@@ -1,0 +1,11 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  startTime: MyString
+  dateTime: MyString
+  duration: 1
+
+two:
+  startTime: MyString
+  dateTime: MyString
+  duration: 1

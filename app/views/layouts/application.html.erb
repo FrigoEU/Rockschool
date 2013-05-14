@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Rockschool</title>
+
+  <%= javascript_include_tag "http://code.jquery.com/jquery-1.9.1.js" %>
+  <%= javascript_include_tag "http://code.jquery.com/ui/1.10.2/jquery-ui.js" %>
+  <%= javascript_include_tag "http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.4.4/underscore-min.js" %>
+  <%= javascript_include_tag "http://cdnjs.cloudflare.com/ajax/libs/backbone.js/1.0.0/backbone-min.js" %>
+  <%= javascript_include_tag "http://cdnjs.cloudflare.com/ajax/libs/mustache.js/0.7.2/mustache.min.js" %>
+
+  <%= stylesheet_link_tag    "http://code.jquery.com/ui/1.10.2/themes/start/jquery-ui.css", :media => "all" %>
+
+  <%= stylesheet_link_tag    "application", :media => "all" %>
+  <%= javascript_include_tag "application" %>
+
+  <%= csrf_meta_tags %>
+</head>
+<body>
+
+<%= yield %>
+
+</body>
+</html>
