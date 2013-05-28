@@ -2,7 +2,7 @@ var Teacher = Backbone.Model.extend({
 	initialize: function(){
 
 	},
-	getSchedule: function(startDate, endDate){
+	showSchedule: function(startDate, endDate){
 		//Hier moeten we dus naar de server gaan om de schedule van een bepaalde week op te halen.
 		//Wat we hier gaan terug krijgen is normaal een array van lesson objecten, in JSON formaat.
 		//Ik kan hier dus wel een dummy doorgeven om verder te kunnen.
@@ -20,7 +20,7 @@ var Teacher = Backbone.Model.extend({
 
 		resultSchedule.fetch({
 			data: {'id': this.id, 'startDate': startDateTimeStamp, 'endDate': endDateTimeStamp},
-			async:false
+			success:moderator.showMainScreenTeacherSchedule(resultSchedule)
 		});
 
 		//console.log("Teacher.getSchedule.resultSchedule = ", resultSchedule);

@@ -4,19 +4,20 @@ var moderator = {
 		$("#mainpage").children().html("");
 
 		if (allTeachers){
+			this.showMainScreenTeacherIndex();
 		}
 		else {
 			allTeachers = new Teachers();
-			allTeachers.fetch({async: false});
+			allTeachers.fetch({success: this.showMainScreenTeacherIndex});
 		}
-
+	},
+	showMainScreenTeacherIndex: function() {
 		var teachersIndexView = new TeachersIndexView({
 			collection: allTeachers,
 			template: $("#teachersIndexViewTemplate").html(), 
 			el: $('#sidebar')
 		});
 		teachersIndexView.render();
-
 	},
 	setMainScreenTeacherSchedule: function (teacher, date1, date2) {
 		var firstDateForServer;
@@ -44,18 +45,15 @@ var moderator = {
 
 		console.log("firstDateForServer = " + firstDateForServer);
 		console.log("lastDateForServer = " + lastDateForServer);
-		var teacherSchedule = teacher.getSchedule(firstDateForServer, lastDateForServer);
-
+		teacher.showSchedule(firstDateForServer, lastDateForServer);
+	},
+	showMainScreenTeacherSchedule: function(schedule){
 		var scheduleView = new ScheduleView({
-			collection: teacherSchedule,
+			collection: schedule,
 			el: $('#middle'),
 			template: $("#scheduleViewItemTemplate").html()
 		});
 		scheduleView.render();
-
-
-		//make view for teacher.schedule(week) and render
-
 	},
 	setMainScreenAddTeacher: function() {
 		var addTeacherView = new AddTeacherView({
@@ -68,12 +66,14 @@ var moderator = {
 		$("#mainpage").children().html("");
 
 		if (allStudents){
+			this.showMainScreenStudentIndex();
 		}
 		else {
 			allStudents = new Students();
-			allStudents.fetch({async: false});
-		};
-
+			allStudents.fetch({success: this.showMainScreenStudentIndex});
+		};	
+	},
+	showMainScreenStudentIndex: function() {
 		var studentsIndexView = new StudentsIndexView({
 			collection: allStudents,
 			template: $("#studentsIndexViewTemplate").html(), 
