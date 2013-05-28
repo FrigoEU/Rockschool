@@ -2,6 +2,8 @@ Rockschool::Application.routes.draw do
   get "home/index"
 
   resources :teachers
+  resources :students
+  resources :lessons
 
 
   # The priority is based upon order of creation:
@@ -14,8 +16,8 @@ Rockschool::Application.routes.draw do
   # Sample of named route:
   #   match 'products/:id/purchase' => 'catalog#purchase', :as => :purchase
   # This route can be invoked with purchase_url(:id => product.id)
-  match "/lessons" => "lessons#index"
-  match "/students" => "students#index"
+  # match "/lessons" => "lessons#index"
+  # match "/students" => "students#index"
 
   # Sample resource route (maps HTTP verbs to controller actions automatically):
   #   resources :products
