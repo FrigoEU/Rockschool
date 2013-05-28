@@ -13,8 +13,6 @@ var Teacher = Backbone.Model.extend({
 		resultSchedule.meta("endDate", new Date(endDate));
 		resultSchedule.meta("teacher", this);
 
-		//this.fillScheduleTest(resultSchedule, numberOfDays, new Date(startDate), new Date(endDate));
-
 		var startDateTimeStamp = +new Date(startDate)/1000;
 		var endDateTimeStamp = +new Date(endDate)/1000;
 
@@ -25,29 +23,6 @@ var Teacher = Backbone.Model.extend({
 
 		//console.log("Teacher.getSchedule.resultSchedule = ", resultSchedule);
 		return resultSchedule;
-
-	},
-
-	fillScheduleTest: function(schedule, numberOfDays, startDate, endDate){
-		//Gewoon testprocedure o; een paar lessen te maken
-
-		var lesson;
-		var lessonDate;
-
-		for (var i = 0; i <= numberOfDays ; i++) {
-			lessonDate = new Date(startDate);
-			lessonDate.add({days: i, hours: 15, minutes: 0});
-
-			lesson = new Lesson({
-				teacher: "Gunther",
-				student: "Maja",
-				duration: 30,
-				startTime: lessonDate
-			});
-
-			schedule.add(lesson);
-		};
-
 
 	},
 
@@ -108,3 +83,4 @@ var AddTeacherView = Backbone.View.extend({
         moderator.setMainScreenTeacherIndex();
 	}
 })
+

@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html>
 <head>
-
 </head>
 <body>
 	<div>
@@ -74,7 +73,7 @@
 	</script>
 
 	<script type="text/template" class="template" id="teacherTeachingDropDownTemplate">
-		<ul id="dropDownMenu"><li><a class="enroll" data-startTime="{{startTime}}" data-duration="{{duration}}" href="#">Inschrijven</a></li></ul>
+		<ul id="dropDownMenu" data-startTime="{{startTime}}" data-duration="{{duration}}"><li><a class="enroll" href="#">Inschrijven</a></li></ul>
 	</script>
 	<script type="text/template" class="template" id="scheduleViewItemTemplate">
 		<td class="{{htmlClass}}" rowspan = "{{rowspan}}" data-startTime = "{{startTime}}" data-duration = "{{duration}}"> 
@@ -82,7 +81,24 @@
 		</td>
 	</script>
 	<script type="text/template" class="template" id="enrollmentDialogTemplate">
-		
+		<div id="enrollmentDialog" title="Inschrijvingsformulier">
+		  	<h3>Inschrijvingsformulier</h3>
+		  	<form>
+		  		<p>Naam student:<span id="studentName">{{studentName}}</span>
+		    	</p>
+		    	<p>Naam leerkracht:<span id="teacherName">{{teacherName}}</span>
+		    	</p>
+		    	<p>Lesdag:<span id="teachingDay">{{teachingDay}}</span>
+		    	</p>
+		    	<p><label for="spinner">Lesuur:</label>
+	  				<input id="spinner" name="spinner" value="{{startLessonHour}}" />
+		    	</p>
+		    	<p>Type inschrijving:
+		    		<input type="radio" name="enrollmentType" value="year" checked>Schooljaar</input>
+		    		<input type="radio" name="enrollmentType" value="10lessons">10 Lessen</input>
+		    	</p>
+		  	</form>
+		</div>
 	</script>
 </body>
 

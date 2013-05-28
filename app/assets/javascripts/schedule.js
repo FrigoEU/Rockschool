@@ -204,18 +204,18 @@ var ScheduleView = Backbone.View.extend({
 		result = ((endSchoolDay*60) - (startSchoolDay*60)) / smallestSlotLength;
 		return result;
 	},
-	showTeacherTeachingDropdown: function(e) {
+	showTeacherTeachingDropdown: function(event) {
 		//console.log("$(e.currentTarget).data('starttime') = " + $(e.currentTarget).data("starttime"));
 		//console.log("$(e.currentTarget).data('duration') = " + $(e.currentTarget).data('duration'));
 		//console.log("event.pageX = " + event.pageX);
 		//console.log("event.pageY = " + event.pageY);
 
-		var scheduleViewItem = new ScheduleViewItem(new TimeRange({ "startTime": new Date($(e.currentTarget).data("starttime")) , 
-																	"duration": $(e.currentTarget).data('duration'), 
-																	"type": $(e.currentTarget).attr("class")}));
+		var scheduleViewItem = new ScheduleViewItem(new TimeRange({ "startTime": new Date($(event.currentTarget).data("starttime")) , 
+																	"duration": $(event.currentTarget).data('duration'), 
+																	"type": $(event.currentTarget).attr("class")}));
 		//console.log("scheduleViewItem.startTime = " + scheduleViewItem.startTime);
 		moderator.showTeacherTeachingDropdown(event.pageX, event.pageY, scheduleViewItem);
-		e.stopPropagation();//Anders wordt de dropdown direct terug weggegooid!
+		event.stopPropagation();//Anders wordt de dropdown direct terug weggegooid!
 	}
 
 })
@@ -374,10 +374,51 @@ var TeacherTeachingDropDownView = Backbone.View.extend({
 	showEnrollmentDialog: function(e) {
 		e.preventDefault();
 
-		var teacher = allTeachers.get($("#lessenrooster").data("teacher_id"));
-		var startTime = $(e.currentTarget).parents("ul").data("startTime");
+		var student = "Simon Van Casteren";//var user = getUSER!!!
+		var teacher = allTeachers.get($("#lessenrooster").data("teacher-id"));
+		var startTime = $(e.currentTarget).parents("ul").data("starttime");
 		var duration = $(e.currentTarget).parents("ul").data("duration");
-		//var user = getUSER!!!
-		moderator.showEnrollmentDialog(teacher, startTime, duration);
+		
+		moderator.showEnrollmentDialog(student,teacher, startTime, duration);
+	}
+});
+var EnrollmentDialogView = Backbone.View.extend({
+	initialize: function () {
+	},
+	tagName: "div",
+	id:"enrollmentDialog",
+	events: {
+
+	},
+	render: function() {
+		var startTimeObject = new Date(this.options.startTime);
+		$("body").append(Mustache.render(
+			this.options.template.html(),{
+			"studentName": this.options.student, //aan te passen wanneer we echt student object meegeven
+			"teacherName": this.options.teacher.get('name'),
+			"teachingDay": startTimeObject.toString("ddd dd MMM yyyy"),
+			"startLessonHour": startTimeObject.toString("HH:mm")
+		}));
+		var enrollmentDialog = $('#enrollmentDialog');
+		console.log("enrollmentDialog = " + enrollmentDialog);
+		enrollmentDialog.dialog({
+			autoOpen: true,
+			height: 400,
+			width: 450,
+			modal: true,
+			buttons:{
+				"Voer inschrijving in": function () {
+					
+				},
+				Cancel: function() {
+          			$( this ).dialog( "close" );
+        		}
+			},
+			close: function() {
+        		//allFields.val( "" ).removeClass( "ui-state-error" );
+        		$('#enrollmentDialog').remove();
+      		}
+		});
+		$('#enrollmentDialog').children('#spinner').spinner();
 	}
 })

@@ -101,5 +101,17 @@ var moderator = {
 			}
 		});
 		teacherTeachingDropDownView.render();
+	},
+	showEnrollmentDialog: function(student, teacher, startTime, duration) {
+		console.log("even testen");
+		enrollmentDialogView = new EnrollmentDialogView({
+			template: $('#enrollmentDialogTemplate'),
+			el:$("enrollmentDialog"),
+			student: student,
+			teacher: teacher,
+			startTime: startTime,
+			duration: duration
+		});
+		enrollmentDialogView.render();
 	}
 }
