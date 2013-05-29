@@ -12,6 +12,7 @@ var moderator = {
 		}
 	},
 	showMainScreenTeacherIndex: function() {
+		$('#middle').children().each(function(){this.remove()});
 		var teachersIndexView = new TeachersIndexView({
 			collection: allTeachers,
 			template: $("#teachersIndexViewTemplate").html(), 
@@ -20,6 +21,7 @@ var moderator = {
 		teachersIndexView.render();
 	},
 	setMainScreenTeacherSchedule: function (teacher, date1, date2) {
+		$('#middle').children().each(function(){this.remove()});
 		var firstDateForServer;
 		var lastDateForServer;
 		if (date1 && date2) {
@@ -48,6 +50,7 @@ var moderator = {
 		teacher.showSchedule(firstDateForServer, lastDateForServer);
 	},
 	showMainScreenTeacherSchedule: function(schedule){
+		$('#middle').children().each(function(){this.remove()});
 		var scheduleView = new ScheduleView({
 			collection: schedule,
 			el: $('#middle'),
@@ -56,6 +59,7 @@ var moderator = {
 		scheduleView.render();
 	},
 	setMainScreenAddTeacher: function() {
+		$('#middle').children().each(function(){this.remove()});
 		var addTeacherView = new AddTeacherView({
 			template: $("#addTeacherTemplate"),
 			el: $('#middle')
@@ -74,6 +78,7 @@ var moderator = {
 		};	
 	},
 	showMainScreenStudentIndex: function() {
+		$('#middle').children().each(function(){this.remove()});
 		var studentsIndexView = new StudentsIndexView({
 			collection: allStudents,
 			template: $("#studentsIndexViewTemplate").html(), 
@@ -82,6 +87,8 @@ var moderator = {
 		studentsIndexView.render();
 	},
 	setMainScreenAddStudent: function() {
+		if (addStudentView) {addStudentView.remove()};
+		$('#middle').children().each(function(){this.remove()});
 		var addStudentView = new AddStudentView({
 			template: $("#addStudentTemplate"),
 			el: $('#middle')

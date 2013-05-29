@@ -28,22 +28,27 @@ var StudentsIndexView = Backbone.View.extend({
 
 var AddStudentView = Backbone.View.extend({
 	events: {
-		"click .submitButton": "submit"
+		//"click .submitButton": "submit"
 
 	},
 	tagName: "div",
 	id: "addstudentview",
 	render: function () {
+		$(this.el).off('click');
 		$(this.el).html(this.options.template.html());
 		$(this.el).find("button.submitButton").button();
+		$(this.el).on('click', ".submitButton" , this.submit);
+
 		return this;
 	},
 	submit: function(e) {
 		e.preventDefault();
 
+		var studentName = $(this).parents('#newstudentform').find('input[name=name]').val();
 		allStudents.create({
-            name: this.$('input[name=name]').val()
+            name: studentName
         });
+
         moderator.setMainScreenStudentIndex();
 	}
 })

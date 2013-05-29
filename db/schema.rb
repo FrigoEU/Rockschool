@@ -14,12 +14,12 @@
 ActiveRecord::Schema.define(:version => 20130501082752) do
 
   create_table "lessons", :force => true do |t|
-    t.datetime "startTime"
     t.integer  "duration"
     t.datetime "created_at", :null => false
     t.datetime "updated_at", :null => false
     t.integer  "teacher_id"
     t.integer  "student_id"
+    t.datetime "startTime"
   end
 
   create_table "students", :force => true do |t|
