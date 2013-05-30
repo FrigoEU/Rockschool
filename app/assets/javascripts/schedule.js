@@ -21,7 +21,7 @@ var Schedule = Backbone.Collection.extend({
 		for (var i = 0; i < response.length; i++) {
 			var data = response[i];
 			var lesson = new Lesson({
-				startTime: new Date(data.startTime),
+				startTime: new Date(data.starttime),
 				duration: data.duration,
 				teacher: data.teacher_id,
 				student: data.student_id,
