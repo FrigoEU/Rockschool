@@ -1,8 +1,8 @@
 class CreateLessons < ActiveRecord::Migration
   def change
     create_table :lessons do |t|
-      t.string :startTime
-      t.string :dateTime
+      t.datetime :startTime
+      t.string :status
       t.integer :duration
 
       t.timestamps
