@@ -164,8 +164,8 @@ var ScheduleView = Backbone.View.extend({
 		for (var i = 0; i <= numberOfDays-1 ; i++) {
 			var openingStartDate = new Date(startDate);
 			openingStartDate.add({days: i});
-			openingStartDate.addHours(10);
-			var duration = 7*60;
+			openingStartDate.addHours(startSchoolDay);
+			var duration = (endSchoolDay-startSchoolDay)*60;
 			resultingSchoolOpeningHours.add(new TimeRange({"startTime": openingStartDate, "duration" : duration, "type" : "schoolopen"}));
 		};
 
@@ -180,17 +180,17 @@ var ScheduleView = Backbone.View.extend({
 
 		var numberOfDays = (endDate.getTime() - startDate.getTime())/(1000*60*60*24) + 1;
 
-		for (var i = 0; i <= numberOfDays-2 ; i++) {
+		for (var i = 0; i <= numberOfDays-3 ; i++) {
 			var teachingStartDate = new Date(startDate);
 			teachingStartDate.add({days: i});
-			teachingStartDate.addHours(11);
-			var duration = 3*60;
+			teachingStartDate.addHours(9);
+			var duration = 4*60;
 			resultingTeacherTeachingHours.add(new TimeRange({"startTime": teachingStartDate, "duration" : duration, "type" : "teacherteaching"}));
 
 			teachingStartDate = new Date(startDate);
 			teachingStartDate.add({days: i});
-			teachingStartDate.addHours(15);
-			duration = 1*60;
+			teachingStartDate.addHours(14);
+			duration = 2.5*60;
 			resultingTeacherTeachingHours.add(new TimeRange({"startTime": teachingStartDate, "duration" : duration, "type" : "teacherteaching"}));
 
 		};
