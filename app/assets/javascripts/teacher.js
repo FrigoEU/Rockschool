@@ -18,7 +18,10 @@ var Teacher = Backbone.Model.extend({
 
 		resultSchedule.fetch({
 			data: {'id': this.id, 'startDate': startDateTimeStamp, 'endDate': endDateTimeStamp},
-			success:moderator.showMainScreenTeacherSchedule(resultSchedule)
+			success: function(model, response, options){
+				resultSchedule.parse(response);
+				moderator.showMainScreenTeacherSchedule(resultSchedule)
+			}
 		});
 
 		//console.log("Teacher.getSchedule.resultSchedule = ", resultSchedule);

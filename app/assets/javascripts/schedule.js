@@ -24,7 +24,8 @@ var Schedule = Backbone.Collection.extend({
 				startTime: new Date(data.startTime),
 				duration: data.duration,
 				teacher: data.teacher_id,
-				student: data.student_id
+				student: data.student_id,
+				status: data.status
 			});
 			resultArray.push(lesson);
 		};
@@ -88,8 +89,8 @@ var ScheduleView = Backbone.View.extend({
 						}
 					};
 					if (scheduleViewItem.content.has("teacher")) { // We hebben een les vast
-						htmlClass = "lesson";
-						text = scheduleViewItem.content.get("student") + " " + scheduleViewItem.content.get("duration") + " minutes";
+						htmlClass = "lesson lesson-" + scheduleViewItem.content.get('status');
+						text = allStudents.get(scheduleViewItem.content.get("student")).get("name"); // + " " + scheduleViewItem.content.get("duration") + " minutes";
 					};
 					var html = Mustache.render(scheduleViewItemTemplate, {
 						"htmlClass": htmlClass,
@@ -125,6 +126,7 @@ var ScheduleView = Backbone.View.extend({
 		//Alle uren enzo erin gooien
 		schoolOpeningHours.each(function(model) {scheduleMatrix.add(new ScheduleViewItem(model));});
 		teacherTeachingHours.each(function(model) {scheduleMatrix.add(new ScheduleViewItem(model));});
+		console.log("this.collection = " + this.collection);
 		this.collection.each(function(model) {scheduleMatrix.add(new ScheduleViewItem(model));});
 		scheduleMatrix.splitItemsIntoStandardLength("teacherteaching");
 
@@ -147,7 +149,7 @@ var ScheduleView = Backbone.View.extend({
 		scheduleMatrix.unshift(hoursArray);
 
 
-		//console.log("scheduleMatrix = ", scheduleMatrix);
+		console.log("scheduleMatrix = ", scheduleMatrix);
 
 		return scheduleMatrix;
 	},

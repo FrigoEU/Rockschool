@@ -57,10 +57,25 @@ border-radius: 5px;
 }
 #lessenrooster td.teacherteaching {
   background-color: #A0DB29;
+  cursor: pointer;
 }
 #lessenrooster td.teacherteaching:hover{
 	opacity: 0.5;
 }
 #lessenrooster td.lesson {
+	color: white;
+	text-align: center;
+	cursor: pointer;
+}
+#lessenrooster td.lesson-open {
 	background-color: #275CB2;
+}
+#lessenrooster td.lesson-absent-nok {
+	background-color: red;
+}
+#lessenrooster td.lesson-absent-ok {
+	background-color: green;
+}
+#lessenrooster td.lesson-tbc {
+	background-color: black;
 }
