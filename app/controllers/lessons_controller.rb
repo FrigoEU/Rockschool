@@ -5,7 +5,7 @@ class LessonsController < ApplicationController
     if (params.has_key?(:startDate) && params.has_key?(:endDate) && params.has_key?(:id))
       @startDateParsed = Time.at(params[:startDate].to_f)
       @endDateParsed = Time.at(params[:endDate].to_f)   
-      @lessons = Lesson.where("teacher_id = ? AND startTime > ? AND startTime < ?", params[:id], @startDateParsed, @endDateParsed)
+      @lessons = Lesson.where("teacher_id = ? AND starttime > ? AND starttime < ?", params[:id], @startDateParsed, @endDateParsed)
     else # Gewoon RESTful alles ophalen
       @lessons = Lesson.all
     end
