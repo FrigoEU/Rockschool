@@ -19,7 +19,7 @@ ActiveRecord::Schema.define(:version => 20130530191832) do
     t.datetime "updated_at", :null => false
     t.integer  "teacher_id"
     t.integer  "student_id"
-    t.datetime "startTime"
+    t.datetime "starttime"
     t.string   "status"
   end
 
