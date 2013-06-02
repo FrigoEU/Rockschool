@@ -11,16 +11,55 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130530191832) do
+ActiveRecord::Schema.define(:version => 20130602171512) do
+
+  create_table "closingperiods", :force => true do |t|
+    t.date     "startdate"
+    t.date     "enddate"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
+
+  create_table "enrollments", :force => true do |t|
+    t.integer  "student_id"
+    t.integer  "lessongroup_id"
+    t.boolean  "paid"
+    t.datetime "created_at",     :null => false
+    t.datetime "updated_at",     :null => false
+  end
+
+  create_table "lessongroups", :force => true do |t|
+    t.integer  "maximum_number_of_students"
+    t.datetime "created_at",                 :null => false
+    t.datetime "updated_at",                 :null => false
+  end
 
   create_table "lessons", :force => true do |t|
+    t.datetime "starttime"
+    t.string   "status"
     t.integer  "duration"
     t.datetime "created_at", :null => false
     t.datetime "updated_at", :null => false
     t.integer  "teacher_id"
-    t.integer  "student_id"
-    t.datetime "starttime"
-    t.string   "status"
+  end
+
+  create_table "periods", :force => true do |t|
+    t.date     "startdate"
+    t.boolean  "open_on_monday"
+    t.boolean  "open_on_tuesday"
+    t.boolean  "open_on_wednesday"
+    t.boolean  "open_on_thursday"
+    t.boolean  "open_on_friday"
+    t.boolean  "open_on_saturday"
+    t.boolean  "open_on_sunday"
+    t.integer  "openinghours"
+    t.integer  "openingminutes"
+    t.integer  "closinghours"
+    t.integer  "closingminutes"
+    t.date     "enddate"
+    t.boolean  "open_for_registration"
+    t.datetime "created_at",            :null => false
+    t.datetime "updated_at",            :null => false
   end
 
   create_table "students", :force => true do |t|

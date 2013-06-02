@@ -1,0 +1,33 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  startdate: 2013-06-02
+  open_on_monday: false
+  open_on_tuesday: false
+  open_on_wednesday: false
+  open_on_thursday: false
+  open_on_friday: false
+  open_on_saturday: false
+  open_on_sunday: false
+  openinghours: 1
+  openingminutes: 1
+  closinghours: 1
+  closingminutes: 1
+  enddate: 2013-06-02
+  open_for_registration: false
+
+two:
+  startdate: 2013-06-02
+  open_on_monday: false
+  open_on_tuesday: false
+  open_on_wednesday: false
+  open_on_thursday: false
+  open_on_friday: false
+  open_on_saturday: false
+  open_on_sunday: false
+  openinghours: 1
+  openingminutes: 1
+  closinghours: 1
+  closingminutes: 1
+  enddate: 2013-06-02
+  open_for_registration: false
