@@ -21,7 +21,7 @@ var Schedule = Backbone.Collection.extend({
 		for (var i = 0; i < response.length; i++) {
 			var data = response[i];
 			var lesson = new Lesson({
-				startTime: new Date(data.starttime),
+				startTime: new Date(data.startime),
 				duration: data.duration,
 				teacher: data.teacher_id,
 				student: data.student_id,
@@ -354,27 +354,25 @@ var TeacherTeachingDropDownView = Backbone.View.extend({
 		"click .enroll": "showEnrollmentDialog"
 	},
 	render: function() {
-		$(this.el).remove();
-		$("body").append(Mustache.render(this.options.template.html(),{
-			"startTime": this.options.scheduleViewItem.startTime.toString(), 
-			"duration": this.options.scheduleViewItem.duration
-		})); //this.options.scheduleViewItem
-		var dropDownMenu = $("#dropDownMenu");
+		$(this.el).html(Mustache.render(this.options.template.html(),{
+			"startTime": this.scheduleViewItem.startTime.toString(), 
+			"duration": this.scheduleViewItem.duration
+		})); 
+		var dropDownMenu = $(this.el).children("#dropDownMenu");
 		dropDownMenu.menu()
 					.css({
 						position: 'absolute',
 						zIndex:   5000,
-       					top:      this.options.posY, 
-       					left:     this.options.posX
+       					top:      this.posY, 
+       					left:     this.posX
      				});
 		dropDownMenu.outside('click', function(e){
 			$(this).remove();
 		});
-		this.setElement(dropDownMenu);
-		return this;
 	},
 	showEnrollmentDialog: function(e) {
 		e.preventDefault();
+		$(this).remove();
 
 		var student = "Simon Van Casteren";//var user = getUSER!!!
 		var teacher = allTeachers.get($("#lessenrooster").data("teacher-id"));
@@ -393,11 +391,11 @@ var EnrollmentDialogView = Backbone.View.extend({
 
 	},
 	render: function() {
-		var startTimeObject = new Date(this.options.startTime);
+		var startTimeObject = new Date(this.startTime);
 		$("body").append(Mustache.render(
 			this.options.template.html(),{
-			"studentName": this.options.student, //aan te passen wanneer we echt student object meegeven
-			"teacherName": this.options.teacher.get('name'),
+			"studentName": this.student, //aan te passen wanneer we echt student object meegeven
+			"teacherName": this.teacher.get('name'),
 			"teachingDay": startTimeObject.toString("ddd dd MMM yyyy"),
 			"startLessonHour": startTimeObject.toString("HH:mm")
 		}));

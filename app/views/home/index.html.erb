@@ -10,7 +10,7 @@
 		<nav>
 			<input type="radio" id="teachers" name="radio"><label for="teachers">Leerkrachten</label></input>
    	 		<input type="radio" id="students" name="radio"><label for="students">Leerlingen</label></input>
-   	 		<input type="radio" id="tbd" name="radio"><label for="tbd">Vanalles</label></input>
+   	 		<input type="radio" id="options" name="radio"><label for="options">Opties</label></input>
 		</nav>
 	</div>
 
@@ -18,43 +18,24 @@
 		<div id="sidebar"></div>
 		<div id="middle"></div>
 	</div>
+	<div id="teacherTeachingDropDownMenu"></div>
 
 	<script type="text/template" class="template" id="teachersIndexViewTemplate">
-		<div id="accordion">
+		<div id="teachersIndex">
 			 {{#teachers}}
-				<h3>
-					{{name}}
-				</h3>
-				<div>
-					<p class="teacherSchedule" data-id="{{id}}">
-						Uurrooster
-					</p>
-					<p class= "teacherDetails" data-id="{{id}}">
-						Details
-					</p>
-				</div>
+			 	<button class="teacher teachersBox">{{name}}</button><br>
 			{{/teachers}}
-				<h3 class="addTeacher">
-					Leraar toevoegen
-				</h3>
+				<button class="addTeacher teachersBox">Leraar toevoegen</button>
 		</div>
 	</script>
 	<script type="text/template" class="template" id="studentsIndexViewTemplate">
-		<div id="accordion">
+		<div id="studentsIndex"> 
 			 {{#students}}
-				<h3>
-					{{name}}
-				</h3>
-				<div>
-					<p class= "studentDetails" data-id="{{id}}">
-						Details
-					</p>
-				</div>
+			 	<button class="student studentsBox">{{name}}</button><br>
 			{{/students}}
-				<h3 class="addStudent">
-					Leerling toevoegen
-				</h3>
+				<button class="addStudent studentsBox">Leerling toevoegen</button>
 		</div>
+
 	</script>
 	
 	<script type="text/template" class="template" id="addTeacherTemplate">
@@ -102,6 +83,39 @@
 		    		<input type="radio" name="enrollmentType" value="10lessons">10 Lessen</input>
 		    	</p>
 		  	</form>
+		</div>
+	</script>
+	<script type="text/template" class="template" id="periodOptionsTemplate">
+		<div id="periodConfig">
+			<h1>Schooljaar</h1>
+			<form>
+				<h2>Start- en einddata</h2>
+				Startdatum schooljaar: <br>
+				<input type="text" class="datepicker" name="beginDate" placeholder="{{startDate}}"/><br>
+				Laatste gewone inschrijvingsdag: <br>
+				<input type="text" class="datepicker" name="endNormalEnrollmentsDate" placeholder="{{endNormalEnrollmentsDate}}"/><br>
+				<h2>Dagen van de week</h2>
+				<input type="checkbox" name="daysOpen" id="monday" {{#monday}}checked{{/monday}} > Maandag
+				<input type="checkbox" name="daysOpen" id="tuesday" {{#tuesday}}checked{{/tuesday}} > Dinsdag
+				<input type="checkbox" name="daysOpen" id="wednesday" {{#wednesday}}checked{{/wednesday}} > Woensdag
+				<input type="checkbox" name="daysOpen" id="thursday" {{#thursday}}checked{{/thursday}} > Donderdag
+				<input type="checkbox" name="daysOpen" id="friday" {{#friday}}checked{{/friday}} > Vrijdag
+				<input type="checkbox" name="daysOpen" id="saturday" {{#saturday}}checked{{/saturday}} > Zaterdag
+				<input type="checkbox" name="daysOpen" id="sunday" {{#sunday}}checked{{/sunday}} > Zondag
+				<h2>Openingsuren</h2>
+				<label for="startTime">Start dag:</label><br>
+  				<input type="text" name="startTime" placeholder="{{startTime}}" /><br>
+  				<label for="endTime">Einde dag:</label><br>
+  				<input type="text" name="endTime" placeholder="{{endTime}}" /><br>
+  				<h2>Open</h2>
+				<input type="checkbox" name="active" value="true" {{#openForEnrollment}}checked{{/openForEnrollment}}>Open voor inschrijvingen? <br>
+				<button class="submitButton">Submit</button>
+			</form>
+		</div>
+	</script>
+	<script type="text/template" class="template" id="optionsTemplate">
+		<div id="options">
+			<button id="options-period" class="optionsBox">Schooljaar</button>
 		</div>
 	</script>
 </body>

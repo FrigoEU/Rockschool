@@ -10,14 +10,14 @@ var Students = Backbone.Collection.extend({
 
 var StudentsIndexView = Backbone.View.extend({
 	events: {
-		"click .studentDetails" : "showStudentDetails",
+		"click .student" : "showStudentDetails",
 		"click .addStudent": "showAddStudentScreen"
 	},
 	tagName: "div",
 	id: "accordion",
 	render: function() {
 		$(this.el).html(Mustache.to_html(this.options.template,{students: this.collection.toJSON()})); 
-		$(this.el).children("div#accordion").accordion({collapsible: true});
+		$(this.el).find('.studentsBox').each(function() {$(this).button()});
 		return this;
 	},
 	showAddStudentScreen: function(e) {
@@ -28,27 +28,24 @@ var StudentsIndexView = Backbone.View.extend({
 
 var AddStudentView = Backbone.View.extend({
 	events: {
-		//"click .submitButton": "submit"
-
+		'click .submitButton': 'submit'
 	},
-	tagName: "div",
-	id: "addstudentview",
 	render: function () {
-		$(this.el).off('click');
+		//$(this.el).off('click');
 		$(this.el).html(this.options.template.html());
 		$(this.el).find("button.submitButton").button();
-		$(this.el).on('click', ".submitButton" , this.submit);
+		//$(this.el).on('click', ".submitButton" , this.submit);
 
 		return this;
 	},
 	submit: function(e) {
 		e.preventDefault();
 
-		var studentName = $(this).parents('#newstudentform').find('input[name=name]').val();
+		var studentName = $(this.el).find('#newseftudentform').find('input[name=name]').val();
 		allStudents.create({
             name: studentName
         });
 
-        moderator.setMainScreenStudentIndex();
+        moderator.showMainScreenStudentIndex();
 	}
 })

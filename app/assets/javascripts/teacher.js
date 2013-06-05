@@ -44,15 +44,14 @@ var Teachers = Backbone.Collection.extend({
 
 var TeachersIndexView = Backbone.View.extend({
 	events: {
-		"click .teacherSchedule": "showTeacherSchedule",
-		"click .teacherDetails" : "showTeacherDetails",
+		"click .teacher": "showTeacherSchedule",
 		"click .addTeacher": "showAddTeacherScreen"
 	},
 	tagName: "div",
 	id: "accordion",
 	render: function() {
 		$(this.el).html(Mustache.to_html(this.options.template,{teachers: this.collection.toJSON()})); 
-		$(this.el).children("div#accordion").accordion({collapsible: true});
+		$(this.el).find('.teachersBox').each(function() {$(this).button()});
 		return this;
 	},
 	showTeacherSchedule: function(e) {
@@ -67,26 +66,26 @@ var TeachersIndexView = Backbone.View.extend({
 
 var AddTeacherView = Backbone.View.extend({
 	events: {
-
+		'click .submitButton': 'submit'
 	},
 	tagName: "div",
 	id: "addteacherview",
 	render: function () {
-		$(this.el).off('click');
+		//$(this.el).off('click');
 		$(this.el).html(this.options.template.html());
 		$(this.el).find("button.submitButton").button();
-		$(this.el).on('click', ".submitButton" , this.submit);
+		//$(this.el).on('click', ".submitButton" , this.submit);
 
 		return this;
 	},
 	submit: function(e) {
 		e.preventDefault();
-		var teacherName = $(this).parents('#newteacherform').find('input[name=name]').val();
+		var teacherName = $(this.el).find('#newteacherform').find('input[name=name]').val();
 
 		allTeachers.create({
             name: teacherName
         });
-        moderator.setMainScreenTeacherIndex();
+        moderator.showMainScreenTeacherIndex();
 	}
 })
 

@@ -1,27 +1,42 @@
 var moderator = {
+	sidebarView: "",
+	middleView: "",
+	teachersIndexView: "",
+	optionsView: "",
+	scheduleView: "",
+	addTeacherView: "",
+	studentsIndexView: "",
+	addStudentView: "",
+	teacherTeachingDropDownView: "",
+	enrollmentDialogView: "",
+	periodOptionsView: "",
 
-	setMainScreenTeacherIndex: function() {
-		$("#mainpage").children().html("");
-
-		if (allTeachers){
-			this.showMainScreenTeacherIndex();
-		}
-		else {
-			allTeachers = new Teachers();
-			allTeachers.fetch({success: this.showMainScreenTeacherIndex});
-		}
-	},
 	showMainScreenTeacherIndex: function() {
-		$('#middle').children().each(function(){this.remove()});
-		var teachersIndexView = new TeachersIndexView({
-			collection: allTeachers,
-			template: $("#teachersIndexViewTemplate").html(), 
-			el: $('#sidebar')
-		});
-		teachersIndexView.render();
+		if (this.teachersIndexView=="") {
+			this.teachersIndexView = new TeachersIndexView({
+				collection: allTeachers,
+				template: $("#teachersIndexViewTemplate").html()
+			});
+		}
+		this.setSidebar(this.teachersIndexView);
+	},
+	setMainScreenOptions: function() {
+		if (this.optionsView==""){
+			this.optionsView = new OptionsView({
+				template: $("#optionsTemplate").html()
+			});
+		}
+		this.setSidebar(this.optionsView);
+	},
+	showPeriodOptions: function() {
+		if(this.periodOptionsView=="") {
+			periodOptionsView = new PeriodOptionsView({
+				template: $("#periodOptionsTemplate").html()
+			})
+		};
+		this.setMiddle(periodOptionsView);
 	},
 	setMainScreenTeacherSchedule: function (teacher, date1, date2) {
-		$('#middle').children().each(function(){this.remove()});
 		var firstDateForServer;
 		var lastDateForServer;
 		if (date1 && date2) {
@@ -30,95 +45,118 @@ var moderator = {
 		}
 		else {
 			//eerste en laatste dag van deze week
-			if (Date.today().is().monday()) {
-				firstDateForServer = Date.today();
-			}
-			else{
-				firstDateForServer = Date.today().last().monday();//Date.parse('last monday');
-			};
+			if (Date.today().is().monday()) {firstDateForServer = Date.today()}
+			else{firstDateForServer = Date.today().last().monday()};
 
-			if (Date.today().is().sunday()) {
-				lastDateForServer = Date.today();
-			}
-			else{
-				lastDateForServer = Date.today().next().sunday(); //Date.parse('next sunday');
-			};
+			if (Date.today().is().sunday()) {lastDateForServer = Date.today();}
+			else{lastDateForServer = Date.today().next().sunday()};
 		} 
 
-		console.log("firstDateForServer = " + firstDateForServer);
-		console.log("lastDateForServer = " + lastDateForServer);
+		//console.log("firstDateForServer = " + firstDateForServer);
+		//console.log("lastDateForServer = " + lastDateForServer);
 		teacher.showSchedule(firstDateForServer, lastDateForServer);
 	},
 	showMainScreenTeacherSchedule: function(schedule){
-		$('#middle').children().each(function(){this.remove()});
-		var scheduleView = new ScheduleView({
+		if (this.scheduleView=="") {
+			this.scheduleView = new ScheduleView({
 			collection: schedule,
-			el: $('#middle'),
 			template: $("#scheduleViewItemTemplate").html()
-		});
-		scheduleView.render();
-	},
-	setMainScreenAddTeacher: function() {
-		$('#middle').children().each(function(){this.remove()});
-		var addTeacherView = new AddTeacherView({
-			template: $("#addTeacherTemplate"),
-			el: $('#middle')
-		});
-		addTeacherView.render();
-	},
-	setMainScreenStudentIndex: function() {
-		$("#mainpage").children().html("");
-
-		if (allStudents){
-			this.showMainScreenStudentIndex();
+			});
 		}
 		else {
-			allStudents = new Students();
-			allStudents.fetch({success: this.showMainScreenStudentIndex});
-		};	
+			this.scheduleView.collection = schedule;
+		}
+		this.setMiddle(this.scheduleView);
+	},
+	setMainScreenAddTeacher: function() {
+		if (this.addTeacherView=="") {
+			this.addTeacherView = new AddTeacherView({
+			template: $("#addTeacherTemplate")
+			});
+		}
+		this.setMiddle(this.addTeacherView);
 	},
 	showMainScreenStudentIndex: function() {
-		$('#middle').children().each(function(){this.remove()});
-		var studentsIndexView = new StudentsIndexView({
+		if (this.studentsIndexView=="") {
+			this.studentsIndexView = new StudentsIndexView({
 			collection: allStudents,
-			template: $("#studentsIndexViewTemplate").html(), 
-			el: $('#sidebar')
-		});
-		studentsIndexView.render();
+			template: $("#studentsIndexViewTemplate").html()
+			});
+		}
+		this.setSidebar(this.studentsIndexView);
 	},
 	setMainScreenAddStudent: function() {
-		if (addStudentView) {addStudentView.remove()};
-		$('#middle').children().each(function(){this.remove()});
-		var addStudentView = new AddStudentView({
-			template: $("#addStudentTemplate"),
-			el: $('#middle')
-		});
-		addStudentView.render();
+		if (this.addStudentView=="") {
+			this.addStudentView = new AddStudentView({
+			template: $("#addStudentTemplate")
+			});
+		}
+		this.setMiddle(this.addStudentView);
 	},
 	showTeacherTeachingDropdown: function(x,y,scheduleViewItem) {
-		var teacherTeachingDropDownView = new TeacherTeachingDropDownView({
-			posX: x,
-			posY: y,
-			scheduleViewItem: scheduleViewItem,
-			template: $("#teacherTeachingDropDownTemplate"),
-			el: $("#dropDownMenu"),
-			attributes: {
-				"startTime": scheduleViewItem.startTime.toString(),
-				"duration": scheduleViewItem.duration
-			}
-		});
-		teacherTeachingDropDownView.render();
+		if (this.teacherTeachingDropDownView=="") {
+			this.teacherTeachingDropDownView = new TeacherTeachingDropDownView({
+				posX: x,
+				posY: y,
+				scheduleViewItem: scheduleViewItem,
+				template: $("#teacherTeachingDropDownTemplate"),
+				el: $("#teacherTeachingDropDownMenu"),
+				attributes: {
+					"startTime": scheduleViewItem.startTime.toString(),
+					"duration": scheduleViewItem.duration
+				}
+			});
+		}
+		this.teacherTeachingDropDownView.posX = x;
+		this.teacherTeachingDropDownView.posY = y;
+		this.teacherTeachingDropDownView.scheduleViewItem = scheduleViewItem;
+		this.teacherTeachingDropDownView.attributes= {
+			"startTime": scheduleViewItem.startTime.toString(),
+			"duration": scheduleViewItem.duration
+		}
+		this.teacherTeachingDropDownView.render();
 	},
 	showEnrollmentDialog: function(student, teacher, startTime, duration) {
-		console.log("even testen");
-		enrollmentDialogView = new EnrollmentDialogView({
-			template: $('#enrollmentDialogTemplate'),
-			el:$("enrollmentDialog"),
-			student: student,
-			teacher: teacher,
-			startTime: startTime,
-			duration: duration
-		});
-		enrollmentDialogView.render();
+		if (this.enrollmentDialogView=="") {
+			this.enrollmentDialogView = new EnrollmentDialogView({
+				template: $('#enrollmentDialogTemplate'),
+				el:$("enrollmentDialog")
+				});
+		}
+		this.enrollmentDialogView.student = student;
+		this.enrollmentDialogView.teacher = teacher;
+		this.enrollmentDialogView.startTime = startTime;
+		this.enrollmentDialogView.duration = duration;
+		
+		this.enrollmentDialogView.render();
+	},
+	clearAllScreens: function () {
+		if (this.sidebarView!=""){
+			this.sidebarView.remove();
+			$('#sidebar').remove();
+			this.sidebarView="";
+			$('#middle').before('<div id="sidebar"></div>');
+		};	
+		this.clearMiddleScreen();
+	},
+	clearMiddleScreen: function () {
+		if (this.middleView!="") {
+			this.middleView.remove();
+			$('#middle').remove();
+			this.middleView="";
+			$('#sidebar').before('<div id="middle"></div>');
+		};
+	},
+	setSidebar: function(view) {
+		this.clearAllScreens();
+		view.setElement($('#sidebar'));
+		this.sidebarView = view;
+		view.render();
+	},
+	setMiddle: function(view) {
+		this.clearMiddleScreen();
+		view.setElement($('#middle'));
+		this.middleView = view;
+		view.render();
 	}
 }

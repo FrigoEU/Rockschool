@@ -13,20 +13,22 @@ body{
 	position: absolute;
 	left: 225px;
 	top: 150px;
-}s
-
-#accordion {
-	width: 250px;
-}
-#accordion p{
-	cursor: pointer;
-}
-
+} 
 #lessenrooster th {
 	border: 1px solid blue;
 }
+.teachersBox, .studentsBox, .optionsBox {
+	width: 200px;
+	font-size: 10px;
+}
+.teachersBox {
+
+}
+.studentsBox {
+
+}
 #lessenrooster td {
-border-radius: 5px;
+	border-radius: 5px;
 }
 #lessenrooster td {
 	width: 150px;
@@ -56,8 +58,8 @@ border-radius: 5px;
 	background-color: darkgray;
 }
 #lessenrooster td.teacherteaching {
-  background-color: #A0DB29;
-  cursor: pointer;
+  	background-color: #A0DB29;
+  	cursor: pointer;
 }
 #lessenrooster td.teacherteaching:hover{
 	opacity: 0.5;

@@ -1,13 +1,25 @@
 window.onload = function() {
-	//var allTeachers = getAllTeachers();
+  allTeachers = new Teachers();
+  allTeachers.fetch();
+
+  allStudents = new Students();
+  allStudents.fetch();
+
+  period = new Period();
+  period.fetch({
+    data:{'active': true}
+  });
 
 	$( "nav" ).buttonset();
 	$("nav #teachers").on("click", function (event){
-		moderator.setMainScreenTeacherIndex();
+		moderator.showMainScreenTeacherIndex();
 	});
 	$("nav #students").on("click", function (event) {
-		moderator.setMainScreenStudentIndex();
+		moderator.showMainScreenStudentIndex();
 	});
+  $("nav #options").on("click", function (event) {
+    moderator.setMainScreenOptions();
+  });
    	$.fn.outside = function(ename, cb){
      	return this.each(function(){
         	var $this = $(this),
