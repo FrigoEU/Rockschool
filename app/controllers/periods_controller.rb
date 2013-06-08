@@ -6,6 +6,7 @@ class PeriodsController < ApplicationController
 		if params[:active] == true
   			@activePeriod = Period.all #Period.where({active: true})
   		end
+  		@activePeriod = Period.all 
   		respond_to do |format|
       		format.html # index.html.erb
       		format.json { render json: @activePeriod }
