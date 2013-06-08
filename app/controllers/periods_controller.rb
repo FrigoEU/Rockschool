@@ -3,10 +3,9 @@ class PeriodsController < ApplicationController
     # GET /periods.json
     include PeriodsHelper
 	def index
-		if params[:active] == true
-  			@activePeriod = Period.all #Period.where({active: true})
-  		end
-  		@activePeriod = Period.all 
+		if params[:active] == "true"
+  			@activePeriod = Period.where({active: true})
+  		end 
   		respond_to do |format|
       		format.html # index.html.erb
       		format.json { render json: @activePeriod }
@@ -14,7 +13,7 @@ class PeriodsController < ApplicationController
 	end
 
 	def create
-		Period.update_all "active = 'false'", "active = 'true'"
+		Period.update_all({active: false}, {active: true})
 
 		@beginDateParsed = jsdate_to_railsdate(params[:beginDate])
       	@endNormalEnrollmentsDate = jsdate_to_railsdate(params[:endNormalEnrollmentsDate])  

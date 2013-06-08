@@ -23,7 +23,7 @@
 	<script type="text/template" class="template" id="teachersIndexViewTemplate">
 		<div id="teachersIndex">
 			 {{#teachers}}
-			 	<button class="teacher teachersBox">{{name}}</button><br>
+			 	<button class="teacher teachersBox" data-id="{{id}}">{{name}}</button><br>
 			{{/teachers}}
 				<button class="addTeacher teachersBox">Leraar toevoegen</button>
 		</div>
@@ -31,7 +31,7 @@
 	<script type="text/template" class="template" id="studentsIndexViewTemplate">
 		<div id="studentsIndex"> 
 			 {{#students}}
-			 	<button class="student studentsBox">{{name}}</button><br>
+			 	<button class="student studentsBox" data-id="{{id}}>{{name}}</button><br>
 			{{/students}}
 				<button class="addStudent studentsBox">Leerling toevoegen</button>
 		</div>
@@ -108,7 +108,7 @@
   				<label for="endTime">Einde dag:</label><br>
   				<input type="text" name="endTime" placeholder="{{endTime}}" /><br>
   				<h2>Open</h2>
-				<input type="checkbox" name="active" value="true" {{#openForEnrollment}}checked{{/openForEnrollment}}>Open voor inschrijvingen? <br>
+				<input type="checkbox" name="openForEnrollment" value="true" {{#openForEnrollment}}checked{{/openForEnrollment}}>Open voor inschrijvingen? <br>
 				<button class="submitButton">Submit</button>
 			</form>
 		</div>

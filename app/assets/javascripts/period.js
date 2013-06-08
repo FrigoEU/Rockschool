@@ -16,11 +16,29 @@ Period = Backbone.Model.extend({
 		openOnSunday: false,
 		openForEnrollment: true
 	},
-	save: function(attributes, options) {
-
-		return Backbone.Model.prototype.save.call(this, attributes, options);
+	parse: function (response) {
+		return {
+			beginDate: Date.parse(USDateToEU(response[0].startdate)),
+			endNormalEnrollmentsDate: Date.parse(USDateToEU(response[0].enddate)),
+			openingTimeHours: response[0].openinghours,
+			openingTimeMinutes: response[0].openingminutes,
+			closingTimeHours: response[0].closinghours,
+			closingTimeMinutes: response[0].closingminutes,
+			openOnMonday: response[0].open_on_monday,
+			openOnTuesday: response[0].open_on_tuesday,
+			openOnWednesday: response[0].open_on_wednesday,
+			openOnThursday: response[0].open_on_thursday,
+			openOnFriday: response[0].open_on_friday,	
+			openOnSaturday: response[0].open_on_saturday,
+			openOnSunday: response[0].open_on_sunday,
+			openForEnrollment: response[0].open_for_registration
+		};
 	}
 });
+
+function USDateToEU (USDate) {
+	return (USDate.substring(8,10) + '/' + USDate.substring(5,7) + '/' + USDate.substring(0,4))
+}
 
 PeriodOptionsView = Backbone.View.extend({
 	events: {
@@ -39,8 +57,8 @@ PeriodOptionsView = Backbone.View.extend({
 			"friday": period.get("openOnFriday"),
 			"saturday": period.get("openOnSaturday"),
 			"sunday": period.get("openOnSunday"),
-			"startTime": period.get("openingTimeHours") + ":" + pad(period.get("openingTimeMinutes"),2),
-			"endTime": period.get("closingTimeHours") + ":" + pad(period.get("closingTimeMinutes"),2),
+			"startTime": pad(period.get("openingTimeHours"), 2) + ":" + pad(period.get("openingTimeMinutes"),2),
+			"endTime": pad(period.get("closingTimeHours"), 2) + ":" + pad(period.get("closingTimeMinutes"),2),
 			"active":  period.get("openForEnrollment")
 		}));
 		$(this.el).find(".datepicker").datepicker({"dateFormat": "dd/mm/yy"});
@@ -62,10 +80,10 @@ PeriodOptionsView = Backbone.View.extend({
 			openOnFriday: $(this.el).find('input#friday').is(':checked'),
 			openOnSaturday: $(this.el).find('input#saturday').is(':checked'),
 			openOnSunday: $(this.el).find('input#sunday').is(':checked'),
-			openForEnrollment: $(this.el).find('input[name=endTime]').is(':checked')
+			openForEnrollment: $(this.el).find('input[name=openForEnrollment]').is(':checked')
 		});
 		period.save();
-		//moderator.setMainScreenOptions();
+		moderator.setMainScreenOptions();
 	}
 });
 

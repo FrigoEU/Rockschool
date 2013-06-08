@@ -119,9 +119,11 @@ var ScheduleView = Backbone.View.extend({
 
 		var schoolOpeningHours = this.getSchoolOpeningHours();
 		var teacherTeachingHours = this.getTeacherTeachingHours();
-		var numberOfSlots = this.getNumberOfSlots(schoolOpeningHours);
+		var numberOfSlots = this.getNumberOfSlots();
 
-		var scheduleMatrix = new ScheduleMatrix(startDate, numberOfDays);
+		console.log("numberOfSlots = ", numberOfSlots);
+
+		var scheduleMatrix = new ScheduleMatrix(startDate, numberOfDays, period.get('openingTimeHours'), period.get('openingTimeMinutes'), period.get('closingTimeHours'), period.get('closingTimeMinutes'));
 
 		//Alle uren enzo erin gooien
 		schoolOpeningHours.each(function(model) {scheduleMatrix.add(new ScheduleViewItem(model));});
@@ -133,43 +135,64 @@ var ScheduleView = Backbone.View.extend({
 		//De "timeindications" er in gooien die zorgen dat die rowspn lukt
 		var timeIndicationArray = new ScheduleViewItemArray();
 		var tempDate = new Date(startDate);
-		tempDate.setHours(schoolOpeningHours);
+		tempDate.setHours(period.get('openingTimeHours'));
+		tempDate.setMinutes(period.get('openingTimeMinutes'));
 		for (var i = 0; i < numberOfSlots; i++) {
 			timeIndicationArray.push(new ScheduleViewItem(new TimeRange({"startTime": tempDate, "duration": smallestSlotLength, "type": "timeindication"})));
 			tempDate.addMinutes(smallestSlotLength);
 		};
-		scheduleMatrix.push(timeIndicationArray);
+		scheduleMatrix.push(timeIndicationArray); //op het einde van de schedulematrix gooien we de timeindicationarray
 
 		var hoursArray = [];
-		for (var i = 0; i < endSchoolDay-startSchoolDay+2; i++) {
-			var text = (startSchoolDay+i) + " uur";
-			hoursArray[i] = new ScheduleViewItem(new TimeRange({"startTime": 0, "duration": 60, "type": "hour", "text": text}));
+		if (period.get('openingTimeMinutes') > 0) {
+			hoursArray.push(new ScheduleViewItem(new TimeRange({"startTime": 0, "duration": period.get('openingTimeMinutes'), "type": "hour", "text": period.get('openingTimeHours') + " uur"})))
+		}
+		else {
+			hoursArray.push(new ScheduleViewItem(new TimeRange({"startTime": 0, "duration": 60, "type": "hour", "text": period.get('openingTimeHours') + " uur"})))
+		}
+
+		for (var i = 1; i < period.get('closingTimeHours')-period.get('openingTimeHours')+2; i++) {
+			var text = (period.get('openingTimeHours')+i) + " uur";
+			hoursArray.push(new ScheduleViewItem(new TimeRange({"startTime": 0, "duration": 60, "type": "hour", "text": text})));
+		};
+		if (period.get('closingTimeMinutes') > 0) {
+			hoursArray.push(new ScheduleViewItem(new TimeRange({"startTime": 0, "duration": period.get('closingTimeMinutes'), "type": "hour", "text": period.get('closingTimeHours') + " uur"})))
 		};
 
-		scheduleMatrix.unshift(hoursArray);
+		scheduleMatrix.unshift(hoursArray); //hoursArray in schedulematrix gooien, op eerste plaats
 
 
 		console.log("scheduleMatrix = ", scheduleMatrix);
 
 		return scheduleMatrix;
 	},
-	getSchoolOpeningHours: function() {
+	getSchoolOpeningHours: function () {
 		//testprocedure, should come from server
-		//zondag gesloten
-		//Formaat: startdate/enddate/startdate/enddate/...
+		//zaterdag em zondag geen les
 		var startDate = new Date(this.collection.meta("startDate"));
 		var endDate = new Date(this.collection.meta("endDate"));
 		var resultingSchoolOpeningHours = new TimeRangeCollection();
 
-		var numberOfDays = (endDate.getTime() - startDate.getTime())/(1000*60*60*24) +1;
+		var numberOfDays = (endDate.getTime() - startDate.getTime())/(1000*60*60*24) + 1;
+		var duration = (period.get('closingTimeHours')*60 + period.get('closingTimeMinutes') - period.get('openingTimeHours')*60 - period.get('openingTimeMinutes'))
 
-		for (var i = 0; i <= numberOfDays-1 ; i++) {
-			var openingStartDate = new Date(startDate);
-			openingStartDate.add({days: i});
-			openingStartDate.addHours(startSchoolDay);
-			var duration = (endSchoolDay-startSchoolDay)*60;
-			resultingSchoolOpeningHours.add(new TimeRange({"startTime": openingStartDate, "duration" : duration, "type" : "schoolopen"}));
+		for (var i = 0; i < numberOfDays ; i++) {
+			var schoolOpenDate = new Date(startDate);
+			schoolOpenDate.add({days: i});
+			schoolOpenDate.addHours(period.get('openingTimeHours'));
+			schoolOpenDate.addMinutes(period.get('openingTimeMinutes'));
+			if ((schoolOpenDate.is().monday() && period.get('openOnMonday') == true)
+				|| (schoolOpenDate.is().tuesday() && period.get('openOnTuesday') == true)
+				|| (schoolOpenDate.is().wednesday() && period.get('openOnWednesday') == true)
+				|| (schoolOpenDate.is().thursday() && period.get('openOnThursday') == true)
+				|| (schoolOpenDate.is().friday() && period.get('openOnFriday') == true)
+				|| (schoolOpenDate.is().saturday() && period.get('openOnSaturday') == true)
+				|| (schoolOpenDate.is().sunday() && period.get('openOnSunday') == true)) {
+				resultingSchoolOpeningHours.add(new TimeRange({"startTime": schoolOpenDate, "duration" : duration, "type" : "schoolopen"}));
+			}
 		};
+
+		console.log("resultingSchoolOpeningHours = ", resultingSchoolOpeningHours);
 
 		return resultingSchoolOpeningHours;
 	},
@@ -199,12 +222,10 @@ var ScheduleView = Backbone.View.extend({
 
 		return resultingTeacherTeachingHours;
 	},
-	getNumberOfSlots: function(openingHours){
+	getNumberOfSlots: function(){
 		// Returns the amount of slots between the minimum and maximum opening hours based on smallestSlotLength
-		var result;
 
-		result = ((endSchoolDay*60) - (startSchoolDay*60)) / smallestSlotLength;
-		return result;
+		return (period.get('closingTimeHours')*60 + period.get('closingTimeMinutes') - period.get('openingTimeHours')*60 - period.get('openingTimeMinutes')) / smallestSlotLength;
 	},
 	showTeacherTeachingDropdown: function(event) {
 		//console.log("$(e.currentTarget).data('starttime') = " + $(e.currentTarget).data("starttime"));
@@ -258,16 +279,17 @@ function ScheduleViewText (type, text) {
 	this.text = text;
 };
 
-function ScheduleMatrix(startDate, numberOfDays) {
+function ScheduleMatrix(startDate, numberOfDays, openingTimeHours, openingTimeMinutes, closingTimeHours, closingTimeMinutes) {
 	this.startDate = startDate;
 	this.numberOfDays = numberOfDays;
-	// Elke dag één item inzetten van beginschooldag tot eindschooldag, met type = "boundary"
+	var duration = (period.get('closingTimeHours')*60 + period.get('closingTimeMinutes') - period.get('openingTimeHours')*60 - period.get('openingTimeMinutes'))
+	// Elke dag één item inzetten van beginschooldag tot eindschooldag, met type = "schoolopen"
 	for (var i = 0; i < numberOfDays; i++) {
 		this.push(new ScheduleViewItemArray());
 		var tempDate = new Date(startDate);
-		tempDate.set({hour: startSchoolDay});
+		tempDate.set({hour: period.get('openingTimeHours'), minute: period.get('openingTimeMinutes')});
 		tempDate.addDays(i);
-		this[i].push(new ScheduleViewItem(new TimeRange({"startTime": tempDate, "duration": (endSchoolDay - startSchoolDay)*60,"type": "boundary"})));
+		this[i].push(new ScheduleViewItem(new TimeRange({"startTime": tempDate, "duration": duration,"type": "boundary"})));
 	};
 	//console.log("this = " + this);
 };
@@ -304,7 +326,8 @@ ScheduleViewItemArray.prototype.addScheduleViewItem = function(newScheduleViewIt
 	for (var i = 0; i < this.length; i++) {
 		var existingItem = this[i];
 		if (existingItem.startTime.getTime() <= newScheduleViewItem.startTime.getTime()
-			&& existingItem.getEndTime() > newScheduleViewItem.startTime.getTime()) {
+			&& existingItem.getEndTime() > newScheduleViewItem.startTime.getTime()
+			&& upperLevelOk(existingItem, newScheduleViewItem)) {
 				var originalItemEndTime = existingItem.getEndTime();
 			 	existingItem.setDuration((newScheduleViewItem.startTime.getTime() - existingItem.startTime.getTime())/60000);
 				this.splice(i+1, 0, newScheduleViewItem);
@@ -322,6 +345,16 @@ ScheduleViewItemArray.prototype.addScheduleViewItem = function(newScheduleViewIt
 				return;
 			}
 	};
+};
+function upperLevelOk(existingItem, newItem) {
+	var upperLevelOk = false;
+	var existingItemType = existingItem.content.get("type");
+	var newItemType = newItem.content.get("type");
+	if (existingItemType == "boundary" && newItemType == "schoolopen"){upperLevelOk = true};
+	if (existingItemType == "schoolopen" && newItemType == "teacherteaching"){upperLevelOk = true};
+	if (existingItemType == "teacherteaching" && newItemType == "lesson"){upperLevelOk = true};
+
+	return upperLevelOk;
 };
 ScheduleViewItemArray.prototype.splitItemsIntoStandardLength = function(type) {
 	for (var i = 0; i < this.length; i++) {
