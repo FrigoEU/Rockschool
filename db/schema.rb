@@ -35,12 +35,12 @@ ActiveRecord::Schema.define(:version => 20130604110950) do
   end
 
   create_table "lessons", :force => true do |t|
+    t.datetime "starttime"
+    t.string   "status"
     t.integer  "duration"
     t.datetime "created_at", :null => false
     t.datetime "updated_at", :null => false
     t.integer  "teacher_id"
-    t.datetime "starttime"
-    t.string   "status"
   end
 
   create_table "periods", :force => true do |t|
