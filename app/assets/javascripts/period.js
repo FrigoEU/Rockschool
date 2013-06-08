@@ -16,6 +16,10 @@ Period = Backbone.Model.extend({
 		openOnSunday: false,
 		openForEnrollment: true
 	},
+	save: function(attributes, options) {
+
+		return Backbone.Model.prototype.save.call(this, attributes, options);
+	}
 });
 
 PeriodOptionsView = Backbone.View.extend({
