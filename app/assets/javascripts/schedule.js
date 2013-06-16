@@ -192,7 +192,7 @@ var ScheduleView = Backbone.View.extend({
 			}
 		};
 
-		console.log("resultingSchoolOpeningHours = ", resultingSchoolOpeningHours);
+		//console.log("resultingSchoolOpeningHours = ", resultingSchoolOpeningHours);
 
 		return resultingSchoolOpeningHours;
 	},
@@ -204,21 +204,27 @@ var ScheduleView = Backbone.View.extend({
 		var resultingTeacherTeachingHours = new TimeRangeCollection();
 
 		var numberOfDays = (endDate.getTime() - startDate.getTime())/(1000*60*60*24) + 1;
+		var teacher = this.collection.meta("teacher");
+		//console.log("teacher = ", teacher);
+		var duration = (teacher.get('endTimeHours')*60 + teacher.get('endTimeMinutes') - teacher.get('startTimeHours')*60 - teacher.get('startTimeMinutes'));
 
-		for (var i = 0; i <= numberOfDays-3 ; i++) {
-			var teachingStartDate = new Date(startDate);
-			teachingStartDate.add({days: i});
-			teachingStartDate.addHours(9);
-			var duration = 4*60;
-			resultingTeacherTeachingHours.add(new TimeRange({"startTime": teachingStartDate, "duration" : duration, "type" : "teacherteaching"}));
-
-			teachingStartDate = new Date(startDate);
-			teachingStartDate.add({days: i});
-			teachingStartDate.addHours(14);
-			duration = 2.5*60;
-			resultingTeacherTeachingHours.add(new TimeRange({"startTime": teachingStartDate, "duration" : duration, "type" : "teacherteaching"}));
-
+		for (var i = 0; i < numberOfDays ; i++) {
+			var teacherTeachingDate = new Date(startDate);
+			teacherTeachingDate.add({days: i});
+			teacherTeachingDate.addHours(period.get('startTimeHours'));
+			teacherTeachingDate.addMinutes(period.get('startTimeMinutes'));
+			if ((teacherTeachingDate.is().monday() && period.get('teachingOnMonday') == true)
+				|| (teacherTeachingDate.is().tuesday() && period.get('teachingOnTuesday') == true)
+				|| (teacherTeachingDate.is().wednesday() && period.get('teachingOnWednesday') == true)
+				|| (teacherTeachingDate.is().thursday() && period.get('teachingOnThursday') == true)
+				|| (teacherTeachingDate.is().friday() && period.get('teachingOnFriday') == true)
+				|| (teacherTeachingDate.is().saturday() && period.get('teachingOnSaturday') == true)
+				|| (teacherTeachingDate.is().sunday() && period.get('teachingOnSunday') == true)) {
+				resultingSchoolOpeningHours.add(new TimeRange({"startTime": teacherTeachingDate, "duration" : duration, "type" : "teacherteaching"}));
+			}
 		};
+
+		console.log("resultingTeacherTeachingHours = ", resultingTeacherTeachingHours);
 
 		return resultingTeacherTeachingHours;
 	},
@@ -452,6 +458,6 @@ var EnrollmentDialogView = Backbone.View.extend({
         		$('#enrollmentDialog').remove();
       		}
 		});
-		$('#enrollmentDialog').children('#spinner').spinner();
+		//$('#enrollmentDialog').children('#spinner').spinner();
 	}
 })

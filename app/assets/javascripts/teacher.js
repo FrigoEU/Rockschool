@@ -1,6 +1,38 @@
 var Teacher = Backbone.Model.extend({
 	initialize: function(){
-
+		//valideer of begin en einde tijd binnen schooltijd valt!
+	},
+	url: "/teachers",
+	defaults: {
+		name: "Nieuwe Leerkracht",
+		startTimeHours: 12,
+		startTimeMinutes: 0,
+		endTimeHours: 18,
+		endTimeMinutes: 0,
+		teachingOnMonday: true,
+		teachingOnTuesday: true,
+		teachingOnWednesday: true,
+		teachingOnThursday: true,
+		teachingOnFriday: true,
+		teachingOnSaturday: false,
+		teachingOnSunday: false
+	},
+	parse: function (response) {
+		return {
+			id: response.id,
+			name: response.name,
+			startTimeHours: response.starttimehours,
+			startTimeMinutes: response.starttimeminutes,
+			endTimeHours: response.endtimehours,
+			endTimeMinutes: response.endtimeminutes,
+			teachingOnMonday: response.teachingonmonday,
+			teachingOnTuesday: response.teachingontuesday,
+			teachingOnWednesday: response.teachingonwednesday,
+			teachingOnThursday: response.teachingonthursday,
+			teachingOnFriday: response.teachingonfriday,	
+			teachingOnSaturday: response.teachingonsaturday,
+			teachingOnSunday: response.teachingonsunday
+		};
 	},
 	showSchedule: function(startDate, endDate){
 		//Hier moeten we dus naar de server gaan om de schedule van een bepaalde week op te halen.
@@ -26,9 +58,21 @@ var Teacher = Backbone.Model.extend({
 
 		//console.log("Teacher.getSchedule.resultSchedule = ", resultSchedule);
 		return resultSchedule;
-
 	},
-
+	startTime: function() {
+		return (pad(this.attributes.startTimeHours,2) + ":" + pad(this.attributes.startTimeMinutes,2));
+	},
+	endTime: function() {
+		 return (pad(this.attributes.endTimeHours,2) + ":" + pad(this.attributes.endTimeMinutes,2));
+	},
+	setStartTime: function(s) {
+		this.attributes.startTimeHours = parseInt(s.substring(0,2));
+		this.attributes.startTimeMinutes = parseInt(s.substring(3,5));
+	},
+	setEndTime: function(s) {
+		this.attributes.endTimeHours = parseInt(s.substring(0,2));
+		this.attributes.endTimeMinutes = parseInt(s.substring(3,5));
+	}
 });
 
 Backbone.Model.prototype.setByName = function(key, value, options) { 
@@ -64,7 +108,7 @@ var TeachersIndexView = Backbone.View.extend({
 	}
 });
 
-var AddTeacherView = Backbone.View.extend({
+var TeacherDetailsView = Backbone.View.extend({
 	events: {
 		'click .submitButton': 'submit'
 	},
@@ -72,20 +116,40 @@ var AddTeacherView = Backbone.View.extend({
 	id: "addteacherview",
 	render: function () {
 		//$(this.el).off('click');
-		$(this.el).html(this.options.template.html());
+		$(this.el).html(Mustache.to_html(this.options.template.html(), {
+			"name": this.model.get("name"),
+			"startTime": this.model.startTime(),
+			"endTime": this.model.endTime(),
+			"monday": this.model.get("teachingOnMonday"),
+			"tuesday": this.model.get("teachingOnTuesday"),
+			"wednesday": this.model.get("teachingOnWednesday"),
+			"thursday": this.model.get("teachingOnThursday"),
+			"friday": this.model.get("teachingOnFriday"),
+			"saturday": this.model.get("teachingOnSaturday"),
+			"sunday": this.model.get("teachingOnSunday")
+		}));
 		$(this.el).find("button.submitButton").button();
-		//$(this.el).on('click', ".submitButton" , this.submit);
 
 		return this;
 	},
 	submit: function(e) {
 		e.preventDefault();
-		var teacherName = $(this.el).find('#newteacherform').find('input[name=name]').val();
-
-		allTeachers.create({
-            name: teacherName
-        });
-        moderator.showMainScreenTeacherIndex();
+		this.model.setStartTime($(this.el).find('input[name=startTime]').val());
+		this.model.setEndTime($(this.el).find('input[name=endTime]').val());
+		this.model.set("teachingOnMonday", $(this.el).find('input#monday').is(':checked'));
+		this.model.set("teachingOnTuesday", $(this.el).find('input#tuesday').is(':checked'));
+		this.model.set("teachingOnWednesday", $(this.el).find('input#wednesday').is(':checked'));
+		this.model.set("teachingOnThursday", $(this.el).find('input#thursday').is(':checked'));
+		this.model.set("teachingOnFriday", $(this.el).find('input#friday').is(':checked'));
+		this.model.set("teachingOnSaturday", $(this.el).find('input#saturday').is(':checked'));
+		this.model.set("teachingOnSunday", $(this.el).find('input#sunday').is(':checked'));
+			
+		this.model.save({"name": $(this.el).find('input[name=name]').val()},{
+			success: function (model, response, options) {
+				allTeachers.add(model);
+    	    	moderator.showMainScreenTeacherIndex();
+			}
+		});
 	}
 })
 

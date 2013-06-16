@@ -2,33 +2,11 @@ class TeachersController < ApplicationController
   # GET /teachers
   # GET /teachers.json
   def index
-    @teachers = Teacher.all
+    @teachers = Teacher.find(:all)
 
     respond_to do |format|
       format.html # index.html.erb
       format.json { render json: @teachers }
-    end
-  end
-
-  # GET /teachers/1
-  # GET /teachers/1.json
-  def show
-    @teacher = Teacher.find(params[:id])
-
-    respond_to do |format|
-      format.html # show.html.erb
-      format.json { render json: @teacher }
-    end
-  end
-
-  # GET /teachers/new
-  # GET /teachers/new.json
-  def new 
-    @teacher = Teacher.new
-
-    respond_to do |format|
-      format.html # new.html.erb
-      format.json { render json: @teacher }
     end
   end
 
@@ -40,7 +18,20 @@ class TeachersController < ApplicationController
   # POST /teachers
   # POST /teachers.json
   def create
-    @teacher = Teacher.new(params[:teacher])
+    @teacher = Teacher.new({
+      name: params[:name],
+      starttimehours: params[:startTimeHours].to_i,
+      endtimehours: params[:endTimeHours].to_i,
+      starttimeminutes: params[:startTimeMinutes].to_i,
+      endtimeminutes: params[:endTimeMinutes].to_i,
+      teachingonfriday: params[:teachingOnFriday],
+      teachingonmonday: params[:teachingOnMonday],
+      teachingonsaturday: params[:teachingOnSaturday],
+      teachingonsunday: params[:teachingOnSunday],
+      teachingonthursday: params[:teachingOnThursday],
+      teachingontuesday: params[:teachingOnTuesday],
+      teachingonwednesday: params[:teachingOnWednesday]
+      })
 
     respond_to do |format|
       if @teacher.save

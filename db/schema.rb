@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130604110950) do
+ActiveRecord::Schema.define(:version => 20130616145439) do
 
   create_table "closingperiods", :force => true do |t|
     t.date     "startdate"
@@ -71,8 +71,19 @@ ActiveRecord::Schema.define(:version => 20130604110950) do
 
   create_table "teachers", :force => true do |t|
     t.string   "name"
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
+    t.datetime "created_at",          :null => false
+    t.datetime "updated_at",          :null => false
+    t.integer  "starttimehours"
+    t.integer  "starttimeminutes"
+    t.integer  "endtimehours"
+    t.integer  "endtimeminutes"
+    t.boolean  "teachingonmonday"
+    t.boolean  "teachingontuesday"
+    t.boolean  "teachingonwednesday"
+    t.boolean  "teachingonthursday"
+    t.boolean  "teachingonfriday"
+    t.boolean  "teachingonsaturday"
+    t.boolean  "teachingonsunday"
   end
 
 end

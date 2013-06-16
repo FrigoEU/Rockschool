@@ -4,7 +4,7 @@ var moderator = {
 	teachersIndexView: "",
 	optionsView: "",
 	scheduleView: "",
-	addTeacherView: "",
+	teacherDetailsView: "",
 	studentsIndexView: "",
 	addStudentView: "",
 	teacherTeachingDropDownView: "",
@@ -69,12 +69,13 @@ var moderator = {
 		this.setMiddle(this.scheduleView);
 	},
 	setMainScreenAddTeacher: function() {
-		if (this.addTeacherView=="") {
-			this.addTeacherView = new AddTeacherView({
-			template: $("#addTeacherTemplate")
+		if (this.teacherDetailsView=="") {
+			this.teacherDetailsView = new TeacherDetailsView({
+			template: $("#teacherDetailsTemplate")
 			});
 		}
-		this.setMiddle(this.addTeacherView);
+		this.teacherDetailsView.model = (new Teacher());
+		this.setMiddle(this.teacherDetailsView);
 	},
 	showMainScreenStudentIndex: function() {
 		if (this.studentsIndexView=="") {

@@ -31,19 +31,32 @@
 	<script type="text/template" class="template" id="studentsIndexViewTemplate">
 		<div id="studentsIndex"> 
 			 {{#students}}
-			 	<button class="student studentsBox" data-id="{{id}}>{{name}}</button><br>
+			 	<button class="student studentsBox" data-id="{{id}}">{{name}}</button><br>
 			{{/students}}
 				<button class="addStudent studentsBox">Leerling toevoegen</button>
 		</div>
 
 	</script>
 	
-	<script type="text/template" class="template" id="addTeacherTemplate">
-		<div id="newteacherform">
+	<script type="text/template" class="template" id="teacherDetailsTemplate">
+		<div id="teacherDetails">
 			<h3>Gegevens leraar:</h3>
 			<form>
-				<input type="text" name="name"><br>
-				<button class="submitButton">Maak nieuwe leraar</button>
+				<h2>Naam:</h2>
+				<input type="text" name="name" value="{{name}}"><br>
+				<h2>Tijdstip start lessen:</h2>
+				<input type="text" name="startTime" value="{{startTime}}"><br>
+				<h2>Tijdstip einde lessen:</h2>
+				<input type="text" name="endTime" value="{{endTime}}"><br>
+				<h2>Lesdagen</h2>
+				<input type="checkbox" name="daysOpen" id="monday" {{#monday}}checked{{/monday}} > Maandag
+				<input type="checkbox" name="daysOpen" id="tuesday" {{#tuesday}}checked{{/tuesday}} > Dinsdag
+				<input type="checkbox" name="daysOpen" id="wednesday" {{#wednesday}}checked{{/wednesday}} > Woensdag
+				<input type="checkbox" name="daysOpen" id="thursday" {{#thursday}}checked{{/thursday}} > Donderdag
+				<input type="checkbox" name="daysOpen" id="friday" {{#friday}}checked{{/friday}} > Vrijdag
+				<input type="checkbox" name="daysOpen" id="saturday" {{#saturday}}checked{{/saturday}} > Zaterdag
+				<input type="checkbox" name="daysOpen" id="sunday" {{#sunday}}checked{{/sunday}} > Zondag
+				<button class="submitButton">Opslaan</button>
 			</form>
 		</div>
 	</script>
