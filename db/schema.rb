@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130616145439) do
+ActiveRecord::Schema.define(:version => 20130623153217) do
 
   create_table "closingperiods", :force => true do |t|
     t.date     "startdate"
@@ -35,12 +35,13 @@ ActiveRecord::Schema.define(:version => 20130616145439) do
   end
 
   create_table "lessons", :force => true do |t|
+    t.datetime "created_at",     :null => false
+    t.datetime "updated_at",     :null => false
+    t.integer  "teacher_id"
     t.datetime "starttime"
     t.string   "status"
-    t.integer  "duration"
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
-    t.integer  "teacher_id"
+    t.integer  "lessongroup_id"
+    t.datetime "endtime"
   end
 
   create_table "periods", :force => true do |t|

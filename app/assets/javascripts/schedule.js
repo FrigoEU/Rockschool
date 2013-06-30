@@ -6,30 +6,15 @@ var Schedule = Backbone.Collection.extend({
 	model: Lesson,
 	url: "/lessons",
 	comparator: function(lesson){
-		if (lesson){return lesson.get("startTime").getTime()}
+		if (lesson){return lesson.get("startTime").getTime();}
 	},
 	meta: function(prop, value) {
 		if (value === undefined) {
-			return this._meta[prop]
+			return this._meta[prop];
 		}
 		else {
 			this._meta[prop] = value;
 		}
-	},
-	parse: function (response) {
-		var resultArray = [];
-		for (var i = 0; i < response.length; i++) {
-			var data = response[i];
-			var lesson = new Lesson({
-				startTime: new Date(data.startime),
-				duration: data.duration,
-				teacher: data.teacher_id,
-				student: data.student_id,
-				status: data.status
-			});
-			resultArray.push(lesson);
-		};
-		return resultArray;
 	}
 });
 
@@ -37,7 +22,10 @@ var ScheduleView = Backbone.View.extend({
 	initialize: function () {
 	},
 	events: {
-		"click .teacherteaching": "showTeacherTeachingDropdown",
+		"click .teacherteaching": "showTeacherTeachingDropDown",
+		"click .lesson": "showLessonDropDown",
+		"click #navbackward": "navigateToPreviousWeek",
+		"click #navforward": "navigateToNextWeek"
 	},
 	render: function() {
 		var scheduleMatrix = this.buildScheduleMatrix();
@@ -47,13 +35,15 @@ var ScheduleView = Backbone.View.extend({
 		var cursorArray = [];
 		var skippingSlotsCountDownArray = [];
 		var scheduleViewItemTemplate = this.options.template;
+		this.itemsArray = [];
+		var itemsArrayIndex = 0;
 		for (var i = 0; i < scheduleMatrix.length; i++) {
 			cursorArray.push(0);
 		};
 
 		renderedScheduleMatrix =  renderedScheduleMatrix.concat('<table id="lessenrooster" data-teacher-id= "' + this.collection.meta("teacher").get("id") + '">');
 		//Eerst alle datums er voor zetten
-		renderedScheduleMatrix = renderedScheduleMatrix.concat('<td class = "date">' + "" + '</td>');
+		renderedScheduleMatrix = renderedScheduleMatrix.concat('<td class = "navbutton" id="navbackward">' + "Vorige" + '</td><td class = "navbutton" id="navforward">' + "Volgende" + '</td>');
 		for (var i = 0; i < scheduleMatrix.length-2; i++) {
 			var renderDate = new Date(this.collection.meta("startDate"));
 			renderDate.add({days: i});
@@ -78,28 +68,33 @@ var ScheduleView = Backbone.View.extend({
 					var rowspan = scheduleViewItem.getNumberOfSlots();
 					var htmlClass = '';
 					var text = ''; 
+					var colspan = 1;
 
 					++cursorArray[j];
-
-					if (scheduleViewItem.content.has("type")) { // We hebben iets vast dat geen les is: schoolopeningsuren, lesuren, ...
+					if (scheduleViewItem.content.get("type") == "lesson") { // We hebben een les vast
+						htmlClass = "lesson lesson-" + scheduleViewItem.content.get('status');
+						text = allStudents.get(scheduleViewItem.content.get("student")).get("name"); // + " " + scheduleViewItem.content.get("duration") + " minutes";
+					}
+					else { // We hebben iets vast dat geen les is: schoolopeningsuren, lesuren, ...
 						htmlClass = scheduleViewItem.content.get("type");
 						if (scheduleViewItem.content.has("text")) {
 							text = scheduleViewItem.content.attributes.text;
 							htmlClass = htmlClass + " ui-state-default";
 						}
-					};
-					if (scheduleViewItem.content.has("teacher")) { // We hebben een les vast
-						htmlClass = "lesson lesson-" + scheduleViewItem.content.get('status');
-						text = allStudents.get(scheduleViewItem.content.get("student")).get("name"); // + " " + scheduleViewItem.content.get("duration") + " minutes";
-					};
+						if (scheduleViewItem.content.get("type") == "hour") {colspan = 2;}
+					}
+					this.itemsArray.push(scheduleViewItem);
 					var html = Mustache.render(scheduleViewItemTemplate, {
 						"htmlClass": htmlClass,
 						"rowspan": rowspan,
 						"startTime": scheduleViewItem.startTime.toString(),
 						"duration": scheduleViewItem.duration,
-						"text": text
+						"text": text,
+						"id": itemsArrayIndex,
+						"colspan": colspan
 					});
-					renderedScheduleMatrix =  renderedScheduleMatrix.concat(html);	
+					itemsArrayIndex++;
+					renderedScheduleMatrix =  renderedScheduleMatrix.concat(html);	 
 
 					if (rowspan > 1) {
 						skippingSlotsCountDownArray[j] = rowspan;
@@ -110,6 +105,7 @@ var ScheduleView = Backbone.View.extend({
 		};
 		renderedScheduleMatrix = renderedScheduleMatrix.concat('</table>');
 		$(this.el).html(renderedScheduleMatrix);
+		$(this.el).find('.navbutton').each(function() {$(this).button();});
 	},
 	buildScheduleMatrix: function() {
 		var startDate = new Date(this.collection.meta("startDate"));
@@ -121,18 +117,17 @@ var ScheduleView = Backbone.View.extend({
 		var teacherTeachingHours = this.getTeacherTeachingHours();
 		var numberOfSlots = this.getNumberOfSlots();
 
-		console.log("numberOfSlots = ", numberOfSlots);
+		//console.log("numberOfSlots = ", numberOfSlots);
 
 		var scheduleMatrix = new ScheduleMatrix(startDate, numberOfDays, period.get('openingTimeHours'), period.get('openingTimeMinutes'), period.get('closingTimeHours'), period.get('closingTimeMinutes'));
 
-		//Alle uren enzo erin gooien
+		//Alle arrays erin gooien
 		schoolOpeningHours.each(function(model) {scheduleMatrix.add(new ScheduleViewItem(model));});
 		teacherTeachingHours.each(function(model) {scheduleMatrix.add(new ScheduleViewItem(model));});
-		console.log("this.collection = " + this.collection);
 		this.collection.each(function(model) {scheduleMatrix.add(new ScheduleViewItem(model));});
 		scheduleMatrix.splitItemsIntoStandardLength("teacherteaching");
 
-		//De "timeindications" er in gooien die zorgen dat die rowspn lukt
+		//De "timeindications" er in gooien die zorgen dat die rowspan lukt
 		var timeIndicationArray = new ScheduleViewItemArray();
 		var tempDate = new Date(startDate);
 		tempDate.setHours(period.get('openingTimeHours'));
@@ -143,12 +138,13 @@ var ScheduleView = Backbone.View.extend({
 		};
 		scheduleMatrix.push(timeIndicationArray); //op het einde van de schedulematrix gooien we de timeindicationarray
 
+		//Uur aanduiding links maken
 		var hoursArray = [];
 		if (period.get('openingTimeMinutes') > 0) {
 			hoursArray.push(new ScheduleViewItem(new TimeRange({"startTime": 0, "duration": period.get('openingTimeMinutes'), "type": "hour", "text": period.get('openingTimeHours') + " uur"})))
 		}
 		else {
-			hoursArray.push(new ScheduleViewItem(new TimeRange({"startTime": 0, "duration": 60, "type": "hour", "text": period.get('openingTimeHours') + " uur"})))
+			hoursArray.push(new ScheduleViewItem(new TimeRange({"startTime": 0, "duration": 60, "type": "hour", "text": period.get('openingTimeHours') + " uur"})));
 		}
 
 		for (var i = 1; i < period.get('closingTimeHours')-period.get('openingTimeHours')+2; i++) {
@@ -159,10 +155,8 @@ var ScheduleView = Backbone.View.extend({
 			hoursArray.push(new ScheduleViewItem(new TimeRange({"startTime": 0, "duration": period.get('closingTimeMinutes'), "type": "hour", "text": period.get('closingTimeHours') + " uur"})))
 		};
 
-		scheduleMatrix.unshift(hoursArray); //hoursArray in schedulematrix gooien, op eerste plaats
-
-
-		console.log("scheduleMatrix = ", scheduleMatrix);
+		//hoursArray in schedulematrix gooien, op eerste plaats
+		scheduleMatrix.unshift(hoursArray); 
 
 		return scheduleMatrix;
 	},
@@ -211,20 +205,20 @@ var ScheduleView = Backbone.View.extend({
 		for (var i = 0; i < numberOfDays ; i++) {
 			var teacherTeachingDate = new Date(startDate);
 			teacherTeachingDate.add({days: i});
-			teacherTeachingDate.addHours(period.get('startTimeHours'));
-			teacherTeachingDate.addMinutes(period.get('startTimeMinutes'));
-			if ((teacherTeachingDate.is().monday() && period.get('teachingOnMonday') == true)
-				|| (teacherTeachingDate.is().tuesday() && period.get('teachingOnTuesday') == true)
-				|| (teacherTeachingDate.is().wednesday() && period.get('teachingOnWednesday') == true)
-				|| (teacherTeachingDate.is().thursday() && period.get('teachingOnThursday') == true)
-				|| (teacherTeachingDate.is().friday() && period.get('teachingOnFriday') == true)
-				|| (teacherTeachingDate.is().saturday() && period.get('teachingOnSaturday') == true)
-				|| (teacherTeachingDate.is().sunday() && period.get('teachingOnSunday') == true)) {
-				resultingSchoolOpeningHours.add(new TimeRange({"startTime": teacherTeachingDate, "duration" : duration, "type" : "teacherteaching"}));
+			teacherTeachingDate.addHours(teacher.get('startTimeHours'));
+			teacherTeachingDate.addMinutes(teacher.get('startTimeMinutes'));
+			if ((teacherTeachingDate.is().monday() && teacher.get('teachingOnMonday') == true)
+				|| (teacherTeachingDate.is().tuesday() && teacher.get('teachingOnTuesday') == true)
+				|| (teacherTeachingDate.is().wednesday() && teacher.get('teachingOnWednesday') == true)
+				|| (teacherTeachingDate.is().thursday() && teacher.get('teachingOnThursday') == true)
+				|| (teacherTeachingDate.is().friday() && teacher.get('teachingOnFriday') == true)
+				|| (teacherTeachingDate.is().saturday() && teacher.get('teachingOnSaturday') == true)
+				|| (teacherTeachingDate.is().sunday() && teacher.get('teachingOnSunday') == true)) {
+				resultingTeacherTeachingHours.add(new TimeRange({"startTime": teacherTeachingDate, "duration" : duration, "type" : "teacherteaching"}));
 			}
 		};
 
-		console.log("resultingTeacherTeachingHours = ", resultingTeacherTeachingHours);
+		//console.log("resultingTeacherTeachingHours = ", resultingTeacherTeachingHours);
 
 		return resultingTeacherTeachingHours;
 	},
@@ -233,18 +227,38 @@ var ScheduleView = Backbone.View.extend({
 
 		return (period.get('closingTimeHours')*60 + period.get('closingTimeMinutes') - period.get('openingTimeHours')*60 - period.get('openingTimeMinutes')) / smallestSlotLength;
 	},
-	showTeacherTeachingDropdown: function(event) {
+	showTeacherTeachingDropDown: function(event) {
 		//console.log("$(e.currentTarget).data('starttime') = " + $(e.currentTarget).data("starttime"));
 		//console.log("$(e.currentTarget).data('duration') = " + $(e.currentTarget).data('duration'));
 		//console.log("event.pageX = " + event.pageX);
 		//console.log("event.pageY = " + event.pageY);
 
-		var scheduleViewItem = new ScheduleViewItem(new TimeRange({ "startTime": new Date($(event.currentTarget).data("starttime")) , 
-																	"duration": $(event.currentTarget).data('duration'), 
-																	"type": $(event.currentTarget).attr("class")}));
+		var scheduleViewItem = this.itemsArray[$(event.target).data('id')];
+
 		//console.log("scheduleViewItem.startTime = " + scheduleViewItem.startTime);
-		moderator.showTeacherTeachingDropdown(event.pageX, event.pageY, scheduleViewItem);
-		event.stopPropagation();//Anders wordt de dropdown direct terug weggegooid!
+		moderator.showTeacherTeachingDropDown(event.pageX, event.pageY, scheduleViewItem);
+		//event.stopPropagation();//Anders wordt de dropdown direct terug weggegooid!
+	},
+	showLessonDropDown: function(event) {
+		var scheduleViewItem = this.itemsArray[$(event.target).data('id')];
+
+		moderator.showLessonDropDown(event.pageX, event.pageY, scheduleViewItem);
+	},
+	navigateToPreviousWeek: function(event){
+		var startDate = this.collection.meta("startDate");
+		startDate.addWeeks(-1);
+		var endDate = this.collection.meta("endDate");
+		endDate.addWeeks(-1);
+		var teacher = this.collection.meta("teacher");
+		moderator.setMainScreenTeacherSchedule(teacher, startDate, endDate);
+	},
+	navigateToNextWeek: function(event){
+		var startDate = this.collection.meta("startDate");
+		startDate.addWeeks(1);
+		var endDate = this.collection.meta("endDate");
+		endDate.addWeeks(1);
+		var teacher = this.collection.meta("teacher");
+		moderator.setMainScreenTeacherSchedule(teacher, startDate, endDate);
 	}
 
 })
@@ -254,6 +268,9 @@ function ScheduleViewItem(item) {
 	this.duration = item.get("duration");
 	this.startTime = item.get("startTime");
 	this.content = item;
+	if (item.has("teacher")) {
+		item.set({type: "lesson"})
+	}
 };
 ScheduleViewItem.prototype.getRelativeDay = function(firstDay) {
 	var tempDate = new Date(this.startTime);
@@ -335,7 +352,7 @@ ScheduleViewItemArray.prototype.addScheduleViewItem = function(newScheduleViewIt
 			&& existingItem.getEndTime() > newScheduleViewItem.startTime.getTime()
 			&& upperLevelOk(existingItem, newScheduleViewItem)) {
 				var originalItemEndTime = existingItem.getEndTime();
-			 	existingItem.setDuration((newScheduleViewItem.startTime.getTime() - existingItem.startTime.getTime())/60000);
+				existingItem.setDuration((newScheduleViewItem.startTime.getTime() - existingItem.startTime.getTime())/60000);
 				this.splice(i+1, 0, newScheduleViewItem);
 				if (originalItemEndTime == newScheduleViewItem.getEndTime()) {
 					;
@@ -380,84 +397,3 @@ ScheduleViewItemArray.prototype.splitItemsIntoStandardLength = function(type) {
 		}
 	};
 };
-var TeacherTeachingDropDownView = Backbone.View.extend({
-	initialize: function () {
-		//this.attributes = {
-			//"data-startTime": this.options.scheduleViewItem.startTime.toString(),
-			//"data-duration": this.options.scheduleViewItem.duration
-		//};
-	},
-	tagName: "ul",
-	id: "dropDownMenu",
-	events: {
-		"click .enroll": "showEnrollmentDialog"
-	},
-	render: function() {
-		$(this.el).html(Mustache.render(this.options.template.html(),{
-			"startTime": this.scheduleViewItem.startTime.toString(), 
-			"duration": this.scheduleViewItem.duration
-		})); 
-		var dropDownMenu = $(this.el).children("#dropDownMenu");
-		dropDownMenu.menu()
-					.css({
-						position: 'absolute',
-						zIndex:   5000,
-       					top:      this.posY, 
-       					left:     this.posX
-     				});
-		dropDownMenu.outside('click', function(e){
-			$(this).remove();
-		});
-	},
-	showEnrollmentDialog: function(e) {
-		e.preventDefault();
-		$(this).remove();
-
-		var student = "Simon Van Casteren";//var user = getUSER!!!
-		var teacher = allTeachers.get($("#lessenrooster").data("teacher-id"));
-		var startTime = $(e.currentTarget).parents("ul").data("starttime");
-		var duration = $(e.currentTarget).parents("ul").data("duration");
-		
-		moderator.showEnrollmentDialog(student,teacher, startTime, duration);
-	}
-});
-var EnrollmentDialogView = Backbone.View.extend({
-	initialize: function () {
-	},
-	tagName: "div",
-	id:"enrollmentDialog",
-	events: {
-
-	},
-	render: function() {
-		var startTimeObject = new Date(this.startTime);
-		$("body").append(Mustache.render(
-			this.options.template.html(),{
-			"studentName": this.student, //aan te passen wanneer we echt student object meegeven
-			"teacherName": this.teacher.get('name'),
-			"teachingDay": startTimeObject.toString("ddd dd MMM yyyy"),
-			"startLessonHour": startTimeObject.toString("HH:mm")
-		}));
-		var enrollmentDialog = $('#enrollmentDialog');
-		console.log("enrollmentDialog = " + enrollmentDialog);
-		enrollmentDialog.dialog({
-			autoOpen: true,
-			height: 400,
-			width: 450,
-			modal: true,
-			buttons:{
-				"Voer inschrijving in": function () {
-					
-				},
-				Cancel: function() {
-          			$( this ).dialog( "close" );
-        		}
-			},
-			close: function() {
-        		//allFields.val( "" ).removeClass( "ui-state-error" );
-        		$('#enrollmentDialog').remove();
-      		}
-		});
-		//$('#enrollmentDialog').children('#spinner').spinner();
-	}
-})
