@@ -41,7 +41,7 @@ var AddStudentView = Backbone.View.extend({
 	submit: function(e) {
 		e.preventDefault();
 
-		var studentName = $(this.el).find('#newseftudentform').find('input[name=name]').val();
+		var studentName = $(this.el).find('#newstudentform').find('input[name=name]').val();
 		allStudents.create({
             name: studentName
         });
