@@ -35,11 +35,11 @@ ActiveRecord::Schema.define(:version => 20130623153217) do
   end
 
   create_table "lessons", :force => true do |t|
+    t.datetime "starttime"
+    t.string   "status"
     t.datetime "created_at",     :null => false
     t.datetime "updated_at",     :null => false
     t.integer  "teacher_id"
-    t.datetime "starttime"
-    t.string   "status"
     t.integer  "lessongroup_id"
     t.datetime "endtime"
   end

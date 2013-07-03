@@ -1,5 +1,6 @@
 class Lesson < ActiveRecord::Base
   	attr_accessible :endtime, :starttime, :status, :teacher_id, :lessongroup_id
+  	attr_accessor :paid
   	has_one :teacher
   	belongs_to :lessongroup, :inverse_of => :lessons
   	validate :start_and_endtime

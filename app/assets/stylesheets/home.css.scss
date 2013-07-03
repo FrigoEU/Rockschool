@@ -4,13 +4,18 @@
 body {
 	
 }
-$lessonopencolor: purple;
-$lessoncreatedcolor: blue;
-$lessonabsentokcolor: green;
-$lessonabsentnokcolor: red;
-$schedulecolumnwidth: 150px;
+$lessonopencolor: lightblue;
+$lessoncreatedcolor: yellow;
+$lessonunpaidenrollmentcolor:red;
+$lessonabsentokcolor: darkgray;
+$lessonabsentnokcolor: brown;
+$lessondonecolor: blue;
+$lessonabsentreqcolor: purple;
+$schedulecolumnwidth: 135px;
 $schedulelineheight: 1.3;
 $darkgraybackground: #333333 url(images/ui-bg_dots-small_20_333333_2x2.png) 50% 50% repeat;
+$schedulecellheight: 4px;
+$standardborderradius: 5px;
 body {
 	width: 100%;
 	margin: 0px;
@@ -50,15 +55,23 @@ body {
 .teacherBox {
 
 }
-.studentBox {
-
+.lessonbox {
+	width: $schedulecolumnwidth;
+	height: $schedulecellheight*5;
+	font-family: Verdana,Arial,sans-serif;
+	text-align: center;
+	cursor: pointer;
+	background-color: $lessonabsentokcolor;
+	padding: .4em 1em;
+	border-radius: $standardborderradius;
+	display: block;
 }
 #lessenrooster td {
-	border-radius: 5px;
+	border-radius: $standardborderradius;
 }
 #lessenrooster td {
 	width: $schedulecolumnwidth;
-	height: 4px;
+	height: $schedulecellheight;
 	font-family: Verdana,Arial,sans-serif;
 	line-height: $schedulelineheight; //!!!!!!!!!!!!
 }
@@ -88,7 +101,7 @@ body {
 	background-color: lightgray;
 }
 #lessenrooster td.schoolopen {
-	background-color: darkgray;
+	background-color: $lessonabsentokcolor;
 }
 #lessenrooster td.teacherteaching {
   	background-color: #A0DB29;
@@ -98,31 +111,49 @@ body {
 	opacity: 0.5;
 }
 #lessenrooster td.lesson {
-	color: white;
 	text-align: center;
 	cursor: pointer;
 }
-#lessenrooster td.lesson-created {
+.lesson-unpaidenrollment {
+	background: url(exclamation9.png) left no-repeat;
+}
+.lesson-created {
+	color: brown;
 	background-color: $lessoncreatedcolor;
 }
-#lessenrooster td.lesson-open {
+.lesson-open {
+	color: darkblue;
 	background-color: $lessonopencolor;
 }
-#lessenrooster td.lesson-absent-nok {
+.lesson-absentreq {
+	color: white;
+	background-color: $lessonabsentreqcolor;
+}
+.lesson-absentnok {
+	color: white;
 	background-color: $lessonabsentnokcolor;
 }
-#lessenrooster td.lesson-absent-ok {
+.lesson-absentok {
+	color: white;
 	background-color: $lessonabsentokcolor;
 }
-#lessenrooster td.lesson-tbc {
-	background-color: black;
+.lesson-done {
+	color: white;
+	background-color: $lessondonecolor;
 }
-#periodConfig {
+.configScreen {
 	background: $darkgraybackground;
 	color: white;
 	width: 1024px;
 	height: 520px;
 	padding: 5px;
 	padding-left: 20px;
-	border-radius: 5px;
+	border-radius: $standardborderradius;
+}
+#dropDown .ui-menu {
+	line-height: 1;
+	font-size: 1em;
+	.ui-widget {
+		width: 150px;
+	}
 }

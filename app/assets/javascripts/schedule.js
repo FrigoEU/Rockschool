@@ -66,13 +66,18 @@ var ScheduleView = Backbone.View.extend({
 					// Cursorarray heeft evenveel elementen als dagen, en per dag staat er in aan welk item we zitten. Dit omdat we niet op index i kunnen vertrouwen omdat die veel harder itereert wegens de skipping/rowspan logica
 					var scheduleViewItem = scheduleMatrix[j][cursorArray[j]];
 					var rowspan = scheduleViewItem.getNumberOfSlots();
+					var paidclass;
 					var htmlClass = '';
 					var text = ''; 
 					var colspan = 1;
 
 					++cursorArray[j];
 					if (scheduleViewItem.content.get("type") == "lesson") { // We hebben een les vast
-						htmlClass = "lesson lesson-" + scheduleViewItem.content.get('status');
+						if (scheduleViewItem.content.get('paid') == false) {
+							paidclass = " lesson-unpaidenrollment";
+						}
+						else {paidclass = ""}
+						htmlClass = "lesson lesson-" + scheduleViewItem.content.get('status') + paidclass;
 						text = allStudents.get(scheduleViewItem.content.get("student")).get("name"); // + " " + scheduleViewItem.content.get("duration") + " minutes";
 					}
 					else { // We hebben iets vast dat geen les is: schoolopeningsuren, lesuren, ...
@@ -242,7 +247,7 @@ var ScheduleView = Backbone.View.extend({
 	showLessonDropDown: function(event) {
 		var scheduleViewItem = this.itemsArray[$(event.target).data('id')];
 
-		moderator.showLessonDropDown(event.pageX, event.pageY, scheduleViewItem);
+		moderator.showLessonDropDown(event.pageX, event.pageY, scheduleViewItem.content);
 	},
 	navigateToPreviousWeek: function(event){
 		var startDate = this.collection.meta("startDate");

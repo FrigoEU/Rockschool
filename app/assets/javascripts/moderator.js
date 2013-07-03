@@ -9,6 +9,7 @@ var moderator = {
 	addStudentView: "",
 	enrollmentDialogView: "",
 	periodOptionsView: "",
+	lessonsSearchView: "",
 
 	showMainScreenTeacherIndex: function() {
 		if (this.teachersIndexView==="") {
@@ -34,6 +35,18 @@ var moderator = {
 			});
 		}
 		this.setMiddle(periodOptionsView);
+	},
+	showLessonsSearch: function() {
+		if(this.lessonsSearchView==="") {
+			lessonsSearchView = new LessonsSearchView({
+				template: $("#lessonsSearchTemplate"),
+				collection: new Lessons()
+			});
+		}
+		else {
+			this.lessonsSearchView.collection = new Lessons();
+		}
+		this.setMiddle(lessonsSearchView);
 	},
 	setMainScreenTeacherSchedule: function (teacher, date1, date2) {
 		var firstDateForServer;
@@ -112,11 +125,11 @@ var moderator = {
 		});
 		teacherTeachingDropDownView.render();
 	},
-	showLessonDropDown: function(x,y,scheduleViewItem) {
+	showLessonDropDown: function(x,y,lesson) {
 		lessonDropDownView = new LessonDropDownView({
 			posX: x,
 			posY: y,
-			lesson: scheduleViewItem.content
+			lesson: lesson
 		});
 		lessonDropDownView.render();
 	},

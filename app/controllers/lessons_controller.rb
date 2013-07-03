@@ -6,40 +6,24 @@ class LessonsController < ApplicationController
       @startDateParsed = Time.at(params[:startDate].to_f)
       @endDateParsed = Time.at(params[:endDate].to_f)   
       @lessons = Lesson.where("teacher_id = ? AND starttime > ? AND starttime < ?", params[:teacher_id], @startDateParsed, @endDateParsed)
-    else # Gewoon RESTful alles ophalen
+    elsif params.has_key?(:inquirystatus) # Gewoon RESTful alles ophalen
+      @lessons = Lesson.where("status = ?", params[:inquirystatus])
+    else
       @lessons = Lesson.all
+    end
+    @lessons.each  do 
+      |lesson|
+      if lesson.lessongroup.enrollments.first.paid == false
+        lesson.paid = false
+      end 
     end
     respond_to do |format|
       format.html # index.html.erb
-      format.json { render json: @lessons }
+      format.json { render json: @lessons.to_json(:methods => %w(paid)) }
+
     end
   end
 
-  # POST /lessons
-  # POST /lessons.json
-  def create
-    @starttime = Time.parse(params[:startTime])
-    @endtime = Time.parse(params[:endTime])
-    @lessongroup_id = params[:lessongroup_id].to_i
-    @teacher_id = params[:teacher].to_i
-    @lesson = Lesson.new({
-      starttime: @starttime,
-      endtime: @endtime,
-      lessongroup_id: @lessongroup_id,
-      teacher_id: @teacher_id,
-      status: params[:status]
-      })
-
-    respond_to do |format|
-      if @lesson.save
-        format.html { redirect_to @lesson, notice: 'Lesson was successfully created.' }
-        format.json { render json: @lesson, status: :created, location: @lesson }
-      else
-        format.html { render action: "new" }
-        format.json { render json: @lesson.errors, status: :unprocessable_entity }
-      end
-    end
-  end
 
   # PUT /lessons/1
   # PUT /lessons/1.json
@@ -49,8 +33,41 @@ class LessonsController < ApplicationController
     @endtime = Time.parse(params[:endTime])
     @lessongroup_id = params[:lessongroup_id].to_i
     @teacher_id = params[:teacher].to_i
-    logger.debug(@starttime)
-    logger.debug(@endtime)
+    @status = params[:status]
+    @lessongroup = @lesson.lessongroup
+
+    case params[:data][:action]
+    when 'acceptenrollment'
+      @lessongroup.lessons.each do
+        |lesson|
+        lesson.status="open"
+        lesson.save
+      end
+      @status="open"
+    when 'removeenrollment'
+      @lessongroup.lessons.destroy_all
+      @lessongroup.enrollments.destroy_all
+      @lessongroup.destroy
+      return render json: {}
+    when 'payenrollment'
+      @lessongroup.enrollments.each do
+        |enrollment|
+        enrollment.paid = true
+        enrollment.save
+      end
+    when 'open'
+      @status = :open
+    when 'absentreq'
+      @status = :absentreq
+    when 'absentok'
+      @status = :absentok
+    when 'absentnok'
+      @status = :absentnok
+    when 'done'
+      @status = :done
+    else
+      raise ArgumentError, 'Incorrect action parameter in lesson update'
+    end
 
     respond_to do |format|
       if @lesson.update_attributes({
@@ -58,12 +75,15 @@ class LessonsController < ApplicationController
       endtime: @endtime,
       lessongroup_id: @lessongroup_id,
       teacher_id: @teacher_id,
-      status: params[:status]
+      status: @status
       })
-        format.html { redirect_to @lesson, notice: 'Lesson was successfully updated.' }
-        format.json { render json: @lesson }
+        if @lesson.lessongroup.enrollments.first.paid == false
+          @lesson.paid = false
+        else
+          @lesson.paid = true
+        end
+        format.json { render json: @lesson.to_json(:methods => %w(paid)) }
       else
-        format.html { render action: "edit" }
         format.json { render json: {:errors => @lesson.errors.full_messages}, status: :unprocessable_entity }
       end
     end

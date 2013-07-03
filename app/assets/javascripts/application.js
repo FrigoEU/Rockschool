@@ -11,4 +11,7 @@
 // GO AFTER THE REQUIRES BELOW.
 //
 //= require jquery_ujs
+//= require jquery.js
+//= require underscore-min.js 
+//= require jquery-ui.js
 //= require_tree .

@@ -36,11 +36,25 @@
 			{{/students}}
 				<button class="addStudent studentsBox">Leerling toevoegen</button>
 		</div>
-
+	</script>
+	<script type="text/template" class="template" id="lessonsSearchTemplate">
+		<div id="searchScreen" class="configScreen">
+			<h1>Lessen zoeken</h2>
+			<label for="status">Status les:</label>
+			<select name="statusses">
+				{{#statusses}}
+					<option value="{{key}}">{{name}}</option>
+				{{/statusses}}
+			</select>
+			<button class="searchButton">Zoek</button><br>
+			{{#lessons}}
+				<span data-id={{attributes.id}} class="lessonbox lesson-{{attributes.status}}">{{attributes.status}}</span>
+			{{/lessons}}
+		</div>
 	</script>
 	
 	<script type="text/template" class="template" id="teacherDetailsTemplate">
-		<div id="teacherDetails">
+		<div id="teacherDetails" class="configScreen">
 			<h3>Gegevens leraar:</h3>
 			<form>
 				<h2>Naam:</h2>
@@ -57,15 +71,16 @@
 				<input type="checkbox" name="daysOpen" id="friday" {{#friday}}checked{{/friday}} > Vrijdag
 				<input type="checkbox" name="daysOpen" id="saturday" {{#saturday}}checked{{/saturday}} > Zaterdag
 				<input type="checkbox" name="daysOpen" id="sunday" {{#sunday}}checked{{/sunday}} > Zondag
+				<br>
 				<button class="submitButton">Opslaan</button>
 			</form>
 		</div>
 	</script>
 	<script type="text/template" class="template" id="addStudentTemplate">
-		<div id="newstudentform">
+		<div id="studentDetails" class = "configScreen">
 			<h3>Gegevens leerling:</h3>
 			<form>
-				<input type="text" name="name"><br>
+				<input type="text" name="name"><br><br>
 				<button class="submitButton">Maak nieuwe leerling</button>
 			</form>
 		<div>
@@ -80,10 +95,9 @@
 			<li><a href= "#">Leeraar: {{teacher.name}}</a></li>
 			<li><a href= "#">Status: {{status}}</a>
 				<ul>
-					<li><a href="#" class="status" data-status="open">Open</a></li>
-					<li><a href="#" class="status" data-status="absent-ok">Afwezig</a></li>
-					<li><a href="#" class="status" data-status="absent-nok">WA</a></li>
-					<li><a href="#" class="status">...</a></li>
+					{{#choices}}
+					<li><a href="#" class="status" data-action="{{action}}">{{label}}</a></li>
+					{{/choices}}
 				</ul>
 			</li>
 		</ul>
@@ -115,7 +129,7 @@
 		</div>
 	</script>
 	<script type="text/template" class="template" id="periodOptionsTemplate">
-		<div id="periodConfig">
+		<div id="periodConfig" class="configScreen">
 			<h1>Schooljaar</h1>
 			<form>
 				<h2>Start- en einddata</h2>
@@ -144,7 +158,8 @@
 	</script>
 	<script type="text/template" class="template" id="optionsTemplate">
 		<div id="options">
-			<button id="options-period" class="optionsBox">Schooljaar</button>
+			<button id="options-period" class="optionsBox">Schooljaar</button><br>
+			<button id="lessonsSearch" class="optionsBox">Zoeken</button>
 		</div>
 	</script>
 </body>
