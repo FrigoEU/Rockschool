@@ -110,17 +110,26 @@
 	</script>
 	<script type="text/template" class="template" id="enrollmentDialogTemplate">
 		<div id="enrollmentDialog" title="Inschrijvingsformulier">
-		  	<h3>Inschrijvingsformulier</h3>
 		  	<form>
-		  		<p>Naam student:<span id="studentName">{{studentName}}</span>
-		    	</p>
-		    	<p>Naam leerkracht:<span id="teacherName">{{teacherName}}</span>
-		    	</p>
-		    	<p>Lesdag:<span id="teachingDay">{{teachingDay}}</span>
-		    	</p>
-		    	<p><label for="spinner">Lesuur:</label>
-	  				<input id="spinner" name="spinner" value="{{startLessonHour}}" />
-		    	</p>
+		  		<table>
+		  			<tr>
+		  				<td>Student:</td><td id="studentName">{{studentName}}</td>
+		  			</tr>
+		  			<tr></tr>
+		  			<tr>
+		  				<td>Leerkracht:</td><td id="teacherName">{{teacherName}}</td>
+		  			</tr>
+		  			<tr>
+		  			</tr>
+		  			<tr>
+		  				<td>Lesuur:</td><td id="startLessonHour">{{startLessonHour}}</td>
+		  			</tr>
+		  			<tr></tr>
+		  			<tr>
+		  				<td>Lesdag:</td><td id="teachingDay">{{teachingDay}}</td>
+		  			</tr>
+		  		</table>
+
 		    	<p>Type inschrijving:
 		    		<input type="radio" name="enrollmentType" value="schoolyear" checked>Schooljaar</input>
 		    		<input type="radio" name="enrollmentType" value="tenlessons">10 Lessen</input>
