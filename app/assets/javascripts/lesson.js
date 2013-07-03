@@ -27,6 +27,10 @@ var Lesson = Backbone.Model.extend({
 	statusToDutch: function() {
 		var status= this.get("status");
 		return LessonStatusses[status].name;
+	},
+	getStudentName: function() {
+		//reference naar global variable in algemene methode van class... niet zeker of dit proper is.
+		return allStudents.get(this.get('student')).get("name");
 	}
 });
 var Lessons = Backbone.Collection.extend({
@@ -70,13 +74,14 @@ var LessonDropDownView = DropDownView.extend({
 	renderInnerHTML: function(){
 		var choicesArray =[];
 		choicesArray = _.clone(LessonStatusses[this.options.lesson.get('status')].possibleActions);
-		if (this.options.lesson.get('paid') == false) {
+		if (this.options.lesson.get('paid') === false) {
 			choicesArray.push(LessonActions.pay);
 		}
 		var argumentHash = {
 			student: allStudents.get(this.options.lesson.get("student")).toJSON(),
 			teacher: allTeachers.get(this.options.lesson.get("teacher")).toJSON(),
-			status: this.options.lesson.statusToDutch(), 
+			datetime: this.options.lesson.get('startTime').toString("ddd dd MMM yyyy, HH:mm"),
+			status: this.options.lesson.statusToDutch(),
 			choices: choicesArray
 		};
 		return Mustache.render(this.template.html(),argumentHash);
@@ -97,7 +102,7 @@ var LessonDropDownView = DropDownView.extend({
 });
 var LessonsSearchView = Backbone.View.extend({
 	initialize: function () {
-		
+
 	},
 	events: {
 		"click .searchButton": "searchLessons",
@@ -126,4 +131,4 @@ var LessonsSearchView = Backbone.View.extend({
 
 		moderator.showLessonDropDown(event.pageX, event.pageY, lesson);
 	}
-})
+});

@@ -48,7 +48,7 @@
 			</select>
 			<button class="searchButton">Zoek</button><br>
 			{{#lessons}}
-				<span data-id={{attributes.id}} class="lessonbox lesson-{{attributes.status}}">{{attributes.status}}</span>
+				<span data-id={{attributes.id}} class="lessonbox lesson-{{attributes.status}}">{{getStudentName}}</span>
 			{{/lessons}}
 		</div>
 	</script>
@@ -93,6 +93,7 @@
 		<ul class="menu">
 			<li><a href= "#">Student: {{student.name}}</a></li>
 			<li><a href= "#">Leeraar: {{teacher.name}}</a></li>
+			<li><a href= "#">Tijdstip: {{datetime}}</a></li>
 			<li><a href= "#">Status: {{status}}</a>
 				<ul>
 					{{#choices}}
