@@ -6,6 +6,7 @@ Rockschool::Application.routes.draw do
   resources :lessons
   resources :periods
   resources :enrollments
+  resources :lessongroups
 
 
   # The priority is based upon order of creation:

@@ -10,6 +10,10 @@ var moderator = {
 	enrollmentDialogView: "",
 	periodOptionsView: "",
 	lessonsSearchView: "",
+	DIALOGS: {
+		enrollmentDialog: {view: 'enrollmentDialogView', template: '#enrollmentDialogTemplate', el: '#enrollmentDialog', class: 'EnrollmentDialogView'},
+		newlessongroupDialog: {view: 'newLessongroupView', template: '#newLessongroupTemplate', el: '#newLessongroupDialog', class: 'NewLessongroupDialogView'}
+	},
 
 	showMainScreenTeacherIndex: function() {
 		if (this.teachersIndexView==="") {
@@ -133,7 +137,24 @@ var moderator = {
 		});
 		lessonDropDownView.render();
 	},
+	showDialog: function(dialog, options){
+		var dialogView = this.DIALOGS[dialog].view;
+		var dialogTemplate = this.DIALOGS[dialog].template;
+		var dialogElement = this.DIALOGS[dialog].el;
+		var myClass = window[this.DIALOGS[dialog].class];
+
+		if (!this[dialogView]) {
+			this[dialogView] = new myClass({
+				template: $(dialogTemplate),
+				el: $(dialogElement)});
+		}
+		_.each(options, function(value, key, list) {
+			this[dialogView][key] = value;
+		}, this);
+		this[dialogView].render();
+	},
 	showEnrollmentDialog: function(student, teacher, startTime, duration) {
+
 		if (this.enrollmentDialogView==="") {
 			this.enrollmentDialogView = new EnrollmentDialogView({
 				template: $('#enrollmentDialogTemplate'),

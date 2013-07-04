@@ -9,4 +9,7 @@ class Lesson < ActiveRecord::Base
   		@errors.add(:base, "Starttime can not be later than endtime") unless self.starttime < self.endtime
   		@errors.add(:base, "Starttime and endtime should be on the same day") unless self.starttime.yday == self.endtime.yday
   	end
+  	def retrieve_students
+  		self.students = self.lessongroup.students
+  	end
 end

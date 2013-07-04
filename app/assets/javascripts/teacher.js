@@ -158,22 +158,28 @@ var TeacherTeachingDropDownView = DropDownView.extend({
 		this.template = $("#teacherTeachingDropDownTemplate");
 	},
 	events: {
-		"click .enroll": "showEnrollmentDialog"
+		"click .enroll": "showEnrollmentDialog",
+		"click .makeLessongroup": "showLessongroupDialog"
 	},
 	render: function() {
 		this.constructor.__super__.render.apply(this);
 	},
 	showEnrollmentDialog: function(e) {
+		this.showDialog(e, "enrollmentDialog");
+	},
+	showLessongroupDialog: function(e) {
+		this.showDialog(e, "newlessongroupDialog");
+	},
+	showDialog: function(e, dialog){
 		e.preventDefault();
 		$(this).remove();
-
 		var student = allStudents.get(1);//Tijdelijk!
 		var teacher = allTeachers.get($("#lessenrooster").data("teacher-id"));
 
 		var startTime = this.options.scheduleViewItem.startTime;
 		var duration = this.options.scheduleViewItem.duration;
-
-		moderator.showEnrollmentDialog(student, teacher, startTime, duration);
+		var options = {'student': student, 'teacher':teacher, 'startTime': startTime, 'duration': duration};
+		moderator.showDialog(dialog, options);
 	},
 	renderInnerHTML: function(){
 		return this.template.html();

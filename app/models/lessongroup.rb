@@ -12,13 +12,13 @@ class Lessongroup < ActiveRecord::Base
 
 	def initialize(args)
 		#logger.debug(args)
-		super({maximum_number_of_students: args[:maximum_number_of_students]})
 		unless argumentok?(args,:duration) && argumentok?(args,:starttime) && argumentok?(args,:teacher) && argumentok?(args,:maximum_number_of_students) && argumentok?(args,:type)  
 			raise ArgumentError, "Missing arguments to create a new lessongroup"
 		end
 		unless args[:type] == "schoolyear" || args[:type] == "tenlessons"
 			raise ArgumentError, "Incorrect type specified to lessongroup"
 		end
+		super({maximum_number_of_students: args[:maximum_number_of_students]})
 
 		#@maximum_number_of_students = args[:maximum_number_of_students]
 		@starttime = args[:starttime]
@@ -126,6 +126,11 @@ class Lessongroup < ActiveRecord::Base
 			@errorperiod = true
 			true
 		end
+	end
+
+	def get_lessons()
+		lessons = self.lessons
+
 	end
 
 	private

@@ -1,73 +1,55 @@
-var Enrollment = Backbone.Model.extend({
-	//teacher
-	//student
-	//lessongroup
-	//type
-	//startTime
-	//duration
-	url: "/enrollments"
-
+var Lessongroup = Backbone.Model.extend({
+	url: "lessongroups"
 });
-
-var EnrollmentDialogView = Backbone.View.extend({
-	initialize: function () {
-		//student
-		//teacher
-		//startTime
-		//duration
-		//lessongroup
+var NewLessongroupDialogView = Backbone.View.extend({
+	initialize:function() {
 		_.bindAll(this);
+	},
+	events: {
 
 	},
 	tagName: "div",
-	id:"enrollmentDialog",
-	events: {
-	},
+	id:"newLessongroupDialog",
 	render: function() {
 		$("body").append(Mustache.render(
 			this.options.template.html(),{
-			"studentName": this.student.get('name'),
 			"teacherName": this.teacher.get('name'),
 			"teachingDay": this.startTime.toString("ddd dd MMM yyyy"),
 			"startLessonHour": this.startTime.toString("HH:mm")
 		}));
-		var enrollmentDialog = $('#'+this.id);
+		var newLessongroupDialog = $('#'+this.id);
+		this.setElement(newLessongroupDialog);
 		//console.log("enrollmentDialog = " + enrollmentDialog);
 
-		enrollmentDialog.dialog({
+		newLessongroupDialog.dialog({
 			autoOpen: true,
 			height: 300,
 			width: 450,
 			modal: true,
 			buttons:{
-					"Voer inschrijving in": this.makeEnrollment,
+					"Maak nieuwe groepsles": this.makeLessongroup,
 					Cancel: function() {
 								$( this ).dialog( "close" );
 						}
 				},
 				close: function() {
 						//allFields.val( "" ).removeClass( "ui-state-error" );
-						$('#enrollmentDialog').remove();
+						$('#newLessongroupDialog').remove();
 				}
 		});
-
-		//$('#enrollmentDialog').children('#spinner').spinner();
 	},
-	makeEnrollment: function(){
-		var type = $('input:radio[name="enrollmentType"]:checked').val();
-		var startTime = this.startTime;
-		//startTime.addMinutes(-this.startTime.getTimezoneOffset()); //Vuil, maar anders lukte het niet... Mss later nog eens herbekijken
-		var enrollment = new Enrollment({
-			student: this.student,
+	makeLessongroup: function (){
+		var duration = $('#duration');
+		var lessongroup = new Lessongroup({
 			teacher: this.teacher,
 			startTime: this.startTime,
-			duration: this.duration,
-			type: type,
-			lessongroup: this.lessongroup
+			duration: $(this.el).find('#duration').val(),
+			maxNumberOfStudents: $(this.el).find('#maxNumberOfStudents').val(),
+			type: "schoolyear" //assumptie!
 		});
-		enrollment.save(null, {
+		lessongroup.save(null, {
 			success: function(model, response, options){
-				$('#enrollmentDialog').remove();
+				$('#newLessongroupDialog').remove();
 				var lessons = model.get("lessons");
 				for (var i = 0; i < lessons.length; i++) {
 					var lesson = Lesson.prototype.parse(lessons[i]);
@@ -77,7 +59,7 @@ var EnrollmentDialogView = Backbone.View.extend({
 			},
 			error: function(model, response, options) {
 				var errors = $.parseJSON(response.responseText).errors;
-				if (errors.length == 0){alert('Systeemfout');}
+				if (errors.length === 0){alert('Systeemfout');}
 				else {alert('Fout: ' + errors);}
 			}});
 	}

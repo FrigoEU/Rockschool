@@ -87,7 +87,10 @@
 	</script>
 
 	<script type="text/template" class="template" id="teacherTeachingDropDownTemplate">
-		<ul class="menu"><li><a class="enroll" href="#">Inschrijven</a></li></ul>
+		<ul class="menu">
+			<li><a class="enroll" href="#">Inschrijven</a></li>
+			<li><a class="makeLessongroup" href="#">Maak groepsles</a></li>
+		</ul>
 	</script>
 	<script type="text/template" class="template" id="lessonDropDownTemplate">
 		<ul class="menu">
@@ -106,7 +109,7 @@
 	<script type="text/template" class="template" id="scheduleViewItemTemplate">
 		<td class="{{htmlClass}}" rowspan = "{{rowspan}}" colspan ="{{colspan}}" data-startTime = "{{startTime}}" data-duration = "{{duration}}" data-id="{{id}}"> 
 			{{text}}
-		</td>
+		</td>s
 	</script>
 	<script type="text/template" class="template" id="enrollmentDialogTemplate">
 		<div id="enrollmentDialog" title="Inschrijvingsformulier">
@@ -134,8 +137,32 @@
 		    		<input type="radio" name="enrollmentType" value="schoolyear" checked>Schooljaar</input>
 		    		<input type="radio" name="enrollmentType" value="tenlessons">10 Lessen</input>
 		    	</p>
-
 		  	</form>
+		</div>
+	</script>
+	<script type="text/template" class="template" id="newLessongroupTemplate">
+		<div id="newLessongroupDialog" title="Nieuwe Groepsles">
+			<form>
+			<table>
+				<tr>
+		  			<td>Leerkracht:</td><td id="teacherName">{{teacherName}}</td>
+		  			</tr>
+		  			<tr></tr>
+		  			<tr>
+		  				<td>Lesuur:</td><td id="startLessonHour">{{startLessonHour}}</td>
+		  			</tr>
+		  			<tr></tr>
+		  			<tr>
+		  				<td>Lesdag:</td><td id="teachingDay">{{teachingDay}}</td>
+		  			</tr>
+					<tr>
+						<td><label for="maxNumberOfStudents">Maximum aantal leerlingen:</label></td><td><input type='text' id="maxNumberOfStudents" value ='5'></input</td>
+					</tr>
+					<tr>
+						<td><label for="duration">Lesduur (minuten):</label></td><td><input type='text' id="duration" value='60'></input></td>
+					</tr>
+			</table>
+			</form>
 		</div>
 	</script>
 	<script type="text/template" class="template" id="periodOptionsTemplate">
