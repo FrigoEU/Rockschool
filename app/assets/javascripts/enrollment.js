@@ -8,6 +8,10 @@ var Enrollment = Backbone.Model.extend({
 	url: "/enrollments"
 
 });
+var Enrollments = Backbone.Collection.extend({
+	model: Enrollment,
+	url: "/enrollments"
+});
 
 var EnrollmentDialogView = Backbone.View.extend({
 	initialize: function () {
@@ -63,7 +67,7 @@ var EnrollmentDialogView = Backbone.View.extend({
 			startTime: this.startTime,
 			duration: this.duration,
 			type: type,
-			lessongroup: this.lessongroup
+			lessongroup_id: this.lessongroup_id
 		});
 		enrollment.save(null, {
 			success: function(model, response, options){

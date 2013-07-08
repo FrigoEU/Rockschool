@@ -12,7 +12,8 @@ var moderator = {
 	lessonsSearchView: "",
 	DIALOGS: {
 		enrollmentDialog: {view: 'enrollmentDialogView', template: '#enrollmentDialogTemplate', el: '#enrollmentDialog', class: 'EnrollmentDialogView'},
-		newlessongroupDialog: {view: 'newLessongroupView', template: '#newLessongroupTemplate', el: '#newLessongroupDialog', class: 'NewLessongroupDialogView'}
+		newlessongroupDialog: {view: 'newLessongroupView', template: '#newLessongroupTemplate', el: '#newLessongroupDialog', class: 'NewLessongroupDialogView'},
+		grouplessonDetailsDialog: {view: 'grouplessonDetailsDialog', template: '#grouplessonDetailsDialogTemplate', el: '#newLessongroupDialog', class: ''}
 	},
 
 	showMainScreenTeacherIndex: function() {
@@ -152,20 +153,6 @@ var moderator = {
 			this[dialogView][key] = value;
 		}, this);
 		this[dialogView].render();
-	},
-	showEnrollmentDialog: function(student, teacher, startTime, duration) {
-
-		if (this.enrollmentDialogView==="") {
-			this.enrollmentDialogView = new EnrollmentDialogView({
-				template: $('#enrollmentDialogTemplate'),
-				el:$("enrollmentDialog")
-				});
-		}
-		this.enrollmentDialogView.student = student;
-		this.enrollmentDialogView.teacher = teacher;
-		this.enrollmentDialogView.startTime = startTime; //Zowel uur als dag!
-		this.enrollmentDialogView.duration = duration;
-		this.enrollmentDialogView.render();
 	},
 	clearAllScreens: function () {
 		if (this.sidebarView!==""){

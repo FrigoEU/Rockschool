@@ -178,7 +178,7 @@ var TeacherTeachingDropDownView = DropDownView.extend({
 
 		var startTime = this.options.scheduleViewItem.startTime;
 		var duration = this.options.scheduleViewItem.duration;
-		var options = {'student': student, 'teacher':teacher, 'startTime': startTime, 'duration': duration};
+		var options = {'student': student, 'teacher':teacher, 'startTime': startTime, 'duration': duration, 'lessongroup_id': undefined};
 		moderator.showDialog(dialog, options);
 	},
 	renderInnerHTML: function(){

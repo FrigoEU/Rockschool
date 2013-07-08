@@ -17,6 +17,8 @@ class LessongroupsController < ApplicationController
 				duration: @duration,
 				maximum_number_of_students: @maximum_number_of_students
 			})
+		@lessons = @lessongroup.lessons
+		@lessons.each {|lesson| lesson.retrieve_virtual_attributes}
 		if @lessongroup.save
 			respond_to do |format|
 					format.json{ render json:{lessongroup: @lessongroup, :lessons => @lessongroup.lessons}, status: :created }

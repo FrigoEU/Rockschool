@@ -13,14 +13,11 @@ class LessonsController < ApplicationController
     end
     @lessons.each  do 
       |lesson|
-      if lesson.lessongroup.enrollments.first.paid == false
-        lesson.paid = false
-      end 
+      lesson.retrieve_virtual_attributes
     end
     respond_to do |format|
       format.html # index.html.erb
-      format.json { render json: @lessons.to_json(:methods => %w(paid)) }
-
+      format.json { render json: @lessons.to_json }
     end
   end
 
@@ -77,12 +74,8 @@ class LessonsController < ApplicationController
       teacher_id: @teacher_id,
       status: @status
       })
-        if @lesson.lessongroup.enrollments.first.paid == false
-          @lesson.paid = false
-        else
-          @lesson.paid = true
-        end
-        format.json { render json: @lesson.to_json(:methods => %w(paid)) }
+        @lesson.retrieve_virtual_attributes
+        format.json { render json: @lesson.to_json }
       else
         format.json { render json: {:errors => @lesson.errors.full_messages}, status: :unprocessable_entity }
       end

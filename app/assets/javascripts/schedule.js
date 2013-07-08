@@ -78,7 +78,7 @@ var ScheduleView = Backbone.View.extend({
 						}
 						else {paidclass = ""}
 						htmlClass = "lesson lesson-" + scheduleViewItem.content.get('status') + paidclass;
-						text = allStudents.get(scheduleViewItem.content.get("student")).get("name"); // + " " + scheduleViewItem.content.get("duration") + " minutes";
+						text = scheduleViewItem.content.getStudentName(); // + " " + scheduleViewItem.content.get("duration") + " minutes";
 					}
 					else { // We hebben iets vast dat geen les is: schoolopeningsuren, lesuren, ...
 						htmlClass = scheduleViewItem.content.get("type");

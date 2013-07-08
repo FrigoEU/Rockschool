@@ -1,9 +1,9 @@
 var Lesson = Backbone.Model.extend({
 	defaults: {
-		startTime: (new Date()),
-		duration: standardLessonLength,
-		teacher: 1,
-		student: 1
+		// startTime: (new Date()),
+		// duration: standardLessonLength,
+		// teacher: 1,
+		// student: 1
 	},
 	//url: "/lessons",
 	initialize: function() {
@@ -13,15 +13,20 @@ var Lesson = Backbone.Model.extend({
 		var startTime = new Date(response.starttime);
 		//startTime.addMinutes(-(startTime.getTimezoneOffset()));
 		var endTime = new Date(response.endtime);
-		//endTime.addMinutes(-(endTime.getTimezoneOffset()));
+		//endTime.addMinutes(-(endTime.getTimezoneOffset()))
+		var students = _.map(response.students, function(obj){
+			if (obj === undefined) {return undefined;}
+			else {return allStudents.get(obj.id);}
+		});
 		return {startTime: startTime,
 				endTime: endTime,
 				teacher: response.teacher_id,
-				student: 1, //bug!
+				students: students,
 				status: response.status,
 				lessongroup_id: response.lessongroup_id,
-				id: response.id,
-				paid: response.paid
+				id: parseInt(response.id,10),
+				paid: response.paid,
+				maximumNumberOfStudents: parseInt(response.maximum_number_of_students, 10)
 		};
 	},
 	statusToDutch: function() {
@@ -29,8 +34,11 @@ var Lesson = Backbone.Model.extend({
 		return LessonStatusses[status].name;
 	},
 	getStudentName: function() {
-		//reference naar global variable in algemene methode van class... niet zeker of dit proper is.
-		return allStudents.get(this.get('student')).get("name");
+		if (this.isGroupLesson()) {return "Groepsles";}
+		else {return this.get("students")[0].get('name');}
+	},
+	isGroupLesson: function() {
+		return (this.get("maximumNumberOfStudents") > 1);
 	}
 });
 var Lessons = Backbone.Collection.extend({
@@ -63,28 +71,38 @@ var LessonStatussesArray = [LessonStatusses.created, LessonStatusses.open, Lesso
 
 var LessonDropDownView = DropDownView.extend({
 	initialize: function () {
-		this.template = $("#lessonDropDownTemplate");
+
 	},
 	events: {
-		"click .status": "changeStatus"
+		"click .status": "changeStatus",
+		"click .enroll": "enrollment",
+		"click .grouplessonDetails": "grouplessonDetails"
 	},
 	render: function() {
 		this.constructor.__super__.render.apply(this);
 	},
 	renderInnerHTML: function(){
-		var choicesArray =[];
-		choicesArray = _.clone(LessonStatusses[this.options.lesson.get('status')].possibleActions);
-		if (this.options.lesson.get('paid') === false) {
-			choicesArray.push(LessonActions.pay);
+		if (!this.options.lesson.isGroupLesson()) {
+			this.template = $("#lessonDropDownTemplate");
+			var choicesArray =[];
+			choicesArray = _.clone(LessonStatusses[this.options.lesson.get('status')].possibleActions);
+			if (this.options.lesson.get('paid') === false) {
+				choicesArray.push(LessonActions.pay);
+			}
+			var argumentHash = {
+				student: this.options.lesson.get("students")[0].toJSON(),
+				teacher: allTeachers.get(this.options.lesson.get("teacher")).toJSON(),
+				datetime: this.options.lesson.get('startTime').toString("ddd dd MMM yyyy, HH:mm"),
+				status: this.options.lesson.statusToDutch(),
+				choices: choicesArray
+			};
+			return Mustache.render(this.template.html(),argumentHash);
 		}
-		var argumentHash = {
-			student: allStudents.get(this.options.lesson.get("student")).toJSON(),
-			teacher: allTeachers.get(this.options.lesson.get("teacher")).toJSON(),
-			datetime: this.options.lesson.get('startTime').toString("ddd dd MMM yyyy, HH:mm"),
-			status: this.options.lesson.statusToDutch(),
-			choices: choicesArray
-		};
-		return Mustache.render(this.template.html(),argumentHash);
+		else {
+			//Groepsles
+			this.template = $('#grouplessonDropDownTemplate');
+			return Mustache.render(this.template.html(), {});
+		}
 	},
 	changeStatus: function(e){
 		console.log("$(e.target).data('action') = " + $(e.target).data("action"));
@@ -97,6 +115,26 @@ var LessonDropDownView = DropDownView.extend({
 					var errors = $.parseJSON(response.responseText).errors;
 					alert('Fout: ' + errors);
 				}
+		});
+	},
+	enrollment: function(e){
+		moderator.showDialog('enrollmentDialog', {
+			lessongroup_id: this.options.lesson.get('lessongroup_id'),
+			teacher: allTeachers.get(this.options.lesson.get('teacher')),
+			startTime: this.options.lesson.get('startTime'),
+			duration: this.options.lesson.get('duration'),
+			student: allStudents.get(1)//todo: Tijdelijk!
+		});
+	},
+	grouplessonDetails: function(e){
+		var enrollments = new Enrollments();
+		enrollments.fetch({
+			data: {'lessongroup_id': this.options.lesson.get('lessongroup_id')},
+			success: function(model, response, options){
+				moderator.showDialog('grouplessonDetailsDialog', {
+
+				});
+			}
 		});
 	}
 });

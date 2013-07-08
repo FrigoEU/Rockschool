@@ -92,6 +92,13 @@
 			<li><a class="makeLessongroup" href="#">Maak groepsles</a></li>
 		</ul>
 	</script>
+	<script type="text/template" class="template" id="grouplessonDropDownTemplate">
+		<ul class="menu">
+			<li><a class="enroll" href="#">Inschrijven</a></li>
+			<li><a class="grouplessonDetails" href="#">Groepsles details</a></li>
+
+		</ul>
+	</script>
 	<script type="text/template" class="template" id="lessonDropDownTemplate">
 		<ul class="menu">
 			<li><a href= "#">Student: {{student.name}}</a></li>
@@ -156,11 +163,43 @@
 		  				<td>Lesdag:</td><td id="teachingDay">{{teachingDay}}</td>
 		  			</tr>
 					<tr>
-						<td><label for="maxNumberOfStudents">Maximum aantal leerlingen:</label></td><td><input type='text' id="maxNumberOfStudents" value ='5'></input</td>
+						<td><label for="maxNumberOfStudents">Maximum aantal leerlingen:</label></td>
+						<td><input type='text' id="maxNumberOfStudents" value ='5'></input></td>
 					</tr>
 					<tr>
-						<td><label for="duration">Lesduur (minuten):</label></td><td><input type='text' id="duration" value='60'></input></td>
+						<td><label for="duration">Lesduur (minuten):</label></td>
+						<td><input type='text' id="duration" value='60'></input></td>
 					</tr>
+			</table>
+			</form>
+		</div>
+	</script>
+	<script type="text/template" class="template" id="grouplessonDetailsDialogTemplate">
+		<div id="grouplessonDetailsDialog" title="Groepsles details">
+			<form>
+			<table>
+				<tr>
+		  			<td>Leerkracht:</td><td id="teacherName">{{teacherName}}</td>
+		  			</tr>
+		  			<tr></tr>
+		  			<tr>
+		  				<td>Lesuur:</td><td id="startLessonHour">{{startLessonHour}}</td>
+		  			</tr>
+		  			<tr></tr>
+		  			<tr>
+		  				<td>Lesdag:</td><td id="teachingDay">{{teachingDay}}</td>
+		  			</tr>
+					<tr>
+						<td>Maximum aantal leerlingen:</td>
+						<td>{{maximumNumberOfStudents}}</td>
+					</tr>
+					<tr>
+						<td>Lesduur (minuten):</td>
+						<td>{{duration}}</td>
+					</tr>
+					{{#enrollments}}
+						
+					{{/enrollments}}
 			</table>
 			</form>
 		</div>
