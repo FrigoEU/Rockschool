@@ -35,10 +35,10 @@ class LessonsController < ApplicationController
 
     case params[:data][:action]
     when 'acceptenrollment'
-      @lessongroup.lessons.each do
-        |lesson|
-        lesson.status="open"
-        lesson.save
+      @lessongroup.enrollments.each do
+        |enrollment|
+        enrollment.approved=true
+        enrollment.save
       end
       @status="open"
     when 'removeenrollment'

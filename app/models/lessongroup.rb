@@ -94,7 +94,7 @@ class Lessongroup < ActiveRecord::Base
 			self.lessons.build({
 				starttime: starttime, 
 				endtime: endtime,
-				status: "created",
+				status: "open",
 				teacher_id: @teacher.id
 			})
 		end

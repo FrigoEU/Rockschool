@@ -26,7 +26,8 @@ var Lesson = Backbone.Model.extend({
 				lessongroup_id: response.lessongroup_id,
 				id: parseInt(response.id,10),
 				paid: response.paid,
-				maximumNumberOfStudents: parseInt(response.maximum_number_of_students, 10)
+				maximumNumberOfStudents: parseInt(response.maximum_number_of_students, 10),
+				approved: response.approved
 		};
 	},
 	statusToDutch: function() {
@@ -41,6 +42,7 @@ var Lesson = Backbone.Model.extend({
 		return (this.get("maximumNumberOfStudents") > 1);
 	}
 });
+
 var Lessons = Backbone.Collection.extend({
 	initialize: function() {
 	},
@@ -48,18 +50,14 @@ var Lessons = Backbone.Collection.extend({
 	url:"/lessons"
 });
 var LessonActions = {
-	accept: {action: 'acceptenrollment', label: 'Accepteer inschrijving'},
-	reject: {action:'removeenrollment', label: 'Keur inschrijving af'},
-	pay: {action: 'payenrollment', label: 'Betaling inschrijving OK'},
 	open: {action: 'open', label: 'Les open'},
 	absentreq: {action: 'absentreq', label: 'Vraag afwezigheid aan'},
 	absentok: {action: 'absentok', label: 'Wettelijk afwezig'},
 	absentnok: {action: 'absentnok', label: 'Afwezig'},
-	done: {action: 'done', label: 'Les OK'},
-	removeenrollment: {action:'removeenrollment', label: 'Verwijder inschrijving'}
+	done: {action: 'done', label: 'Les OK'}
 };
+LessonActions = _.extend(LessonActions, EnrollmentActions);
 var LessonStatusses = {
-	created: {key: "created", name: "Gemaakt", possibleActions: [LessonActions.accept, LessonActions.reject]},
 	open: {key:"open", name: "Open", possibleActions: [LessonActions.absentreq, LessonActions.absentok, LessonActions.absentnok, LessonActions.done, LessonActions.removeenrollment]},
 	done: {key: "done", name: "Les OK", possibleActions: [LessonActions.open]},
 	absentreq: {key: "absentreq", name: "Afwezigheid aangevraagd", possibleActions: [LessonActions.absentok, LessonActions.absentnok]},
@@ -85,10 +83,23 @@ var LessonDropDownView = DropDownView.extend({
 		if (!this.options.lesson.isGroupLesson()) {
 			this.template = $("#lessonDropDownTemplate");
 			var choicesArray =[];
+			// Haal keuzes op die horen bij status van les
 			choicesArray = _.clone(LessonStatusses[this.options.lesson.get('status')].possibleActions);
-			if (this.options.lesson.get('paid') === false) {
+
+			//Voeg keuzes bij die horen bij status van enrollment
+			if (this.options.lesson.get('approved') === false){
+				choicesArray.push(LessonActions.accept);
+				choicesArray.push(LessonActions.reject);
+				_.each(choicesArray, function(value, key, list){
+					if (list[key] == LessonActions.removeenrollment){
+						list.splice(key, 1);
+					}
+				})
+			}
+			else if (this.options.lesson.get('paid') === false) {
 				choicesArray.push(LessonActions.pay);
 			}
+
 			var argumentHash = {
 				student: this.options.lesson.get("students")[0].toJSON(),
 				teacher: allTeachers.get(this.options.lesson.get("teacher")).toJSON(),
@@ -105,7 +116,6 @@ var LessonDropDownView = DropDownView.extend({
 		}
 	},
 	changeStatus: function(e){
-		console.log("$(e.target).data('action') = " + $(e.target).data("action"));
 		this.options.lesson.save({
 				data: {action: $(e.target).data("action")}},{
 				success: function(){
@@ -128,11 +138,16 @@ var LessonDropDownView = DropDownView.extend({
 	},
 	grouplessonDetails: function(e){
 		var enrollments = new Enrollments();
+		var clickedLesson = this.options.lesson;
 		enrollments.fetch({
-			data: {'lessongroup_id': this.options.lesson.get('lessongroup_id')},
+			data: {'lessongroup_id': clickedLesson.get('lessongroup_id')},
 			success: function(model, response, options){
 				moderator.showDialog('grouplessonDetailsDialog', {
-
+					collection: model,
+					teacher: allTeachers.get(clickedLesson.get('teacher')),
+					startTime: clickedLesson.get('startTime'),
+					duration: clickedLesson.get('duration'),
+					maximumNumberOfStudents: clickedLesson.get('maximumNumberOfStudents')
 				});
 			}
 		});

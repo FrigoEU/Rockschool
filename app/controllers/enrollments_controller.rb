@@ -30,7 +30,8 @@ class EnrollmentsController < ApplicationController
 				@enrollment = Enrollment.new({
 					lessongroup_id: @lessongroup.id,
 					student_id: @student.id,
-					paid: false
+					paid: false,
+					approved: false
 				})
 				respond_to do |format|
 					if @enrollment.save
@@ -55,10 +56,27 @@ class EnrollmentsController < ApplicationController
 	def index
 		if params.has_key?(:lessongroup_id)
 			@enrollments = Enrollment.where("lessongroup_id = ?",params[:lessongroup_id])
+			@enrollments.each{|enrollment|enrollment.retrieve_virtual_attributes}
 			respond_to do |format|
 		      format.html 
 		      format.json { render json: @enrollments.to_json }
 		    end
 		end
+	end
+	def update
+		@enrollment = Enrollment.find(params[:id])
+	    respond_to do |format|
+	      	if @enrollment.update_attributes(params[:enrollment])
+	      		@enrollment.retrieve_virtual_attributes
+	        	format.json { render json: @enrollment.to_json }
+	      	else
+	        	format.json { render json: @enrollment.errors, status: :unprocessable_entity }
+	      	end
+	    end
+	end
+	def destroy
+		@enrollment = Enrollment.find(params[:id])
+		@enrollment.destroy
+		return render json: {}
 	end
 end

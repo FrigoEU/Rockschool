@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130623153217) do
+ActiveRecord::Schema.define(:version => 20130711150432) do
 
   create_table "closingperiods", :force => true do |t|
     t.date     "startdate"
@@ -26,6 +26,7 @@ ActiveRecord::Schema.define(:version => 20130623153217) do
     t.boolean  "paid"
     t.datetime "created_at",     :null => false
     t.datetime "updated_at",     :null => false
+    t.boolean  "approved"
   end
 
   create_table "lessongroups", :force => true do |t|

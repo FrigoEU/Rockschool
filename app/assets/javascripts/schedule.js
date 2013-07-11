@@ -41,7 +41,7 @@ var ScheduleView = Backbone.View.extend({
 			cursorArray.push(0);
 		};
 
-		renderedScheduleMatrix =  renderedScheduleMatrix.concat('<table id="lessenrooster" data-teacher-id= "' + this.collection.meta("teacher").get("id") + '">');
+		renderedScheduleMatrix = renderedScheduleMatrix.concat('<table id="lessenrooster" data-teacher-id= "' + this.collection.meta("teacher").get("id") + '">');
 		//Eerst alle datums er voor zetten
 		renderedScheduleMatrix = renderedScheduleMatrix.concat('<td class = "navbutton" id="navbackward">' + "Vorige" + '</td><td class = "navbutton" id="navforward">' + "Volgende" + '</td>');
 		for (var i = 0; i < scheduleMatrix.length-2; i++) {
@@ -66,18 +66,15 @@ var ScheduleView = Backbone.View.extend({
 					// Cursorarray heeft evenveel elementen als dagen, en per dag staat er in aan welk item we zitten. Dit omdat we niet op index i kunnen vertrouwen omdat die veel harder itereert wegens de skipping/rowspan logica
 					var scheduleViewItem = scheduleMatrix[j][cursorArray[j]];
 					var rowspan = scheduleViewItem.getNumberOfSlots();
-					var paidclass;
 					var htmlClass = '';
 					var text = ''; 
 					var colspan = 1;
 
 					++cursorArray[j];
 					if (scheduleViewItem.content.get("type") == "lesson") { // We hebben een les vast
-						if (scheduleViewItem.content.get('paid') == false) {
-							paidclass = " lesson-unpaidenrollment";
-						}
-						else {paidclass = ""}
-						htmlClass = "lesson lesson-" + scheduleViewItem.content.get('status') + paidclass;
+						htmlClass = "lesson lesson-" + scheduleViewItem.content.get('status');
+						if (scheduleViewItem.content.get('paid') == false) {htmlClass += " unpaidenrollment";}
+						if (scheduleViewItem.content.get('approved') == false) {htmlClass += " unapprovedenrollment";}
 						text = scheduleViewItem.content.getStudentName(); // + " " + scheduleViewItem.content.get("duration") + " minutes";
 					}
 					else { // We hebben iets vast dat geen les is: schoolopeningsuren, lesuren, ...

@@ -1,12 +1,13 @@
 var Enrollment = Backbone.Model.extend({
-	//teacher
-	//student
-	//lessongroup
-	//type
-	//startTime
-	//duration
-	url: "/enrollments"
-
+	urlRoot: "/enrollments",
+	parse: function(response){
+		var result = _.clone(response);
+		var startTime = new Date(response.starttime);
+		var endTime = new Date(response.endtime);
+		result.startTime = startTime;
+		result.endTime = endTime;
+		return result;
+	}
 });
 var Enrollments = Backbone.Collection.extend({
 	model: Enrollment,
@@ -15,13 +16,7 @@ var Enrollments = Backbone.Collection.extend({
 
 var EnrollmentDialogView = Backbone.View.extend({
 	initialize: function () {
-		//student
-		//teacher
-		//startTime
-		//duration
-		//lessongroup
 		_.bindAll(this);
-
 	},
 	tagName: "div",
 	id:"enrollmentDialog",
@@ -84,5 +79,94 @@ var EnrollmentDialogView = Backbone.View.extend({
 				if (errors.length == 0){alert('Systeemfout');}
 				else {alert('Fout: ' + errors);}
 			}});
+	}
+});
+
+var EnrollmentBoxView = Backbone.View.extend({
+	initialize: function(){
+		this.template = $('#enrollmentBoxTemplate');
+	},
+	events: {
+		"click .enrollment": "showEnrollmentDropDown"
+	},
+	render: function(){
+		var argumentHash = {studentName: allStudents.get(this.options.enrollment.get('student_id')).get('name')};
+		argumentHash = _.extend(argumentHash, this.options.enrollment.toJSON());
+		$(this.el).html(Mustache.to_html(this.template.html(), argumentHash));
+	},
+	showEnrollmentDropDown: function(){
+		moderator.showEnrollmentDropDown(event.pageX, event.pageY, this.options.enrollment, this);
+	}
+});
+var EnrollmentActions = {
+	accept: {
+		key:'accept',
+		action: 'acceptenrollment', 
+		label: 'Accepteer inschrijving', 
+		func: function(callback){
+			this.save({'approved': true},{success: function(){callback.apply();}});
+		}
+	},
+	reject: {
+		key: 'reject',
+		action:'removeenrollment', 
+		label: 'Keur inschrijving af',
+		func: function(callback){
+			this.destroy({success: function(){
+				callback.apply();
+			}});
+		}
+	},
+	pay: {
+		key: 'pay',
+		action: 'payenrollment', 
+		label: 'Betaling inschrijving OK',
+		func: function(callback){
+			this.save({'paid': true},{success: function(){callback.apply();}});
+		}
+	},
+	removeenrollment: {
+		key: 'removeenrollment',
+		action:'removeenrollment', 
+		label: 'Verwijder inschrijving',
+		func: function(callback){
+			this.destroy({success: function(){
+				callback.apply();
+			}});
+		}
+	}
+};
+var EnrollmentDropDownView = DropDownView.extend({
+	initialize: function(){
+		this.template = $('#enrollmentDropDownTemplate');
+	},
+	events: {
+		"click .status": "changeStatus",
+	},
+	renderInnerHTML: function(){
+		var choices = [EnrollmentActions.removeenrollment];
+		
+		if (this.options.enrollment.get('approved') == false){
+			choices.push(EnrollmentActions.accept);
+			choices.push(EnrollmentActions.reject);
+			_.each(choices, function(value, key, list){
+					if (list[key] == EnrollmentActions.removeenrollment){list.splice(key, 1);}
+				})
+		}
+		else if (this.options.enrollment.get('paid') == false){choices.unshift(EnrollmentActions.pay);}
+		
+		var argumentHash= {
+			student: allStudents.get(this.options.enrollment.get("student_id")).toJSON(),
+			teacher: allTeachers.get(this.options.enrollment.get("teacher_id")).toJSON(),
+			datetime: this.options.enrollment.get('startTime').toString("dddd, HH:mm"),
+			choices: choices
+		};
+		argumentHash = _.extend(argumentHash, this.options.enrollment.toJSON());
+		return Mustache.render(this.template.html(),argumentHash);
+	},
+	changeStatus: function(e){
+		var enrollmentAction = EnrollmentActions[$(e.target).data("key")];
+		var self = this;
+		enrollmentAction.func.apply(this.options.enrollment, [function(){self.options.originatingView.render();}]);
 	}
 });

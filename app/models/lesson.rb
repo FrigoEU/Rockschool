@@ -1,6 +1,6 @@
 class Lesson < ActiveRecord::Base
   	attr_accessible :endtime, :starttime, :status, :teacher_id, :lessongroup_id
-  	attr_accessor :paid, :students, :maximum_number_of_students
+  	attr_accessor :paid, :students, :maximum_number_of_students, :approved
   	has_one :teacher
   	belongs_to :lessongroup, :inverse_of => :lessons
   	validate :start_and_endtime
@@ -14,14 +14,18 @@ class Lesson < ActiveRecord::Base
       #students
   		self.students = lessongroup.students
 
-      #paid
+      #paid & approved
       enrollments = lessongroup.enrollments
       if enrollments.empty?
+        #we geven waarschuwingen als er niet betaald is of niet approved, dus als er nog geen inschrijvingen zien willen we nog niemand lastig vallen met waarschuwingen
         self.paid = true
+        self.approved = true
       elsif lessongroup.maximum_number_of_students == 1
         self.paid = enrollments.first.paid
+        self.approved = enrollments.first.approved
       else
         self.paid = true
+        self.approved = true
       end
 
       #maximum_number_of_students
@@ -29,7 +33,7 @@ class Lesson < ActiveRecord::Base
   	end
     def as_json options=nil
       options ||= {}
-      options[:methods] = ((options[:methods] || []) + [:paid, :students, :maximum_number_of_students])
+      options[:methods] = ((options[:methods] || []) + [:paid, :approved, :students, :maximum_number_of_students])
       super options
     end
 end

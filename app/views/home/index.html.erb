@@ -92,6 +92,7 @@
 			<li><a class="makeLessongroup" href="#">Maak groepsles</a></li>
 		</ul>
 	</script>
+	
 	<script type="text/template" class="template" id="grouplessonDropDownTemplate">
 		<ul class="menu">
 			<li><a class="enroll" href="#">Inschrijven</a></li>
@@ -113,10 +114,26 @@
 			</li>
 		</ul>
 	</script>
+	<script type="text/template" class="template" id="enrollmentDropDownTemplate">
+		<ul class="menu">
+			<li><a href= "#">Student: {{student.name}}</a></li>
+			<li><a href= "#">Leeraar: {{teacher.name}}</a></li>
+			<li><a href= "#">Tijdstip: {{datetime}}</a></li>
+			<li><a href= "#">Geaccepteerd: {{#approved}}Ja{{/approved}}{{^approved}}Nee{{/approved}}</a>
+			<li><a href= "#">Betaald: {{#paid}}Ja{{/paid}}{{^paid}}Nee{{/paid}}</a>
+			<li><a href= "#">Acties:</a>
+				<ul>
+					{{#choices}}
+					<li><a href="#" class="status" data-key="{{key}}">{{label}}</a></li>
+					{{/choices}}
+				</ul>
+			</li>
+		</ul>
+	</script>
 	<script type="text/template" class="template" id="scheduleViewItemTemplate">
 		<td class="{{htmlClass}}" rowspan = "{{rowspan}}" colspan ="{{colspan}}" data-startTime = "{{startTime}}" data-duration = "{{duration}}" data-id="{{id}}"> 
 			{{text}}
-		</td>s
+		</td>
 	</script>
 	<script type="text/template" class="template" id="enrollmentDialogTemplate">
 		<div id="enrollmentDialog" title="Inschrijvingsformulier">
@@ -197,13 +214,16 @@
 						<td>Lesduur (minuten):</td>
 						<td>{{duration}}</td>
 					</tr>
-					{{#enrollments}}
-						
-					{{/enrollments}}
+				</tr>
 			</table>
+			<div id="enrollments"></div>
 			</form>
 		</div>
 	</script>
+	<script type="text/template" class="template" id="enrollmentBoxTemplate">
+		<span class="enrollment lessonbox {{^approved}}unapprovedenrollment{{/approved}} {{#approved}}{{^paid}}unpaidenrollment{{/paid}}{{/approved}}">{{studentName}}</span>
+	</script>
+
 	<script type="text/template" class="template" id="periodOptionsTemplate">
 		<div id="periodConfig" class="configScreen">
 			<h1>Schooljaar</h1>

@@ -13,7 +13,7 @@ var moderator = {
 	DIALOGS: {
 		enrollmentDialog: {view: 'enrollmentDialogView', template: '#enrollmentDialogTemplate', el: '#enrollmentDialog', class: 'EnrollmentDialogView'},
 		newlessongroupDialog: {view: 'newLessongroupView', template: '#newLessongroupTemplate', el: '#newLessongroupDialog', class: 'NewLessongroupDialogView'},
-		grouplessonDetailsDialog: {view: 'grouplessonDetailsDialog', template: '#grouplessonDetailsDialogTemplate', el: '#newLessongroupDialog', class: ''}
+		grouplessonDetailsDialog: {view: 'grouplessonDetailsDialog', template: '#grouplessonDetailsDialogTemplate', el: '#grouplessonDetailsDialog', class: 'GrouplessonDetailsDialog'}
 	},
 
 	showMainScreenTeacherIndex: function() {
@@ -123,7 +123,7 @@ var moderator = {
 		this.setMiddle(this.addStudentView);
 	},
 	showTeacherTeachingDropDown: function(x,y,scheduleViewItem) {
-		teacherTeachingDropDownView = new TeacherTeachingDropDownView({
+		var teacherTeachingDropDownView = new TeacherTeachingDropDownView({
 			posX: x,
 			posY: y,
 			scheduleViewItem: scheduleViewItem
@@ -131,12 +131,21 @@ var moderator = {
 		teacherTeachingDropDownView.render();
 	},
 	showLessonDropDown: function(x,y,lesson) {
-		lessonDropDownView = new LessonDropDownView({
+		var lessonDropDownView = new LessonDropDownView({
 			posX: x,
 			posY: y,
 			lesson: lesson
 		});
 		lessonDropDownView.render();
+	},
+	showEnrollmentDropDown: function(x,y,enrollment,originatingView){
+		var enrollmentDropDownView = new EnrollmentDropDownView({
+			posX: x,
+			posY: y,
+			enrollment: enrollment,
+			originatingView: originatingView
+		});
+		enrollmentDropDownView.render();
 	},
 	showDialog: function(dialog, options){
 		var dialogView = this.DIALOGS[dialog].view;
