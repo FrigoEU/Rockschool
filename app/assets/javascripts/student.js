@@ -40,12 +40,32 @@ var AddStudentView = Backbone.View.extend({
 	},
 	submit: function(e) {
 		e.preventDefault();
+		var form = $(this.el).find('#studentDetails')
 
-		var studentName = $(this.el).find('#studentDetails').find('input[name=name]').val();
+		var studentName = form.find('input[name=name]').val();
+		var address1 = form.find('input[name=address1]').val();
+		var address2 = form.find('input[name=address2]').val();
+		var phone = form.find('input[name=phone]').val();
+		var email = form.find('input[name=email]').val();
+		var create_user = form.find('input[name=create_user]').is(':checked');
+		var mail_student = form.find('input[name=mail_student]').is(':checked');
+
 		allStudents.create({
-            name: studentName
-        });
-
-        moderator.showMainScreenStudentIndex();
+            'name': studentName,
+            'address1': address1,
+            'address2': address2,
+            'phone': phone,
+            'email': email,
+            'mail_student': mail_student,
+            'create_user': create_user
+        },
+        {success: function(){
+        	moderator.showMainScreenStudentIndex();
+        },
+    	error: function(model, response, options){
+			var errors = $.parseJSON(response.responseText).errors;
+			if (errors.length == 0){alert('Systeemfout');}
+			else {alert('Fout: ' + errors);}
+		}});
 	}
 })

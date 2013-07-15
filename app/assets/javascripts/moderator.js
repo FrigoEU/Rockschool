@@ -10,6 +10,7 @@ var moderator = {
 	enrollmentDialogView: "",
 	periodOptionsView: "",
 	lessonsSearchView: "",
+	loginView: "",
 	DIALOGS: {
 		enrollmentDialog: {view: 'enrollmentDialogView', template: '#enrollmentDialogTemplate', el: '#enrollmentDialog', class: 'EnrollmentDialogView'},
 		newlessongroupDialog: {view: 'newLessongroupView', template: '#newLessongroupTemplate', el: '#newLessongroupDialog', class: 'NewLessongroupDialogView'},
@@ -40,6 +41,14 @@ var moderator = {
 			});
 		}
 		this.setMiddle(periodOptionsView);
+	},
+	setMainScreenLogin: function() {
+		if (this.loginView ===""){
+			loginView = new LoginView({
+				template: $('#loginViewTemplate').html()
+			})
+		}
+		this.setMiddle(loginView);
 	},
 	showLessonsSearch: function() {
 		if(this.lessonsSearchView==="") {

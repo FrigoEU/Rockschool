@@ -40,15 +40,36 @@ class StudentsController < ApplicationController
   # POST /students
   # POST /students.json
   def create
-    @student = Student.new(params[:student])
+    @student = Student.new({
+      name: params[:name], 
+      phone: params[:phone], 
+      address1: params[:address1], 
+      address2: params[:address2]
+      })
 
+    if params[:create_user] == true && params.has_key?(:email)
+      @user = User.new({
+        email: params[:email],
+        password: "rockschool",
+        password_confirmation: "rockschool", 
+        role: "student"
+      })
+    end
     respond_to do |format|
-      if @student.save
-        format.html { redirect_to @student, notice: 'Student was successfully created.' }
-        format.json { render json: @student, status: :created, location: @student }
+      if @user.save
+        if params[:mail_student] == true
+          UserMailer.welcome_email(@user).deliver
+        end
+
+        if @student.save
+          format.json { render json: @student, status: :created, location: @student }
+          @user.role_id = @student.id
+          @user.save
+        else
+          format.json { render json: {errors: @student.errors.full_messages}, status: :unprocessable_entity }
+        end
       else
-        format.html { render action: "new" }
-        format.json { render json: @student.errors, status: :unprocessable_entity }
+        format.json { render json: {errors: @user.errors.full_messages}, status: :unprocessable_entity }
       end
     end
   end

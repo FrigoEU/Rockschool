@@ -10,6 +10,8 @@ window.onload = function() {
 		data:{'active': true}
 	});
 
+
+
 	$( "nav" ).buttonset();
 	$("nav #teachers").on("click", function (event){
 		moderator.showMainScreenTeacherIndex();
@@ -19,6 +21,9 @@ window.onload = function() {
 	});
 	$("nav #options").on("click", function (event) {
 		moderator.setMainScreenOptions();
+	});
+	$("nav #login").on("click", function (event) {
+		moderator.setMainScreenLogin();
 	});
 	$.fn.outside = function(ename, cb){
 		return this.each(function(){

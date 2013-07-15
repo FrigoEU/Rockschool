@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130711150432) do
+ActiveRecord::Schema.define(:version => 20130715184712) do
 
   create_table "closingperiods", :force => true do |t|
     t.date     "startdate"
@@ -69,6 +69,9 @@ ActiveRecord::Schema.define(:version => 20130711150432) do
     t.string   "name"
     t.datetime "created_at", :null => false
     t.datetime "updated_at", :null => false
+    t.string   "phone"
+    t.string   "address1"
+    t.string   "address2"
   end
 
   create_table "teachers", :force => true do |t|
@@ -87,5 +90,17 @@ ActiveRecord::Schema.define(:version => 20130711150432) do
     t.boolean  "teachingonsaturday"
     t.boolean  "teachingonsunday"
   end
+
+  create_table "users", :force => true do |t|
+    t.string   "email"
+    t.string   "password_digest"
+    t.datetime "created_at",      :null => false
+    t.datetime "updated_at",      :null => false
+    t.string   "role"
+    t.integer  "role_id"
+    t.string   "remember_token"
+  end
+
+  add_index "users", ["remember_token"], :name => "index_users_on_remember_token"
 
 end
