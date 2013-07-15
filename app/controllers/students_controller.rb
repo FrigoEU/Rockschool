@@ -66,6 +66,7 @@ class StudentsController < ApplicationController
           @user.role_id = @student.id
           @user.save
         else
+          @user.destroy
           format.json { render json: {errors: @student.errors.full_messages}, status: :unprocessable_entity }
         end
       else
