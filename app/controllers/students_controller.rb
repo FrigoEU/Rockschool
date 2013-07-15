@@ -53,15 +53,14 @@ class StudentsController < ApplicationController
         password: "rockschool",
         password_confirmation: "rockschool", 
         role: "student"
-      })
-    end
-    respond_to do |format|
-      if @user.save
         if params[:mail_student] == true
           #sendgrid mail app
           UserMailer.welcome_email(@user).deliver
         end
-
+      })
+    end
+    respond_to do |format|
+      if @user.save
         if @student.save
           format.json { render json: @student, status: :created, location: @student }
           @user.role_id = @student.id
