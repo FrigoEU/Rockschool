@@ -58,6 +58,7 @@ class StudentsController < ApplicationController
     respond_to do |format|
       if @user.save
         if params[:mail_student] == true
+          #sendgrid mail app
           UserMailer.welcome_email(@user).deliver
         end
 
