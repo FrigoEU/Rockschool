@@ -53,11 +53,11 @@ class StudentsController < ApplicationController
         password: "rockschool",
         password_confirmation: "rockschool", 
         role: "student"
-        if params[:mail_student] == true
-          #sendgrid mail app
-          UserMailer.welcome_email(@user).deliver
-        end
       })
+      if params[:mail_student] == true
+        #sendgrid mail app
+        UserMailer.welcome_email(@user).deliver
+      end
     end
     respond_to do |format|
       if @user.save
