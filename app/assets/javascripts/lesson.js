@@ -36,7 +36,10 @@ var Lesson = Backbone.Model.extend({
 	},
 	getStudentName: function() {
 		if (this.isGroupLesson()) {return "Groepsles";}
-		else {return this.get("students")[0].get('name');}
+		else {
+			if (this.get("students")[0] !== undefined) {return this.get("students")[0].getName();}
+			else {return ''}
+		}
 	},
 	isGroupLesson: function() {
 		return (this.get("maximumNumberOfStudents") > 1);
@@ -122,8 +125,7 @@ var LessonDropDownView = DropDownView.extend({
 					moderator.reloadMainscreen();
 				},
 				error: function(model, response, options) {
-					var errors = $.parseJSON(response.responseText).errors;
-					alert('Fout: ' + errors);
+					standardHTTPErrorHandling(model, response, options);
 				}
 		});
 	},
@@ -132,8 +134,7 @@ var LessonDropDownView = DropDownView.extend({
 			lessongroup_id: this.options.lesson.get('lessongroup_id'),
 			teacher: allTeachers.get(this.options.lesson.get('teacher')),
 			startTime: this.options.lesson.get('startTime'),
-			duration: this.options.lesson.get('duration'),
-			student: allStudents.get(1)//todo: Tijdelijk!
+			duration: this.options.lesson.get('duration')
 		});
 	},
 	grouplessonDetails: function(e){

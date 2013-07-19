@@ -1,13 +1,5 @@
 include ApplicationHelper
 
-# class EnrollmentValidator < ActiveModel::Validator
-# 	def validate(record)
-# 		unless record.lessongroup.valid?
-# 			record.errors[:lessongroup] << 'Enrollment was not created because the Lessongroup was not created'
-# 		end
-# 	end
-# end
-
 class Enrollment < ActiveRecord::Base
 	include ActiveModel::Validations
 

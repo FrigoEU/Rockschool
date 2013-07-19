@@ -8,6 +8,8 @@ Rockschool::Application.routes.draw do
   resources :enrollments
   resources :lessongroups
   resources :users
+  match '/signin',  to: 'sessions#new',         via: 'get'
+  match '/signout', to: 'sessions#destroy',     via: 'get'
 
 
   # The priority is based upon order of creation:

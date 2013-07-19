@@ -14,7 +14,8 @@ var moderator = {
 	DIALOGS: {
 		enrollmentDialog: {view: 'enrollmentDialogView', template: '#enrollmentDialogTemplate', el: '#enrollmentDialog', class: 'EnrollmentDialogView'},
 		newlessongroupDialog: {view: 'newLessongroupView', template: '#newLessongroupTemplate', el: '#newLessongroupDialog', class: 'NewLessongroupDialogView'},
-		grouplessonDetailsDialog: {view: 'grouplessonDetailsDialog', template: '#grouplessonDetailsDialogTemplate', el: '#grouplessonDetailsDialog', class: 'GrouplessonDetailsDialog'}
+		grouplessonDetailsDialog: {view: 'grouplessonDetailsDialog', template: '#grouplessonDetailsDialogTemplate', el: '#grouplessonDetailsDialog', class: 'GrouplessonDetailsDialog'},
+		generalDialog: {view: 'generalDialog', template: '#generalDialogTemplate', el: '#generalDialog', class: 'GeneralDialog'}
 	},
 
 	showMainScreenTeacherIndex: function() {

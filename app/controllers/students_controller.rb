@@ -1,8 +1,17 @@
 class StudentsController < ApplicationController
+  include ApplicationHelper
   # GET /students
   # GET /students.json
   def index
-    @students = Student.all
+    get_current_user
+    if @current_user.isAdmin
+      @students = Student.all
+    elsif @current_user.isTeacher
+      teacher = Teacher.find(@current_user.role_id)
+      @students = teacher.lessongroups.students
+    elsif @current_user.isStudent
+      @students = Student.find(@current_user.role_id)
+    end
 
     respond_to do |format|
       format.html # index.html.erb
@@ -41,13 +50,14 @@ class StudentsController < ApplicationController
   # POST /students.json
   def create
     @student = Student.new({
-      name: params[:name], 
+      firstname: params[:firstname],
+      lastname: params[:lastname], 
       phone: params[:phone], 
       address1: params[:address1], 
       address2: params[:address2]
       })
 
-    if params[:create_user] == true && params.has_key?(:email)
+    if params.has_key?(:email) #&& params[:create_user] == true
       @user = User.new({
         email: params[:email],
         password: "rockschool",

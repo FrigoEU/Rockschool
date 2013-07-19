@@ -10,4 +10,11 @@ module ApplicationHelper
 			false
 		end
 	end
+	def get_current_user()
+		if cookies.has_key?(:remember_token)
+	  		@current_user = User.where("remember_token = ?", cookies[:remember_token]).first
+	  	else
+	  		@current_user = User.new
+	  	end
+	end
 end

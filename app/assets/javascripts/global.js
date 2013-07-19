@@ -3,3 +3,4 @@ var smallestSlotLength = 5;//MINUTEN
 var allTeachers;
 var allStudents;
 var period;
+var current_student;

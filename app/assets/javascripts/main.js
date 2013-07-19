@@ -1,16 +1,20 @@
-window.onload = function() {
+main = function() {
 	allTeachers = new Teachers();
 	allTeachers.fetch();
 
 	allStudents = new Students();
-	allStudents.fetch();
+	allStudents.fetch({
+		success: function () {
+			if (allStudents.length == 1) {
+				current_student = allStudents.at(0);
+			}
+		}
+	});
 
 	period = new Period();
 	period.fetch({
 		data:{'active': true}
 	});
-
-
 
 	$( "nav" ).buttonset();
 	$("nav #teachers").on("click", function (event){
@@ -24,6 +28,12 @@ window.onload = function() {
 	});
 	$("nav #login").on("click", function (event) {
 		moderator.setMainScreenLogin();
+	});
+	$("nav #logout").on("click", function (event) {
+		logout();
+	});
+	$("nav #signup").on("click", function (event) {
+		moderator.setMainScreenAddStudent();
 	});
 	$.fn.outside = function(ename, cb){
 		return this.each(function(){

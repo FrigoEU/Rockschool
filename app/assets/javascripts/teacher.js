@@ -53,6 +53,9 @@ var Teacher = Backbone.Model.extend({
 			success: function(model, response, options){
 				resultSchedule.parse(response);
 				moderator.showMainScreenTeacherSchedule(resultSchedule);
+			},
+			error: function(model, response, options){
+				standardHTTPErrorHandling(model, response, options);
 			}
 		});
 

@@ -58,10 +58,9 @@ var NewLessongroupDialogView = Backbone.View.extend({
 				moderator.reloadMainscreen();
 			},
 			error: function(model, response, options) {
-				var errors = $.parseJSON(response.responseText).errors;
-				if (errors.length === 0){alert('Systeemfout');}
-				else {alert('Fout: ' + errors);}
-			}});
+				standardHTTPErrorHandling(model, response, options);
+			}
+		});
 	}
 });
 var GrouplessonDetailsDialog = Backbone.View.extend({

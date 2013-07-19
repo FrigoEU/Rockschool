@@ -23,9 +23,12 @@ var EnrollmentDialogView = Backbone.View.extend({
 	events: {
 	},
 	render: function() {
+		var studentName = '';
+		if (current_student !== undefined) {studentName = current_student.getName()}
+
 		$("body").append(Mustache.render(
 			this.options.template.html(),{
-			"studentName": this.student.get('name'),
+			"studentName": studentName,
 			"teacherName": this.teacher.get('name'),
 			"teachingDay": this.startTime.toString("ddd dd MMM yyyy"),
 			"startLessonHour": this.startTime.toString("HH:mm")
@@ -49,15 +52,35 @@ var EnrollmentDialogView = Backbone.View.extend({
 						$('#enrollmentDialog').remove();
 				}
 		});
+		var source = _.map(allStudents.models, function (value, key, list) {
+				return {label: value.getName(), id: value.id}
+			});
+		var self = this;
+		enrollmentDialog.find( "#studentsSelect" ).autocomplete({
+			minLength: 0,
+      		source: source,
+      		select: function( event, ui ) {
+		        $( "#studentsSelect" ).val( ui.item.label );
+		        self.selectedStudent = allStudents.get(ui.item.id);
+		        return false;
+		    }
+    	})
+    	.data( "ui-autocomplete" )._renderItem = function( ul, item ) {
+	      return $( "<li>" )
+	        .append( "<a>" + item.label + "</a>" )
+	        .appendTo( ul );
+	    };
 
-		//$('#enrollmentDialog').children('#spinner').spinner();
 	},
 	makeEnrollment: function(){
 		var type = $('input:radio[name="enrollmentType"]:checked').val();
 		var startTime = this.startTime;
 		//startTime.addMinutes(-this.startTime.getTimezoneOffset()); //Vuil, maar anders lukte het niet... Mss later nog eens herbekijken
+		var student;
+		if (current_student !== undefined) {student = current_student}
+		else {student = this.selectedStudent}
 		var enrollment = new Enrollment({
-			student: this.student,
+			student: student,
 			teacher: this.teacher,
 			startTime: this.startTime,
 			duration: this.duration,
@@ -75,10 +98,9 @@ var EnrollmentDialogView = Backbone.View.extend({
 				moderator.reloadMainscreen();
 			},
 			error: function(model, response, options) {
-				var errors = $.parseJSON(response.responseText).errors;
-				if (errors.length == 0){alert('Systeemfout');}
-				else {alert('Fout: ' + errors);}
-			}});
+				standardHTTPErrorHandling(model, response, options);
+			}
+		});
 	}
 });
 
@@ -90,7 +112,7 @@ var EnrollmentBoxView = Backbone.View.extend({
 		"click .enrollment": "showEnrollmentDropDown"
 	},
 	render: function(){
-		var argumentHash = {studentName: allStudents.get(this.options.enrollment.get('student_id')).get('name')};
+		var argumentHash = {studentName: allStudents.get(this.options.enrollment.get('student_id')).getName};
 		argumentHash = _.extend(argumentHash, this.options.enrollment.toJSON());
 		$(this.el).html(Mustache.to_html(this.template.html(), argumentHash));
 	},

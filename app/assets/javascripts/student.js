@@ -1,6 +1,9 @@
 var Student = Backbone.Model.extend({
 	initialize: function(){
 
+	},
+	getName: function() {
+		return this.get('firstname') + ' ' + this.get('lastname');
 	}
 });
 var Students = Backbone.Collection.extend({
@@ -16,14 +19,13 @@ var StudentsIndexView = Backbone.View.extend({
 	tagName: "div",
 	id: "accordion",
 	render: function() {
-		$(this.el).html(Mustache.to_html(this.options.template,{students: this.collection.toJSON()})); 
+		$(this.el).html(Mustache.to_html(this.options.template,{students: this.collection.models})); 
 		$(this.el).find('.studentsBox').each(function() {$(this).button()});
 		return this;
 	},
 	showAddStudentScreen: function(e) {
 		moderator.setMainScreenAddStudent();
 	}
-
 });
 
 var AddStudentView = Backbone.View.extend({
@@ -42,7 +44,8 @@ var AddStudentView = Backbone.View.extend({
 		e.preventDefault();
 		var form = $(this.el).find('#studentDetails')
 
-		var studentName = form.find('input[name=name]').val();
+		var firstname = form.find('input[name=firstname]').val();
+		var lastname = form.find('input[name=lastname]').val();
 		var address1 = form.find('input[name=address1]').val();
 		var address2 = form.find('input[name=address2]').val();
 		var phone = form.find('input[name=phone]').val();
@@ -51,7 +54,8 @@ var AddStudentView = Backbone.View.extend({
 		var mail_student = form.find('input[name=mail_student]').is(':checked');
 
 		allStudents.create({
-            'name': studentName,
+            'firstname': firstname,
+            'lastname': lastname,
             'address1': address1,
             'address2': address2,
             'phone': phone,
@@ -59,13 +63,16 @@ var AddStudentView = Backbone.View.extend({
             'mail_student': mail_student,
             'create_user': create_user
         },
-        {success: function(){
-        	moderator.showMainScreenStudentIndex();
-        },
-    	error: function(model, response, options){
-			var errors = $.parseJSON(response.responseText).errors;
-			if (errors.length == 0){alert('Systeemfout');}
-			else {alert('Fout: ' + errors);}
-		}});
+        {
+        	success: function(){
+        		moderator.showDialog('generalDialog', {
+        			title: "Success",
+        			text: "Registratie gelukt!"
+        		})
+        	},
+    		error: function(model, response, options){
+				standardHTTPErrorHandling(model, response, options);
+			}
+		});
 	}
 })

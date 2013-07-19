@@ -172,6 +172,12 @@ body {
 .ui-dialog {
 	
 }
+.ui-autocomplete {
+    max-height: 100px;
+    overflow-y: auto;
+    /* prevent horizontal scrollbar */
+    overflow-x: hidden;
+  }
 #studentDetails input[type="text"] {
 	width: 300px;
 }
