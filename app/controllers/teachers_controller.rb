@@ -18,28 +18,13 @@ class TeachersController < ApplicationController
   # POST /teachers
   # POST /teachers.json
   def create
-    @teacher = Teacher.new({
-      name: params[:name],
-      starttimehours: params[:startTimeHours].to_i,
-      endtimehours: params[:endTimeHours].to_i,
-      starttimeminutes: params[:startTimeMinutes].to_i,
-      endtimeminutes: params[:endTimeMinutes].to_i,
-      teachingonfriday: params[:teachingOnFriday],
-      teachingonmonday: params[:teachingOnMonday],
-      teachingonsaturday: params[:teachingOnSaturday],
-      teachingonsunday: params[:teachingOnSunday],
-      teachingonthursday: params[:teachingOnThursday],
-      teachingontuesday: params[:teachingOnTuesday],
-      teachingonwednesday: params[:teachingOnWednesday]
-      })
+    @teacher = Teacher.new(params[:teacher])
 
     respond_to do |format|
       if @teacher.save
-        format.html { redirect_to @teacher, notice: 'Teacher was successfully created.' }
         format.json { render json: @teacher, status: :created, location: @teacher }
       else
-        format.html { render action: "new" }
-        format.json { render json: @teacher.errors, status: :unprocessable_entity }
+        format.json { render json: {errors: @teacher.errors.full_messages}, status: :unprocessable_entity }
       end
     end
   end
@@ -51,11 +36,9 @@ class TeachersController < ApplicationController
 
     respond_to do |format|
       if @teacher.update_attributes(params[:teacher])
-        format.html { redirect_to @teacher, notice: 'Teacher was successfully updated.' }
         format.json { head :no_content }
       else
-        format.html { render action: "edit" }
-        format.json { render json: @teacher.errors, status: :unprocessable_entity }
+        format.json { render json: {errors: @teacher.errors.full_messages}, status: :unprocessable_entity }
       end
     end
   end

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130718212319) do
+ActiveRecord::Schema.define(:version => 20130722191520) do
 
   create_table "closingperiods", :force => true do |t|
     t.date     "startdate"
@@ -73,23 +73,43 @@ ActiveRecord::Schema.define(:version => 20130718212319) do
     t.string   "address2"
     t.string   "firstname"
     t.string   "lastname"
+    t.integer  "user_id"
   end
 
   create_table "teachers", :force => true do |t|
     t.string   "name"
-    t.datetime "created_at",          :null => false
-    t.datetime "updated_at",          :null => false
-    t.integer  "starttimehours"
-    t.integer  "starttimeminutes"
-    t.integer  "endtimehours"
-    t.integer  "endtimeminutes"
-    t.boolean  "teachingonmonday"
-    t.boolean  "teachingontuesday"
-    t.boolean  "teachingonwednesday"
-    t.boolean  "teachingonthursday"
-    t.boolean  "teachingonfriday"
-    t.boolean  "teachingonsaturday"
-    t.boolean  "teachingonsunday"
+    t.datetime "created_at",              :null => false
+    t.datetime "updated_at",              :null => false
+    t.integer  "start_hours_monday"
+    t.integer  "start_minutes_monday"
+    t.integer  "end_hours_monday"
+    t.integer  "end_minutes_monday"
+    t.integer  "start_hours_tuesday"
+    t.integer  "start_minutes_tuesday"
+    t.integer  "end_hours_tuesday"
+    t.integer  "end_minutes_tuesday"
+    t.integer  "start_hours_wednesday"
+    t.integer  "start_minutes_wednesday"
+    t.integer  "end_hours_wednesday"
+    t.integer  "end_minutes_wednesday"
+    t.integer  "start_hours_thursday"
+    t.integer  "start_minutes_thursday"
+    t.integer  "end_hours_thursday"
+    t.integer  "end_minutes_thursday"
+    t.integer  "start_hours_friday"
+    t.integer  "start_minutes_friday"
+    t.integer  "end_hours_friday"
+    t.integer  "end_minutes_friday"
+    t.integer  "start_hours_saturday"
+    t.integer  "start_minutes_saturday"
+    t.integer  "end_hours_saturday"
+    t.integer  "end_minutes_saturday"
+    t.integer  "start_hours_sunday"
+    t.integer  "start_minutes_sunday"
+    t.integer  "end_hours_sunday"
+    t.integer  "end_minutes_sunday"
+    t.string   "bio"
+    t.string   "courses"
   end
 
   create_table "users", :force => true do |t|

@@ -62,6 +62,15 @@ class EnrollmentsController < ApplicationController
 		      format.json { render json: @enrollments.to_json }
 		    end
 		end
+		if params.has_key?(:student_id)
+			@student = Student.find(params[:student_id])
+			@enrollments = @student.enrollments
+			@enrollments.each{|enrollment|enrollment.retrieve_virtual_attributes}
+			respond_to do |format|
+		      format.html 
+		      format.json { render json: @enrollments.to_json }
+		    end
+		end
 	end
 	def update
 		@enrollment = Enrollment.find(params[:id])

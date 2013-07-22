@@ -68,7 +68,7 @@ var LessonStatusses = {
 	absentnok: {key: "absentnok", name: "Afwezig", possibleActions: [LessonActions.open, LessonActions.done]}
 };
 //Kan dit niet beter?
-var LessonStatussesArray = [LessonStatusses.created, LessonStatusses.open, LessonStatusses.done, LessonStatusses.absentreq, LessonStatusses.absentok, LessonStatusses.absentnok];
+var LessonStatussesArray = [LessonStatusses.done, LessonStatusses.absentreq, LessonStatusses.absentok, LessonStatusses.absentnok];
 
 var LessonDropDownView = DropDownView.extend({
 	initialize: function () {
@@ -104,7 +104,7 @@ var LessonDropDownView = DropDownView.extend({
 			}
 
 			var argumentHash = {
-				student: this.options.lesson.get("students")[0].toJSON(),
+				studentName: this.options.lesson.get("students")[0].getName(),
 				teacher: allTeachers.get(this.options.lesson.get("teacher")).toJSON(),
 				datetime: this.options.lesson.get('startTime').toString("ddd dd MMM yyyy, HH:mm"),
 				status: this.options.lesson.statusToDutch(),

@@ -6,7 +6,8 @@ var moderator = {
 	scheduleView: "",
 	teacherDetailsView: "",
 	studentsIndexView: "",
-	addStudentView: "",
+	editStudentView: "",
+	showStudentView:"",
 	enrollmentDialogView: "",
 	periodOptionsView: "",
 	lessonsSearchView: "",
@@ -15,7 +16,8 @@ var moderator = {
 		enrollmentDialog: {view: 'enrollmentDialogView', template: '#enrollmentDialogTemplate', el: '#enrollmentDialog', class: 'EnrollmentDialogView'},
 		newlessongroupDialog: {view: 'newLessongroupView', template: '#newLessongroupTemplate', el: '#newLessongroupDialog', class: 'NewLessongroupDialogView'},
 		grouplessonDetailsDialog: {view: 'grouplessonDetailsDialog', template: '#grouplessonDetailsDialogTemplate', el: '#grouplessonDetailsDialog', class: 'GrouplessonDetailsDialog'},
-		generalDialog: {view: 'generalDialog', template: '#generalDialogTemplate', el: '#generalDialog', class: 'GeneralDialog'}
+		generalDialog: {view: 'generalDialog', template: '#generalDialogTemplate', el: '#generalDialog', class: 'GeneralDialog'},
+		passwordDialog: {view: 'passwordDialog', template: '#passwordDialogTemplate', el: '#passwordDialog', class: 'PasswordDialog'}
 	},
 
 	showMainScreenTeacherIndex: function() {
@@ -92,7 +94,14 @@ var moderator = {
 		}
 	},
 	reloadMainscreen: function() {
-		this.middleView.render();
+		if (this.middleView != "") {
+			this.middleView.render();
+		}
+	},
+	reloadSidebar: function() {
+		if (this.sidebarView != "") {
+			this.sidebarView.render();
+		}
 	},
 	showMainScreenTeacherSchedule: function(schedule){
 		if (this.scheduleView==="") {
@@ -112,7 +121,6 @@ var moderator = {
 			template: $("#teacherDetailsTemplate")
 			});
 		}
-		this.teacherDetailsView.model = (new Teacher());
 		this.setMiddle(this.teacherDetailsView);
 	},
 	showMainScreenStudentIndex: function() {
@@ -124,13 +132,29 @@ var moderator = {
 		}
 		this.setSidebar(this.studentsIndexView);
 	},
-	setMainScreenAddStudent: function() {
-		if (this.addStudentView==="") {
-			this.addStudentView = new AddStudentView({
-			template: $("#addStudentTemplate")
+	setMainScreenEditStudent: function(student) {
+		if (this.editStudentView==="") {
+			this.editStudentView = new EditStudentView({
+			template: $("#editStudentTemplate")
 			});
 		}
-		this.setMiddle(this.addStudentView);
+		this.editStudentView.student = undefined;
+		if (student !== undefined){
+			this.editStudentView.student = student;
+		}
+		this.setMiddle(this.editStudentView);
+	},
+	setMainScreenShowStudent: function(student){
+		if (this.showStudentView==="") {
+			this.showStudentView = new ShowStudentView({
+			template: $("#showStudentTemplate")
+			});
+		}
+		this.showStudentView.student = undefined;
+		if (student !== undefined){
+			this.showStudentView.student = student;
+		}
+		this.setMiddle(this.showStudentView);
 	},
 	showTeacherTeachingDropDown: function(x,y,scheduleViewItem) {
 		var teacherTeachingDropDownView = new TeacherTeachingDropDownView({

@@ -178,6 +178,56 @@ body {
     /* prevent horizontal scrollbar */
     overflow-x: hidden;
   }
-#studentDetails input[type="text"] {
-	width: 300px;
+input[type="text"], textarea, input[type="password"] {
+    /*display: block;*/
+    padding: 5px;
+    border: 3px solid $orangebackground;
+    border-radius: 5px;
+    color: #333;
+    transition: all 0.3s ease-out;
+    &:hover{
+    	border-radius: 8px;
+	}
+	&:focus{
+		outline: none;
+    	border-radius: 8px;
+    	border-color: #EBD292;
+	}
+}
+textarea {
+	width: 328px;
+	height: 70px;
+}
+ 
+input:focus::-webkit-input-placeholder { color:transparent; }
+input:focus:-moz-placeholder { color:transparent; }
+
+.timeInput {
+	width: 75px;
+}
+input[type=checkbox].niceCheckbox {
+	display:none;
+}
+
+input[type=checkbox].niceCheckbox + label.niceCheckboxLabel {
+	padding-left:20px;
+	height:15px; 
+	display:inline-block;
+	line-height:15px;
+	background-repeat:no-repeat;
+	background-position: 0 0;
+	font-size:15px;
+	vertical-align:middle;
+	cursor:pointer;
+}
+
+input[type=checkbox].niceCheckbox:checked + label.niceCheckboxLabel {
+	background-position: 0 -15px;
+}
+
+.niceCheckboxLabel{ background-image:url(http://csscheckbox.com/checkboxes/dark-check-orange.png); }
+
+#teacherDetails #timeTable td{
+	text-align:center;
+	width: 100px;
 }

@@ -202,20 +202,31 @@ var ScheduleView = Backbone.View.extend({
 		var numberOfDays = (endDate.getTime() - startDate.getTime())/(1000*60*60*24) + 1;
 		var teacher = this.collection.meta("teacher");
 		//console.log("teacher = ", teacher);
-		var duration = (teacher.get('endTimeHours')*60 + teacher.get('endTimeMinutes') - teacher.get('startTimeHours')*60 - teacher.get('startTimeMinutes'));
-
+		
 		for (var i = 0; i < numberOfDays ; i++) {
 			var teacherTeachingDate = new Date(startDate);
+			var duration;
+			var startTeachingHash;
+			var endTeachingHash;
+			var day;
+
 			teacherTeachingDate.add({days: i});
-			teacherTeachingDate.addHours(teacher.get('startTimeHours'));
-			teacherTeachingDate.addMinutes(teacher.get('startTimeMinutes'));
-			if ((teacherTeachingDate.is().monday() && teacher.get('teachingOnMonday') == true)
-				|| (teacherTeachingDate.is().tuesday() && teacher.get('teachingOnTuesday') == true)
-				|| (teacherTeachingDate.is().wednesday() && teacher.get('teachingOnWednesday') == true)
-				|| (teacherTeachingDate.is().thursday() && teacher.get('teachingOnThursday') == true)
-				|| (teacherTeachingDate.is().friday() && teacher.get('teachingOnFriday') == true)
-				|| (teacherTeachingDate.is().saturday() && teacher.get('teachingOnSaturday') == true)
-				|| (teacherTeachingDate.is().sunday() && teacher.get('teachingOnSunday') == true)) {
+			if (teacherTeachingDate.is().monday()) {day = "monday"}
+			if (teacherTeachingDate.is().tuesday()) {day = "tuesday"}
+			if (teacherTeachingDate.is().wednesday()){day = "wednesday"}
+			if (teacherTeachingDate.is().thursday()) {day = "thursday"}
+			if (teacherTeachingDate.is().friday()) {day = "friday"}
+			if (teacherTeachingDate.is().saturday()) {day = "saturday"}
+			if (teacherTeachingDate.is().sunday()) {day = "sunday"}
+
+			startTeachingHash = teacher.getTeachingTimeHash('start',day);
+			endTeachingHash = teacher.getTeachingTimeHash('end',day);
+			teacherTeachingDate.addHours(startTeachingHash.hours);
+			teacherTeachingDate.addMinutes(startTeachingHash.minutes);
+			duration = endTeachingHash.hours*60 + endTeachingHash.minutes - startTeachingHash.hours*60 - startTeachingHash.minutes
+			
+			
+			if (duration > 0) {
 				resultingTeacherTeachingHours.add(new TimeRange({"startTime": teacherTeachingDate, "duration" : duration, "type" : "teacherteaching"}));
 			}
 		};

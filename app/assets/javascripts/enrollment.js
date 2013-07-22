@@ -38,7 +38,7 @@ var EnrollmentDialogView = Backbone.View.extend({
 
 		enrollmentDialog.dialog({
 			autoOpen: true,
-			height: 300,
+			height: 400,
 			width: 450,
 			modal: true,
 			buttons:{
@@ -95,6 +95,7 @@ var EnrollmentDialogView = Backbone.View.extend({
 					var lesson = Lesson.prototype.parse(lessons[i]);
 					moderator.addLessonToActiveSchedule(lesson);
 				}
+				
 				moderator.reloadMainscreen();
 			},
 			error: function(model, response, options) {
@@ -112,7 +113,9 @@ var EnrollmentBoxView = Backbone.View.extend({
 		"click .enrollment": "showEnrollmentDropDown"
 	},
 	render: function(){
-		var argumentHash = {studentName: allStudents.get(this.options.enrollment.get('student_id')).getName};
+		var text = allStudents.get(this.options.enrollment.get('student_id')).getName();
+		if (this.options.labelWithTeacher){text = allTeachers.get(this.options.enrollment.get('teacher_id')).getName(); }
+		var argumentHash = {text: text};
 		argumentHash = _.extend(argumentHash, this.options.enrollment.toJSON());
 		$(this.el).html(Mustache.to_html(this.template.html(), argumentHash));
 	},
