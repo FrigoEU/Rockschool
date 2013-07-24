@@ -18,20 +18,20 @@ Period = Backbone.Model.extend({
 	},
 	parse: function (response) {
 		return {
-			beginDate: Date.parse(USDateToEU(response[0].startdate)),
-			endNormalEnrollmentsDate: Date.parse(USDateToEU(response[0].enddate)),
-			openingTimeHours: response[0].openinghours,
-			openingTimeMinutes: response[0].openingminutes,
-			closingTimeHours: response[0].closinghours,
-			closingTimeMinutes: response[0].closingminutes,
-			openOnMonday: response[0].open_on_monday,
-			openOnTuesday: response[0].open_on_tuesday,
-			openOnWednesday: response[0].open_on_wednesday,
-			openOnThursday: response[0].open_on_thursday,
-			openOnFriday: response[0].open_on_friday,	
-			openOnSaturday: response[0].open_on_saturday,
-			openOnSunday: response[0].open_on_sunday,
-			openForEnrollment: response[0].open_for_registration
+			beginDate: Date.parse(USDateToEU(response.startdate)),
+			endNormalEnrollmentsDate: Date.parse(USDateToEU(response.enddate)),
+			openingTimeHours: response.openinghours,
+			openingTimeMinutes: response.openingminutes,
+			closingTimeHours: response.closinghours,
+			closingTimeMinutes: response.closingminutes,
+			openOnMonday: response.open_on_monday,
+			openOnTuesday: response.open_on_tuesday,
+			openOnWednesday: response.open_on_wednesday,
+			openOnThursday: response.open_on_thursday,
+			openOnFriday: response.open_on_friday,	
+			openOnSaturday: response.open_on_saturday,
+			openOnSunday: response.open_on_sunday,
+			openForEnrollment: response.open_for_registration
 		};
 	},
 	getTime: function(open_close){
@@ -87,8 +87,19 @@ PeriodOptionsView = Backbone.View.extend({
 			openOnSunday: $(this.el).find('input#sunday').is(':checked'),
 			openForEnrollment: $(this.el).find('input[name=openForEnrollment]').is(':checked')
 		});
-		period.save();
-		moderator.setMainScreenOptions();
+		period.save(null,{
+			success:function(model, response, options){
+				moderator.setMainScreenOptions();
+				moderator.showDialog('generalDialog',{
+					title: "Periode opgeslagen",
+					text: "De periode die je hebt geregistreerd is succesvol opgeslagen. Deze periode is meteen actief."
+				})
+			},
+			error: function(model, response, options){
+				standardHTTPErrorHandling(model, response, options);
+			}
+		});
+		
 	}
 });
 

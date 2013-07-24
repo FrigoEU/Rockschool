@@ -1,7 +1,8 @@
 OptionsView = Backbone.View.extend({
 	events: {
 		"click #options-period" : "showPeriodOptions",
-		"click #lessonsSearch" : "showLessonsSearch"
+		"click #lessonsSearch" : "showLessonsSearch",
+		"click #enrollmentsSearch" : "showEnrollmentsSearch"
 	},
 	render: function() {
 		$(this.el).html(this.options.template);
@@ -13,6 +14,9 @@ OptionsView = Backbone.View.extend({
 	},
 	showLessonsSearch: function() {
 		moderator.showLessonsSearch();
+	},
+	showEnrollmentsSearch: function(){
+		moderator.showEnrollmentsSearch();
 	}
 });
 

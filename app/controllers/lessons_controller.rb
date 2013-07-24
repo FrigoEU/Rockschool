@@ -1,4 +1,5 @@
 class LessonsController < ApplicationController
+  include ApplicationHelper
   # GET /lessons
   # GET /lessons.json
   def index
@@ -11,9 +12,12 @@ class LessonsController < ApplicationController
     else
       @lessons = Lesson.all
     end
+    get_current_user
     @lessons.each  do 
       |lesson|
-      lesson.retrieve_virtual_attributes
+      authorized = lesson.authorized?(@current_user)
+      lesson.retrieve_virtual_attributes(authorized)
+      lesson.adapt_status_to_authorization(authorized)
     end
     respond_to do |format|
       format.html # index.html.erb
@@ -74,7 +78,10 @@ class LessonsController < ApplicationController
       teacher_id: @teacher_id,
       status: @status
       })
-        @lesson.retrieve_virtual_attributes
+        get_current_user
+        authorized = @lesson.authorized?(@current_user)
+        @lesson.retrieve_virtual_attributes(authorized)
+        @lesson.adapt_status_to_authorization(authorized)
         format.json { render json: @lesson.to_json }
       else
         format.json { render json: {:errors => @lesson.errors.full_messages}, status: :unprocessable_entity }

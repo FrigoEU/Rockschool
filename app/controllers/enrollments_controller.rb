@@ -1,4 +1,6 @@
 class EnrollmentsController < ApplicationController
+	include ApplicationHelper
+
 	def create
 		unless argumentok?(params, :lessongroup_id) || (argumentok?(params, :teacher) && argumentok?(params, :type) && argumentok?(params, :startTime) && argumentok?(params, :duration))
 			raise ArgumentException, "Enrollments need either an existing lessongroup or a teacher, type, starttime and duration"
@@ -36,7 +38,13 @@ class EnrollmentsController < ApplicationController
 				respond_to do |format|
 					if @enrollment.save
 						lessons = @lessongroup.lessons
-						lessons.each {|lesson|lesson.retrieve_virtual_attributes}
+						get_current_user
+						lessons.each  do 
+						  |lesson|
+						  authorized = lesson.authorized?(@current_user)
+						  lesson.retrieve_virtual_attributes(authorized)
+						  lesson.adapt_status_to_authorization(authorized)
+						end
 						format.json { render json: {:enrollment => @enrollment, :lessongroup => @lessongroup, :lessons => lessons}, status: :created }
 					else
 						format.json { render json: @enrollment.errors, status: :unprocessable_entity }	
@@ -68,6 +76,17 @@ class EnrollmentsController < ApplicationController
 			@enrollments.each{|enrollment|enrollment.retrieve_virtual_attributes}
 			respond_to do |format|
 		      format.html 
+		      format.json { render json: @enrollments.to_json }
+		    end
+		end
+		if params.has_key?(:inquirystatus) && (params[:inquirystatus] == "unpaid" || params[:inquirystatus] == "unapproved")
+			if params[:inquirystatus] == "unpaid"		
+				@enrollments = Enrollment.where('paid = ?', false)
+			elsif params[:inquirystatus] == "unapproved"
+				@enrollments = Enrollment.where('approved = ?', false)
+			end
+			@enrollments.each{|enrollment|enrollment.retrieve_virtual_attributes}
+			respond_to do |format|
 		      format.json { render json: @enrollments.to_json }
 		    end
 		end

@@ -255,7 +255,10 @@ var ScheduleView = Backbone.View.extend({
 	showLessonDropDown: function(event) {
 		var scheduleViewItem = this.itemsArray[$(event.target).data('id')];
 
-		moderator.showLessonDropDown(event.pageX, event.pageY, scheduleViewItem.content);
+		//Ik gebruik hier status om te zien of de user geauthoriseerd is om de les te zien. Is volgens mij niet zo proper...
+		if (scheduleViewItem.content.get("status")){
+			moderator.showLessonDropDown(event.pageX, event.pageY, scheduleViewItem.content);	
+		}
 	},
 	navigateToPreviousWeek: function(event){
 		var startDate = this.collection.meta("startDate");

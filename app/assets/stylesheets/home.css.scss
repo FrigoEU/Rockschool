@@ -11,8 +11,8 @@ $lessonabsentokcolor: darkgray;
 $lessonabsentnokcolor: brown;
 $lessondonecolor: blue;
 $lessonabsentreqcolor: purple;
-$schedulecolumnwidth: 135px;
-$schedulelineheight: 1.3;
+$schedulecolumnwidth: 147px;
+$schedulelineheight: 32px;
 $darkgraybackground: #333333 url(images/ui-bg_dots-small_20_333333_2x2.png) 50% 50% repeat;
 $schedulecellheight: 4px;
 $standardborderradius: 5px;
@@ -45,6 +45,7 @@ body {
 	position: absolute;
 	left: 225px;
 	top: 100px;
+	overflow:auto;
 } 
 #lessenrooster th {
 	border: 1px solid blue;
@@ -64,16 +65,19 @@ body {
 }
 .lessonbox {
 	width: $schedulecolumnwidth;
-	height: $schedulecellheight*5;
+	height: $schedulelineheight;
 	font-family: Verdana,Arial,sans-serif;
 	text-align: center;
 	cursor: pointer;
 	background-color: $lessonabsentokcolor;
-	padding: .4em 1em;
 	border-radius: $standardborderradius;
 	display: block;
 	margin: 4px;
 	font-size: 13px;
+	overflow:hidden;
+	text-overflow:ellipsis;
+	border-width: 2px;
+	line-height:$schedulelineheight;
 }
 .enrollment {
 	background-color: $orangebackground;
@@ -85,7 +89,6 @@ body {
 	width: $schedulecolumnwidth;
 	height: $schedulecellheight;
 	font-family: Verdana,Arial,sans-serif;
-	line-height: $schedulelineheight; //!!!!!!!!!!!!
 }
 #lessenrooster td.timeindication {
 	visibility: hidden;
@@ -125,6 +128,12 @@ body {
 #lessenrooster td.lesson {
 	text-align: center;
 	cursor: pointer;
+	overflow:hidden;
+	text-overflow:ellipsis
+}
+#lessenrooster td.lesson-null {
+	text-align: center;
+	cursor: auto;
 }
 .lesson-created {
 	color: brown;
@@ -162,6 +171,7 @@ body {
 #dropDown .ui-menu {
 	line-height: 1;
 	font-size: 1em;
+	cursor:pointer;
 	.ui-widget {
 		width: 150px;
 	}
@@ -171,6 +181,10 @@ body {
 }
 .ui-dialog {
 	
+}
+.ui-button{
+	border-width: 5px;
+	border-color: $orangebackground;
 }
 .ui-autocomplete {
     max-height: 100px;

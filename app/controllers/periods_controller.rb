@@ -4,7 +4,7 @@ class PeriodsController < ApplicationController
     include PeriodsHelper
 	def index
 		if params[:active] == "true"
-  			@activePeriod = Period.where({active: true})
+  			@activePeriod = Period.where({active: true}).first
   		end 
   		respond_to do |format|
       		format.html # index.html.erb

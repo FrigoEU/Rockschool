@@ -140,15 +140,9 @@ var ShowStudentView = Backbone.View.extend({
 			data: {'student_id': this.student.id},
 			success: function(model, response, options){
 				var enrollmentsDiv = $(self.el).find('#enrollments');
-				_.each(model.models, function(value, key, list){
-					var singleEnrollmentDiv = $('<div></div>');
-					enrollmentsDiv.append(singleEnrollmentDiv);
-					var enrollmentBox = new EnrollmentBoxView({
-						enrollment: value,
-						el: singleEnrollmentDiv,
-						labelWithTeacher: true
-					});
-					enrollmentBox.render();
+				model.renderInto({
+					el: enrollmentsDiv,
+					label: "teacherName"
 				});
 			}
 		});

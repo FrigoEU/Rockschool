@@ -84,15 +84,10 @@ var GrouplessonDetailsDialog = Backbone.View.extend({
 		}));
 		this.setElement($('#' + this.id));
 		var enrollmentsDiv = $(this.el).find('#enrollments');
-		_.each(this.collection.models, function(value, key, list){
-			var singleEnrollmentDiv = $('<div></div>');
-			enrollmentsDiv.append(singleEnrollmentDiv);
-			var enrollmentBox = new EnrollmentBoxView({
-				enrollment: value,
-				el: singleEnrollmentDiv
-			});
-			enrollmentBox.render();
-		});
+		this.collection.renderInto({
+			el: enrollmentsDiv,
+			label: "studentName"
+		})
 		
 		var grouplessonDetailsDialog = $('#'+this.id);
 		this.setElement(grouplessonDetailsDialog);

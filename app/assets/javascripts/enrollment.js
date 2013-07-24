@@ -11,7 +11,21 @@ var Enrollment = Backbone.Model.extend({
 });
 var Enrollments = Backbone.Collection.extend({
 	model: Enrollment,
-	url: "/enrollments"
+	url: "/enrollments",
+	renderInto:function(options){
+		var el = options.el;
+		var label = options.label;
+		_.each(this.models, function(value, key, list){
+			var singleEnrollmentDiv = $('<div></div>');
+			el.append(singleEnrollmentDiv);
+			var enrollmentBox = new EnrollmentBoxView({
+				enrollment: value,
+				el: singleEnrollmentDiv,
+				label: label
+			});
+			enrollmentBox.render();
+		});
+	}
 });
 
 var EnrollmentDialogView = Backbone.View.extend({
@@ -113,8 +127,15 @@ var EnrollmentBoxView = Backbone.View.extend({
 		"click .enrollment": "showEnrollmentDropDown"
 	},
 	render: function(){
-		var text = allStudents.get(this.options.enrollment.get('student_id')).getName();
-		if (this.options.labelWithTeacher){text = allTeachers.get(this.options.enrollment.get('teacher_id')).getName(); }
+		var text;
+		switch (this.options.label){
+			case "studentName":
+				text = allStudents.get(this.options.enrollment.get('student_id')).getName();
+			break;
+			case "teacherName":
+				text = allTeachers.get(this.options.enrollment.get('teacher_id')).getName();
+			break;
+		}
 		var argumentHash = {text: text};
 		argumentHash = _.extend(argumentHash, this.options.enrollment.toJSON());
 		$(this.el).html(Mustache.to_html(this.template.html(), argumentHash));
@@ -161,6 +182,8 @@ var EnrollmentActions = {
 		}
 	}
 };
+var EnrollmentsSearchStatussesArray = [{key: "unpaid", name: "Onbetaald"}, {key: "unapproved", name:"Nog niet goedgekeurd"}];
+
 var EnrollmentDropDownView = DropDownView.extend({
 	initialize: function(){
 		this.template = $('#enrollmentDropDownTemplate');
@@ -169,21 +192,24 @@ var EnrollmentDropDownView = DropDownView.extend({
 		"click .status": "changeStatus",
 	},
 	renderInnerHTML: function(){
-		var choices = [EnrollmentActions.removeenrollment];
+		if (current_user_role == "admin") {
+			var choices = [EnrollmentActions.removeenrollment];
 		
-		if (this.options.enrollment.get('approved') == false){
-			choices.push(EnrollmentActions.accept);
-			choices.push(EnrollmentActions.reject);
-			_.each(choices, function(value, key, list){
-					if (list[key] == EnrollmentActions.removeenrollment){list.splice(key, 1);}
-				})
+			if (this.options.enrollment.get('approved') == false){
+				choices.push(EnrollmentActions.accept);
+				choices.push(EnrollmentActions.reject);
+				_.each(choices, function(value, key, list){
+						if (list[key] == EnrollmentActions.removeenrollment){list.splice(key, 1);}
+					})
+			}
+			else if (this.options.enrollment.get('paid') == false){choices.unshift(EnrollmentActions.pay);}
 		}
-		else if (this.options.enrollment.get('paid') == false){choices.unshift(EnrollmentActions.pay);}
 		
 		var argumentHash= {
 			student: allStudents.get(this.options.enrollment.get("student_id")).toJSON(),
 			teacher: allTeachers.get(this.options.enrollment.get("teacher_id")).toJSON(),
 			datetime: this.options.enrollment.get('startTime').toString("dddd, HH:mm"),
+			choicesmenu: (choices.length > 0),
 			choices: choices
 		};
 		argumentHash = _.extend(argumentHash, this.options.enrollment.toJSON());
@@ -193,5 +219,39 @@ var EnrollmentDropDownView = DropDownView.extend({
 		var enrollmentAction = EnrollmentActions[$(e.target).data("key")];
 		var self = this;
 		enrollmentAction.func.apply(this.options.enrollment, [function(){self.options.originatingView.render();}]);
+	}
+});
+var EnrollmentsSearchView = Backbone.View.extend({
+	initialize: function () {
+
+	},
+	events: {
+		"click input[type=radio]": "searchEnrollments"
+	},
+	render: function(){
+		//To Do: map lessons naar array van hashes met oa. student name in!!
+		$(this.el).html(Mustache.to_html(this.options.template.html(),{statusses: EnrollmentsSearchStatussesArray}));
+		$(this.el).find("#statusses").buttonset();
+		$(this.el).find("#enrollments").remove(); 
+		$(this.el).find('#searchScreen').append('<div id="enrollments"></div>');
+		this.collection.renderInto({ 
+			el: $(this.el).find('#enrollments'),
+			label: "studentName"
+		});
+		return this;
+	},
+	searchEnrollments: function(event){
+		var status = event.currentTarget.value;
+		console.log("status = ", status);
+		var self = this;
+		this.collection.fetch({
+			data: {'inquirystatus': status},
+			success: function(model, response, options){
+				self.render();
+			},
+			error: function(model, response, options){
+				standardHTTPErrorHandling(model, response, options);
+			}
+		});
 	}
 });

@@ -11,6 +11,7 @@ var moderator = {
 	enrollmentDialogView: "",
 	periodOptionsView: "",
 	lessonsSearchView: "",
+	enrollmentsSearchView: "",
 	loginView: "",
 	DIALOGS: {
 		enrollmentDialog: {view: 'enrollmentDialogView', template: '#enrollmentDialogTemplate', el: '#enrollmentDialog', class: 'EnrollmentDialogView'},
@@ -64,6 +65,18 @@ var moderator = {
 			this.lessonsSearchView.collection = new Lessons();
 		}
 		this.setMiddle(lessonsSearchView);
+	},
+	showEnrollmentsSearch: function(){
+		if(this.enrollmentsSearchView==="") {
+			enrollmentsSearchView = new EnrollmentsSearchView({
+				template: $("#enrollmentsSearchTemplate"),
+				collection: new Enrollments()
+			});
+		}
+		else {
+			this.enrollmentsSearchView.collection = new Enrollments();
+		}
+		this.setMiddle(enrollmentsSearchView);
 	},
 	setMainScreenTeacherSchedule: function (teacher, date1, date2) {
 		var firstDateForServer;

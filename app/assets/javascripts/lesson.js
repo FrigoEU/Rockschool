@@ -61,14 +61,14 @@ var LessonActions = {
 };
 LessonActions = _.extend(LessonActions, EnrollmentActions);
 var LessonStatusses = {
-	open: {key:"open", name: "Open", possibleActions: [LessonActions.absentreq, LessonActions.absentok, LessonActions.absentnok, LessonActions.done, LessonActions.removeenrollment]},
-	done: {key: "done", name: "Les OK", possibleActions: [LessonActions.open]},
-	absentreq: {key: "absentreq", name: "Afwezigheid aangevraagd", possibleActions: [LessonActions.absentok, LessonActions.absentnok]},
-	absentok: {key: "absentok", name: "Wettelijk afwezig", possibleActions: [LessonActions.open, LessonActions.done]},
-	absentnok: {key: "absentnok", name: "Afwezig", possibleActions: [LessonActions.open, LessonActions.done]}
+	open: {key:"open", name: "Open", studentPossibleActions:[LessonActions.absentreq], adminPossibleActions: [LessonActions.absentreq, LessonActions.absentok, LessonActions.absentnok, LessonActions.done, LessonActions.removeenrollment]},
+	done: {key: "done", name: "Les OK", studentPossibleActions:[], adminPossibleActions: [LessonActions.open]},
+	absentreq: {key: "absentreq", name: "Afwezigheid aangevraagd", studentPossibleActions:[], adminPossibleActions: [LessonActions.absentok, LessonActions.absentnok]},
+	absentok: {key: "absentok", name: "Wettelijk afwezig", studentPossibleActions:[], adminPossibleActions: [LessonActions.open, LessonActions.done]},
+	absentnok: {key: "absentnok", name: "Afwezig", studentPossibleActions:[], adminPossibleActions: [LessonActions.open, LessonActions.done]}
 };
 //Kan dit niet beter?
-var LessonStatussesArray = [LessonStatusses.done, LessonStatusses.absentreq, LessonStatusses.absentok, LessonStatusses.absentnok];
+var LessonsSearchStatussesArray = [LessonStatusses.done, LessonStatusses.absentreq, LessonStatusses.absentok, LessonStatusses.absentnok];
 
 var LessonDropDownView = DropDownView.extend({
 	initialize: function () {
@@ -87,20 +87,22 @@ var LessonDropDownView = DropDownView.extend({
 			this.template = $("#lessonDropDownTemplate");
 			var choicesArray =[];
 			// Haal keuzes op die horen bij status van les
-			choicesArray = _.clone(LessonStatusses[this.options.lesson.get('status')].possibleActions);
+			choicesArray = _.clone(LessonStatusses[this.options.lesson.get('status')][current_user_role + 'PossibleActions']);
 
 			//Voeg keuzes bij die horen bij status van enrollment
-			if (this.options.lesson.get('approved') === false){
-				choicesArray.push(LessonActions.accept);
-				choicesArray.push(LessonActions.reject);
-				_.each(choicesArray, function(value, key, list){
-					if (list[key] == LessonActions.removeenrollment){
-						list.splice(key, 1);
-					}
-				})
-			}
-			else if (this.options.lesson.get('paid') === false) {
-				choicesArray.push(LessonActions.pay);
+			if (current_user_role == "admin"){
+				if (this.options.lesson.get('approved') === false){
+					choicesArray.push(LessonActions.accept);
+					choicesArray.push(LessonActions.reject);
+					_.each(choicesArray, function(value, key, list){
+						if (list[key] == LessonActions.removeenrollment){
+							list.splice(key, 1);
+						}
+					});
+				}
+				else if (this.options.lesson.get('paid') === false) {
+					choicesArray.push(LessonActions.pay);
+				}
 			}
 
 			var argumentHash = {
@@ -108,6 +110,7 @@ var LessonDropDownView = DropDownView.extend({
 				teacher: allTeachers.get(this.options.lesson.get("teacher")).toJSON(),
 				datetime: this.options.lesson.get('startTime').toString("ddd dd MMM yyyy, HH:mm"),
 				status: this.options.lesson.statusToDutch(),
+				choicesmenu: (choicesArray.length > 0),
 				choices: choicesArray
 			};
 			return Mustache.render(this.template.html(),argumentHash);
@@ -159,17 +162,17 @@ var LessonsSearchView = Backbone.View.extend({
 
 	},
 	events: {
-		"click .searchButton": "searchLessons",
+		"click input[type=radio]": "searchLessons",
 		"click .lessonbox": "showDropdown"
 	},
 	render: function(){
 		//To Do: map lessons naar array van hashes met oa. student name in!!
-		$(this.el).html(Mustache.to_html(this.options.template.html(),{statusses: LessonStatussesArray, lessons: this.collection.models}));
-		$(this.el).find("button.searchButton").button();
+		$(this.el).html(Mustache.to_html(this.options.template.html(),{statusses: LessonsSearchStatussesArray, lessons: this.collection.models}));
+		$(this.el).find("#statusses").buttonset();
 		return this;
 	},
 	searchLessons: function(event){
-		var status = this.$el.find("select").val();
+		var status = event.currentTarget.value;
 		console.log("status = ", status);
 		var self = this;
 		this.collection.fetch({
