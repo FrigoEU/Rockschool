@@ -33,6 +33,11 @@ Period = Backbone.Model.extend({
 			openOnSunday: response[0].open_on_sunday,
 			openForEnrollment: response[0].open_for_registration
 		};
+	},
+	getTime: function(open_close){
+		var key = open_close;
+		if (open_close == 'close'){key = 'clos'}
+		return pad(this.get(key + 'ingTimeHours'),2) + ":" + pad(this.get(key + 'ingTimeMinutes'), 2);
 	}
 });
 

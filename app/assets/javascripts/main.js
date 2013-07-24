@@ -33,7 +33,7 @@ main = function() {
 		logout();
 	});
 	$("nav #signup").on("click", function (event) {
-		moderator.setMainScreenAddStudent();
+		moderator.setMainScreenEditStudent();
 	});
 	$.fn.outside = function(ename, cb){
 		return this.each(function(){

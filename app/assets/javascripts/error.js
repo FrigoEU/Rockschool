@@ -35,3 +35,11 @@ var standardHTTPErrorHandling = function(model, response, options){
 		text: 'Fout: ' + errors
 	});}
 }
+var standardValidationErrorHandling = function(model){
+	if (model.validationError !== undefined){
+		moderator.showDialog('generalDialog', {
+				title: "Fout",
+				text:model.validationError
+			});
+	}
+}

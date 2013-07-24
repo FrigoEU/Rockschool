@@ -75,30 +75,73 @@
 		<div id="teacherDetails" class="configScreen">
 			<h3>Gegevens leraar:</h3>
 			<form>
-				<h2>Naam:</h2>
-				<input type="text" name="name" value="{{name}}"><br>
-				<h2>Tijdstip start lessen:</h2>
-				<input type="text" name="startTime" value="{{startTime}}"><br>
-				<h2>Tijdstip einde lessen:</h2>
-				<input type="text" name="endTime" value="{{endTime}}"><br>
+				<table>
+					<tr><td><label for="name">Naam:</label></td><td><label for="courses">Vakken:</label></td></tr>
+					<tr>
+						<td><input type="text" name="name" placeholder="Naam" value="{{teacherName}}"/></td>
+						<td><input type="text" name="courses" placeholder="Gitaar, Zang" value="{{teacherCourses}}"/></td>
+					</tr>
+				</table>
+				<label for="bio">Details:</label><br>
+				<textarea name="bio"></textarea>
+				
 				<h2>Lesdagen</h2>
-				<input type="checkbox" name="daysOpen" id="monday" {{#monday}}checked{{/monday}} > Maandag
-				<input type="checkbox" name="daysOpen" id="tuesday" {{#tuesday}}checked{{/tuesday}} > Dinsdag
-				<input type="checkbox" name="daysOpen" id="wednesday" {{#wednesday}}checked{{/wednesday}} > Woensdag
-				<input type="checkbox" name="daysOpen" id="thursday" {{#thursday}}checked{{/thursday}} > Donderdag
-				<input type="checkbox" name="daysOpen" id="friday" {{#friday}}checked{{/friday}} > Vrijdag
-				<input type="checkbox" name="daysOpen" id="saturday" {{#saturday}}checked{{/saturday}} > Zaterdag
-				<input type="checkbox" name="daysOpen" id="sunday" {{#sunday}}checked{{/sunday}} > Zondag
-				<br>
+				<table id="timeTable">
+					<tr>
+						<th>Maandag</th>
+						<th>Dinsdag</th>
+						<th>Woensdag</th>
+						<th>Donderdag</th>
+						<th>Vrijdag</th>
+						<th>Zaterdag</th>
+						<th>Zondag</th>
+					</tr>
+					<tr class="checkboxes">
+						<td><div><input type="checkbox" class="niceCheckbox" id="Monday" name="monday" {{#mondayTeaching}}checked{{/mondayTeaching}}/>
+							<label class = "niceCheckboxLabel" for="Monday"></label></div></td>
+						<td><div><input type="checkbox" class="niceCheckbox" id="Tuesday" name="tuesday" {{#tuesdayTeaching}}checked{{/tuesdayTeaching}}/>
+							<label class = "niceCheckboxLabel" for="Tuesday"></label></div></td>
+						<td><div><input type="checkbox" class="niceCheckbox" id="Wednesday" name="wednesday" {{#wednesdayTeaching}}checked{{/wednesdayTeaching}}/>
+							<label class = "niceCheckboxLabel" for="Wednesday"></label></div></td>
+						<td><div><input type="checkbox" class="niceCheckbox" id="Thursday" name="thursday" {{#thursdayTeaching}}checked{{/thursdayTeaching}}/>
+							<label class = "niceCheckboxLabel" for="Thursday"></label></div></td>
+						<td><div><input type="checkbox" class="niceCheckbox" id="Friday" name="friday" {{#fridayTeaching}}checked{{/fridayTeaching}}/>
+							<label class = "niceCheckboxLabel" for="Friday"></label></div></td>
+						<td><div><input type="checkbox" class="niceCheckbox" id="Saturday" name="saturday" {{#saturdayTeaching}}checked{{/saturdayTeaching}}/>
+							<label class = "niceCheckboxLabel" for="Saturday"></label></div></td>
+						<td><div><input type="checkbox" class="niceCheckbox" id="Sunday" name="sunday" {{#sundayTeaching}}checked{{/sundayTeaching}}/>
+							<label class = "niceCheckboxLabel" for="Sunday"></label></div></td>
+					</tr>
+					<tr>
+						<td><input type="text" class="timeInput timeInputMonday" id="start_hours_monday" placeholder="{{periodOpenTime}}" value="{{mondayStartTime}}" {{^mondayTeaching}}hidden{{/mondayTeaching}}></td>
+						<td><input type="text" class="timeInput timeInputTuesday" id="start_hours_tuesday" placeholder="{{periodOpenTime}}" value="{{tuesdayStartTime}}" {{^tuesdayTeaching}}hidden{{/tuesdayTeaching}}></td>
+						<td><input type="text" class="timeInput timeInputWednesday" id="start_hours_wednesday" placeholder="{{periodOpenTime}}" value="{{wednesdayStartTime}}" {{^wednesdayTeaching}}hidden{{/wednesdayTeaching}}></td>
+						<td><input type="text" class="timeInput timeInputThursday" id="start_hours_thursday" placeholder="{{periodOpenTime}}" value="{{thursdayStartTime}}" {{^thursdayTeaching}}hidden{{/thursdayTeaching}}></td>
+						<td><input type="text" class="timeInput timeInputFriday" id="start_hours_friday" placeholder="{{periodOpenTime}}" value="{{fridayStartTime}}" {{^fridayTeaching}}hidden{{/fridayTeaching}}></td>
+						<td><input type="text" class="timeInput timeInputSaturday" id="start_hours_saturday" placeholder="{{periodOpenTime}}" value="{{saturdayStartTime}}" {{^saturdayTeaching}}hidden{{/saturdayTeaching}}></td>
+						<td><input type="text" class="timeInput timeInputSunday" id="start_hours_sunday" placeholder="{{periodOpenTime}}" value="{{sundayStartTime}}" {{^sundayTeaching}}hidden{{/sundayTeaching}}></td>
+					</tr>
+					<tr>
+						<td><input type="text" class="timeInput timeInputMonday" id="end_hours_monday" placeholder="{{periodCloseTime}}" value="{{mondayEndTime}}" {{^mondayTeaching}}hidden{{/mondayTeaching}}></td>
+						<td><input type="text" class="timeInput timeInputTuesday" id="end_hours_tuesday" placeholder="{{periodCloseTime}}" value="{{tuesdayEndTime}}" {{^tuesdayTeaching}}hidden{{/tuesdayTeaching}}></td>
+						<td><input type="text" class="timeInput timeInputWednesday" id="end_hours_wednesday" placeholder="{{periodCloseTime}}" value="{{wednesdayEndTime}}" {{^wednesdayTeaching}}hidden{{/wednesdayTeaching}}></td>
+						<td><input type="text" class="timeInput timeInputThursday" id="end_hours_thursday" placeholder="{{periodCloseTime}}" value="{{thursdayEndTime}}"  {{^thursdayTeaching}}hidden{{/thursdayTeaching}}></td>
+						<td><input type="text" class="timeInput timeInputFriday" id="end_hours_friday" placeholder="{{periodCloseTime}}" value="{{fridayEndTime}}"  {{^fridayTeaching}}hidden{{/fridayTeaching}}></td>
+						<td><input type="text" class="timeInput timeInputSaturday" id="end_hours_saturday" placeholder="{{periodCloseTime}}" value="{{saturdayEndTime}}" {{^saturdayTeaching}}hidden{{/saturdayTeaching}}></td>
+						<td><input type="text" class="timeInput timeInputSunday" id="end_hours_sunday" placeholder="{{periodCloseTime}}" value="{{sundayEndTime}}" {{^sundayTeaching}}hidden{{/sundayTeaching}}></td>
+					</tr>
+
+				</table>
 				<button class="submitButton">Opslaan</button>
 			</form>
 		</div>
 	</script>
-	<script type="text/template" class="template" id="addStudentTemplate">
-		<div id="studentDetails" class = "configScreen">
-			<h3>Gegevens nieuwe registratie:</h3>
+	<script type="text/template" class="template" id="editStudentTemplate">
+		<div id="editStudent" class = "configScreen">
+			<h3>Gegevens:</h3>
 			<form>
 				<table>
+<<<<<<< HEAD
 					<tr><td><label for="firstname">Voornaam:</label></td><td><input type="text" name="firstname"</td></tr>
 					<tr><td><label for="lastname">Achternaam:</label></td><td><input type="text" name="lastname"</td></tr>
 					<tr><td><label for="phone">Telefoonnummer:</label></td><td><input type="text" name="phone"><br></tr></td>
@@ -107,10 +150,57 @@
 					<tr><td><label for="email">E-mail:</label></td><td><input type="text" name="email"><br></tr></td>
 					<tr><td></td><td><input type="checkbox" name="mail_student" checked>Confirmatiemail?</td></tr>
 					<tr><td></td><td><button class="submitButton">Voer registratie uit</button></tr></td>
+=======
+					<tr>
+						<td><label for="firstname">Voornaam:</label></td>
+						<td><label for="lastname">Achternaam:</label></td>					
+					</tr>
+					<tr>
+						<td><input type="text" name="firstname" value = "{{firstname}}" placeholder= "Voornaam"></td>
+						<td><input type="text" name="lastname" value = "{{lastname}}" placeholder="Achternaam"></td>
+					</tr>
+					<tr>
+						<td><label for="address1">Adres:</label></td>
+						<td></td>						
+					</tr>
+					<tr>
+						<td><input type="text" name="address1" value = "{{address1}}" placeholder="Voorbeeld Adreslijn 1"></td>
+						<td><input type="text" name="address2" value = "{{address2}}" placeholder="Voorbeeld Adreslijn 2"></td>
+					</tr>
+					<tr>
+						<td><label for="phone">Telefoonnummer:</label></td>
+						<td><label for="email">E-mail:</label></td>
+					</tr>
+					<tr>
+						<td><input type="text" name="phone" value = "{{phone}}" placeholder="0496 12 34 56"></td>
+						<td><input type="text" name="email" value = "{{email}}" placeholder="voorbeeld@rockschool.be"></td>
+					</tr>
+				</table>
+				<table>
+					<tr><td><button class="submitButton">Registreren</button></td>
+					<td> <% if @current_user.isAdmin || @current_user.isStudent %> <button class="passwordButton">Paswoord aanpassen</button> <% end %> </td>
+					</tr>
+>>>>>>> 94277a1187155779f4cf52639b470eb5b1c66303
 				</table>
 			</form>
-		<div>
+		</div>
 	</script>
+	<script type="text/template" class="template" id="showStudentTemplate">
+		<div id="showStudent" class = "configScreen">
+			<h3>Gegevens:</h3>
+			<table>
+				<tr><td>Voornaam:</td><td>{{firstname}}</td></tr>
+				<tr><td>Achternaam:</td><td>{{lastname}}</td></tr>
+				<tr><td>Telefoonnummer:</td><td>{{phone}}</td></tr>
+				<tr><td>Adres:</td><td>{{address1}}</td></tr>
+				<tr><td></td><td>{{address2}}</td></tr>
+				<tr><td>E-mail:</td><td>{{email}}</td></tr>
+				<tr><td><button class="editButton">Aanpassen</button></td><td></td></tr>
+			</table>
+			<div id="enrollments"></div>
+		</div>
+	</script>
+
 
 	<script type="text/template" class="template" id="teacherTeachingDropDownTemplate">
 		<ul class="menu">
@@ -130,7 +220,7 @@
 	</script>
 	<script type="text/template" class="template" id="lessonDropDownTemplate">
 		<ul class="menu">
-			<li><a href= "#">Student: {{student.getName}}</a></li>
+			<li><a href= "#">Student: {{studentName}}</a></li>
 			<li><a href= "#">Leeraar: {{teacher.name}}</a></li>
 			<li><a href= "#">Tijdstip: {{datetime}}</a></li>
 			<li><a href= "#">Status: {{status}}</a>
@@ -169,7 +259,7 @@
 		  		<table>
 		  			<tr>
 		  				<% if @current_user.isAdmin || @current_user.isTeacher %>
-		  				<td><label for="studentsSelect">Student:</label></td><td><input id="studentsSelect"/></td>
+		  				<td><label for="studentsSelect">Student:</label></td><td><input type="text" id="studentsSelect"/></td>
 		  				<%elsif @current_user.isStudent %>
 		  				<td>Student:</td><td id="studentName">{{studentName}}</td>
 		  				<% end %>
@@ -253,7 +343,7 @@
 		</div>
 	</script>
 	<script type="text/template" class="template" id="enrollmentBoxTemplate">
-		<span class="enrollment lessonbox {{^approved}}unapprovedenrollment{{/approved}} {{#approved}}{{^paid}}unpaidenrollment{{/paid}}{{/approved}}">{{studentName}}</span>
+		<span class="enrollment lessonbox {{^approved}}unapprovedenrollment{{/approved}} {{#approved}}{{^paid}}unpaidenrollment{{/paid}}{{/approved}}">{{text}}</span>
 	</script>
 
 	<script type="text/template" class="template" id="loginViewTemplate">
@@ -308,6 +398,15 @@
 		  	<form>
 		  	{{text}}
 		  	</form>
+		</div>
+	</script>
+	<script type="text/template" class="template" id="passwordDialogTemplate">
+		<div id="passwordDialog" title="Paswoord veranderen">
+		  	{{text}}<br>
+		  	<label for="password">Vul hier je nieuwe paswoord in (minimum 6 karakters):</label><br>
+		  	<input type="password" name="password"/><br>
+		  	<label for="password_confirmation">Vul hier nogmaals je nieuwe paswoord in:</label><br>
+		  	<input type="password" name="password_confirmation"/><br>
 		</div>
 	</script>
 	<script>

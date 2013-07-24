@@ -6,15 +6,17 @@ class StudentsController < ApplicationController
     get_current_user
     if @current_user.isAdmin
       @students = Student.all
+      @students.each{ |student| student.retrieve_virtual_attributes}
     elsif @current_user.isTeacher
       teacher = Teacher.find(@current_user.role_id)
       @students = teacher.lessongroups.students
+      @students.each{ |student| student.retrieve_virtual_attributes}
     elsif @current_user.isStudent
       @students = Student.find(@current_user.role_id)
+      @students.retrieve_virtual_attributes
     end
 
     respond_to do |format|
-      format.html # index.html.erb
       format.json { render json: @students }
     end
   end
@@ -25,37 +27,13 @@ class StudentsController < ApplicationController
     @student = Student.find(params[:id])
 
     respond_to do |format|
-      format.html # show.html.erb
       format.json { render json: @student }
     end
-  end
-
-  # GET /students/new
-  # GET /students/new.json
-  def new
-    @student = Student.new
-
-    respond_to do |format|
-      format.html # new.html.erb
-      format.json { render json: @student }
-    end
-  end
-
-  # GET /students/1/edit
-  def edit
-    @student = Student.find(params[:id])
   end
 
   # POST /students
   # POST /students.json
   def create
-    @student = Student.new({
-      firstname: params[:firstname],
-      lastname: params[:lastname], 
-      phone: params[:phone], 
-      address1: params[:address1], 
-      address2: params[:address2]
-      })
 
     if params.has_key?(:email) #&& params[:create_user] == true
       @user = User.new({
@@ -71,7 +49,17 @@ class StudentsController < ApplicationController
     end
     respond_to do |format|
       if @user.save
+        @student = Student.new({
+          firstname: params[:firstname],
+          lastname: params[:lastname], 
+          phone: params[:phone], 
+          address1: params[:address1], 
+          address2: params[:address2],
+          user_id: @user.id
+        })
         if @student.save
+          @student.retrieve_virtual_attributes
+          @student.new_user = true
           format.json { render json: @student, status: :created, location: @student }
           @user.role_id = @student.id
           @user.save
@@ -87,17 +75,47 @@ class StudentsController < ApplicationController
 
   # PUT /students/1
   # PUT /students/1.json
-  def update
+  def update 
     @student = Student.find(params[:id])
+    @madeNewUser = false
 
-    respond_to do |format|
-      if @student.update_attributes(params[:student])
-        format.html { redirect_to @student, notice: 'Student was successfully updated.' }
-        format.json { head :no_content }
+    if params.has_key?(:email) && params[:email] != @student.user.email
+ 
+      @newUser = User.new({
+        email: params[:email],
+        password: "rockschool",
+        password_confirmation: "rockschool",
+        role: "student", 
+        role_id: @student.id
+        })
+
+      if @newUser.save
+        get_current_user
+        if @current_user.isStudent
+          cookies.delete(:remember_token)
+          cookies.permanent[:remember_token] = @newUser.remember_token
+          @student.new_user = true
+        end
+        @student.user.destroy
+        params[:student][:user_id] = @newUser.id
+        @madeNewUser = true
       else
-        format.html { render action: "edit" }
-        format.json { render json: @student.errors, status: :unprocessable_entity }
+        respond_to do |format|
+          format.json { render json: {errors: @newUser.errors.full_messages}, status: :unprocessable_entity }
+        end
       end
+    end
+
+    if @student.update_attributes(params[:student])
+      @student.retrieve_virtual_attributes
+      if @madeNewUser 
+        @student.new_user = true
+      end
+      respond_to do |format|
+        format.json {  render json: @student }
+      end
+    else
+      format.json { render json: {errors: @student.errors.full_messages}, status: :unprocessable_entity }
     end
   end
 
