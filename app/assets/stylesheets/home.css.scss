@@ -245,3 +245,8 @@ input[type=checkbox].niceCheckbox:checked + label.niceCheckboxLabel {
 	text-align:center;
 	width: 100px;
 }
+.closingperiod {
+	padding: 3px;
+	border-radius: $standardborderradius;
+	border: 1px solid $orangebackground;
+}

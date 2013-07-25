@@ -72,8 +72,8 @@ PeriodOptionsView = Backbone.View.extend({
 		e.preventDefault();
 
 		period = new Period({
-			beginDate: Date.parse($(this.el).find('input[name=beginDate]').val()),
-			endNormalEnrollmentsDate: Date.parse($(this.el).find('input[name=endNormalEnrollmentsDate]').val()),
+			beginDate: Date.parse($(this.el).find('input[name=beginDate]').val()).toString('yyyy-MM-dd'),
+			endNormalEnrollmentsDate: Date.parse($(this.el).find('input[name=endNormalEnrollmentsDate]').val()).toString('yyyy-MM-dd'),
 			openingTimeHours: parseInt($(this.el).find('input[name=startTime]').val().substring(0,2)),
 			openingTimeMinutes: parseInt($(this.el).find('input[name=startTime]').val().substring(3,5)),
 			closingTimeHours: parseInt($(this.el).find('input[name=endTime]').val().substring(0,2)),

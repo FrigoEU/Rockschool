@@ -10,6 +10,7 @@ var moderator = {
 	showStudentView:"",
 	enrollmentDialogView: "",
 	periodOptionsView: "",
+	closingPeriodsOptionsView: "",
 	lessonsSearchView: "",
 	enrollmentsSearchView: "",
 	loginView: "",
@@ -46,6 +47,15 @@ var moderator = {
 		}
 		this.setMiddle(periodOptionsView);
 	},
+	showClosingPeriodsOptions: function() {
+		if(this.closingPeriodsOptionsView==="") {
+			closingPeriodsOptionsView = new ClosingPeriodsOptionsView({
+				template: $("#closingPeriodsOptionsTemplate").html()
+			});
+		}
+		this.setMiddle(closingPeriodsOptionsView);
+	},
+
 	setMainScreenLogin: function() {
 		if (this.loginView ===""){
 			loginView = new LoginView({

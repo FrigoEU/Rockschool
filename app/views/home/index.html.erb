@@ -362,6 +362,33 @@
 		</div>
 	</script>
 
+	
+	<script type="text/template" class="template" id="closingPeriodsOptionsTemplate">
+		<div id="closingPeriodsConfig" class="configScreen">
+			<h3>Bestaande vakantieperiodes:</h3>
+			<div id="closingPeriods">
+				{{#closingPeriods}}
+					<span class = "closingperiod">{{getStartDate}}</span> - <span class = "closingperiod">{{getEndDate}}</span><button class ="deleteButton" data-closingperiodid="{{id}}">Delete</button><br>
+				{{/closingPeriods}}
+			</div>
+			<br>
+			<h3>Nieuwe vakantieperiode ingeven:</h3>
+			<form>
+				<table>
+					<tr>
+						<td><label for="startDate">Vanaf:</label><br></td>
+						<td><label for="endDate">Tot:</label><br></td>
+					</tr>
+					<tr>
+						<td><input type="text" class="datepicker" name="startDate" /><br></td>
+						<td><input type="text" class="datepicker" name="endDate" /><br></td>
+					</tr>
+				</table>
+  				<button class="submitButton">Submit</button>
+			</form>
+		</div>
+	</script>
+
 	<script type="text/template" class="template" id="periodOptionsTemplate">
 		<div id="periodConfig" class="configScreen">
 			<h1>Schooljaar</h1>
@@ -393,6 +420,7 @@
 	<script type="text/template" class="template" id="optionsTemplate">
 		<div id="options">
 			<button id="options-period" class="optionsBox">Schooljaar</button><br>
+			<button id="options-closingperiods" class="optionsBox">Vakantieperiodes</button><br>
 			<button id="lessonsSearch" class="optionsBox">Zoek Lessen</button><br>
 			<button id="enrollmentsSearch" class="optionsBox">Zoek Inschrijvingen</button>
 		</div>
