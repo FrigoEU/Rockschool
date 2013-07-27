@@ -41,7 +41,7 @@ class EnrollmentsController < ApplicationController
 						get_current_user
 						lessons.each  do 
 						  |lesson|
-						  authorized = lesson.authorized?(@current_user)
+						  authorized = true
 						  lesson.retrieve_virtual_attributes(authorized)
 						  lesson.adapt_status_to_authorization(authorized)
 						end

@@ -100,6 +100,9 @@ class Lessongroup < ActiveRecord::Base
 		end
 	end
 	def slot_has_lesson?(date, hour, minute, duration, teacher)
+		logger.debug("minute:")
+		logger.debug(minute)
+
 		starttimenew = date + hour.hours + minute.minutes
 		endtimenew = date + hour.hours + minute.minutes + duration.minutes
 		lesson = Lesson.where("teacher_id = :teacher_id AND 
@@ -130,7 +133,15 @@ class Lessongroup < ActiveRecord::Base
 
 	def get_lessons()
 		lessons = self.lessons
+	end
+	def make_lesson_at_the_end
+		lastlesson = self.lessons.last
+		@teacher = Teacher.find(lastlesson.teacher_id)
+		@duration = lastlesson.endtime.hour*60 + lastlesson.endtime.min - lastlesson.starttime.hour*60 - lastlesson.starttime.min
+		@period = Period.where("startdate <= :date  AND enddate >= :date AND active = :active", {date: lastlesson.starttime.to_date, active: true}).first
+			raise ArgumentError, "Could not find period for Lessonplanner" if @period.nil?
 
+		plan_first_free_lesson_from_date(lastlesson.starttime.to_date + 1.week, lastlesson.starttime.wday, lastlesson.starttime.hour, lastlesson.starttime.min)
 	end
 
 	private

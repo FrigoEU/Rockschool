@@ -12,7 +12,7 @@ var Student = Backbone.Model.extend({
 		var blanks = false;
 		var defaultError = false;
 		var defaultStudent = new Student();
-		var attributesToCheck = ["firstname", "lastname", "email","address1", "address2","phone"];
+		var attributesToCheck = ["firstname", "lastname","address1", "address2","phone"];
  		_.each(attributesToCheck, function(element, index, list){
  			if (attrs[element] == '') {blanks = true}
  			if (attrs[element] == defaultStudent.get([element])){defaultError= true}
@@ -29,13 +29,23 @@ var Students = Backbone.Collection.extend({
 var StudentsIndexView = Backbone.View.extend({
 	events: {
 		"click .student" : "showStudentDetails",
-		"click .addStudent": "showAddStudentScreen"
+		"click .addStudent": "showAddStudentScreen",
+		"click #searchStudent": "searchStudent"
 	},
 	tagName: "div",
 	id: "accordion",
 	render: function() {
 		$(this.el).html(Mustache.to_html(this.options.template,{students: this.collection.models})); 
 		$(this.el).find('.studentsBox').each(function() {$(this).button()});
+		$(this.el).find('.addStudent').button({
+			icons: {
+				secondary: "ui-icon-circle-plus"
+			}
+		});
+		$(this.el).find('#searchStudent').button({
+			icons: {primary: "ui-icon-search"},
+		    text: false
+		});
 
 		if (this.collection.length == 1){
 			moderator.setMainScreenShowStudent(this.collection.at(0));
@@ -49,6 +59,22 @@ var StudentsIndexView = Backbone.View.extend({
 		var id = $(e.currentTarget).data("id");
 		var student = this.collection.get(id);
 		moderator.setMainScreenShowStudent(student);
+	},
+	searchStudent: function(e){
+		var string = $(this.el).find('input[name=searchStudent]').val();
+		if (!this.originalCollection){
+			this.originalCollection = this.collection;
+		}
+		if (string == ''){this.collection = this.originalCollection}
+		else {
+			this.collection = new Students();
+			this.originalCollection.each( function(element, index, list){
+				if (element.get('firstname').startsWith(string) || element.get('lastname').startsWith(string)) {
+					this.collection.add(element);
+				}
+			}, this);
+		}
+		this.render();
 	}
 });
 

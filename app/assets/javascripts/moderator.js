@@ -14,21 +14,23 @@ var moderator = {
 	lessonsSearchView: "",
 	enrollmentsSearchView: "",
 	loginView: "",
+	teacherShowDetailsView: "",
 	DIALOGS: {
 		enrollmentDialog: {view: 'enrollmentDialogView', template: '#enrollmentDialogTemplate', el: '#enrollmentDialog', class: 'EnrollmentDialogView'},
 		newlessongroupDialog: {view: 'newLessongroupView', template: '#newLessongroupTemplate', el: '#newLessongroupDialog', class: 'NewLessongroupDialogView'},
 		grouplessonDetailsDialog: {view: 'grouplessonDetailsDialog', template: '#grouplessonDetailsDialogTemplate', el: '#grouplessonDetailsDialog', class: 'GrouplessonDetailsDialog'},
 		generalDialog: {view: 'generalDialog', template: '#generalDialogTemplate', el: '#generalDialog', class: 'GeneralDialog'},
-		passwordDialog: {view: 'passwordDialog', template: '#passwordDialogTemplate', el: '#passwordDialog', class: 'PasswordDialog'}
+		passwordDialog: {view: 'passwordDialog', template: '#passwordDialogTemplate', el: '#passwordDialog', class: 'PasswordDialog'},
+		newLessonDialog: {view: 'newLessonDialog', template: '#newLessonDialogTemplate', el: '#newLessonDialog', class: 'NewLessonDialog'}
 	},
 
 	showMainScreenTeacherIndex: function() {
 		if (this.teachersIndexView==="") {
 			this.teachersIndexView = new TeachersIndexView({
-				collection: allTeachers,
 				template: $("#teachersIndexViewTemplate").html()
 			});
 		}
+		this.teachersIndexView.collection = allTeachers;
 		this.setSidebar(this.teachersIndexView);
 	},
 	setMainScreenOptions: function() {
@@ -116,16 +118,6 @@ var moderator = {
 			}
 		}
 	},
-	reloadMainscreen: function() {
-		if (this.middleView != "") {
-			this.middleView.render();
-		}
-	},
-	reloadSidebar: function() {
-		if (this.sidebarView != "") {
-			this.sidebarView.render();
-		}
-	},
 	showMainScreenTeacherSchedule: function(schedule){
 		if (this.scheduleView==="") {
 			this.scheduleView = new ScheduleView({
@@ -144,15 +136,35 @@ var moderator = {
 			template: $("#teacherDetailsTemplate")
 			});
 		}
+		this.teacherDetailsView.teacher = undefined;
 		this.setMiddle(this.teacherDetailsView);
+	},
+	setMainScreenEditTeacher: function(teacher) {
+		if (this.teacherDetailsView==="") {
+			this.teacherDetailsView = new TeacherDetailsView({
+			template: $("#teacherDetailsTemplate")
+			});
+		}
+		this.teacherDetailsView.teacher = teacher;
+		this.setMiddle(this.teacherDetailsView);
+	},
+	setMainScreenShowTeacherDetails: function(teacher){
+		if (this.teacherShowDetailsView==="") {
+			this.teacherShowDetailsView = new TeacherShowDetailsView({
+			template: $("#showTeacherDetailsTemplate")
+			});
+		}
+		this.teacherShowDetailsView.teacher = teacher;
+		this.setMiddle(this.teacherShowDetailsView);
+		
 	},
 	showMainScreenStudentIndex: function() {
 		if (this.studentsIndexView==="") {
 			this.studentsIndexView = new StudentsIndexView({
-			collection: allStudents,
 			template: $("#studentsIndexViewTemplate").html()
 			});
 		}
+		this.studentsIndexView.collection = allStudents;
 		this.setSidebar(this.studentsIndexView);
 	},
 	setMainScreenEditStudent: function(student) {
@@ -237,16 +249,30 @@ var moderator = {
 			$('#sidebar').before('<div id="middle"></div>');
 		}
 	},
+	reloadMainscreen: function() {
+		if (this.middleView != "") {
+			this.middleView.render();
+			$('#middle').mCustomScrollbar();
+		}
+	},
+	reloadSidebar: function() {
+		if (this.sidebarView != "") {
+			this.sidebarView.render();
+			$('#sidebar').mCustomScrollbar();
+		}
+	},
 	setSidebar: function(view) {
 		this.clearAllScreens();
 		view.setElement($('#sidebar'));
 		this.sidebarView = view;
 		view.render();
+		$('#sidebar').mCustomScrollbar();
 	},
 	setMiddle: function(view) {
 		this.clearMiddleScreen();
 		view.setElement($('#middle'));
 		this.middleView = view;
 		view.render();
+		$('#middle').mCustomScrollbar();
 	}
 };

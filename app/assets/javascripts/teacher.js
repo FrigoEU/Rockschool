@@ -5,7 +5,7 @@ var Teacher = Backbone.Model.extend({
 	getTeachingTime: function(start_end, day){
 		var hours = this.get(start_end + '_hours_' + day);
 		var minutes = this.get(start_end + '_minutes_' + day);
-		if (hours && minutes && hours != 0 && minutes != 0){return pad(hours,2) + ":" + pad(minutes, 2);}
+		if (hours && hours != 0 ){return pad(hours,2) + ":" + pad(minutes, 2);}
 		else {return '';}
 	},
 	getTeachingTimeHash: function(start_end, day){
@@ -24,40 +24,9 @@ var Teacher = Backbone.Model.extend({
 		this.set(start_end + '_minutes_' + day, parseInt(splitted[1]));
 	},
 	getTeachingDay: function(day){
-		return (this.get('start_hours_'+ day) !== undefined)
+		return (this.get('start_hours_'+ day) !== undefined  && this.get('start_hours_'+ day) != 0)
 	},
 	urlRoot: "/teachers",
-	// defaults: {
-	// 	name: "Nieuwe Leerkracht",
-	// 	startTimeHours: 12,
-	// 	startTimeMinutes: 0,
-	// 	endTimeHours: 18,
-	// 	endTimeMinutes: 0,
-	// 	teachingOnMonday: true,
-	// 	teachingOnTuesday: true,
-	// 	teachingOnWednesday: true,
-	// 	teachingOnThursday: true,
-	// 	teachingOnFriday: true,
-	// 	teachingOnSaturday: false,
-	// 	teachingOnSunday: false
-	// },
-	// parse: function (response) {
-	// 	return {
-	// 		id: response.id,
-	// 		name: response.name,
-	// 		startTimeHours: response.starttimehours,
-	// 		startTimeMinutes: response.starttimeminutes,
-	// 		endTimeHours: response.endtimehours,
-	// 		endTimeMinutes: response.endtimeminutes,
-	// 		teachingOnMonday: response.teachingonmonday,
-	// 		teachingOnTuesday: response.teachingontuesday,
-	// 		teachingOnWednesday: response.teachingonwednesday,
-	// 		teachingOnThursday: response.teachingonthursday,
-	// 		teachingOnFriday: response.teachingonfriday,
-	// 		teachingOnSaturday: response.teachingonsaturday,
-	// 		teachingOnSunday: response.teachingonsunday
-	// 	};
-	// },
 	showSchedule: function(startDate, endDate){
 		//Hier moeten we dus naar de server gaan om de schedule van een bepaalde week op te halen.
 		//Wat we hier gaan terug krijgen is normaal een array van lesson objecten, in JSON formaat.
@@ -93,7 +62,7 @@ var Teacher = Backbone.Model.extend({
 		return (pad(this.attributes.endTimeHours,2) + ":" + pad(this.attributes.endTimeMinutes,2));
 	},
 	getName: function(){
-		return this.get('name');
+		return this.get('firstname') + ' ' +  this.get('lastname');
 	},
 	getCourses: function(){
 		return this.get('courses');
@@ -114,13 +83,32 @@ var Teachers = Backbone.Collection.extend({
 var TeachersIndexView = Backbone.View.extend({
 	events: {
 		"click .teacher": "showTeacherSchedule",
-		"click .addTeacher": "showAddTeacherScreen"
+		"click .addTeacher": "showAddTeacherScreen",
+		"click #searchTeacher": "searchTeacher",
+		"click .info": "showTeacherInfo"
 	},
 	tagName: "div",
 	id: "accordion",
 	render: function() {
-		$(this.el).html(Mustache.to_html(this.options.template,{teachers: this.collection.toJSON()}));
-		$(this.el).find('.teachersBox').each(function() {$(this).button();});
+		$(this.el).html(Mustache.to_html(this.options.template,{teachers: this.collection.models}));
+		//$(this.el).find('.teachersBox').each(function() {$(this).button();});
+		var icons = {
+	      	header: "ui-icon-circle-arrow-e",
+	      	activeHeader: "ui-icon-circle-arrow-s"
+	    };
+		$(this.el).find('#accordion').accordion({
+			icons: icons,
+			collapsible: true,
+			active: false
+		});
+
+		$(this.el).find('.addTeacher').button({
+			icons: {secondary: "ui-icon-circle-plus"}
+		});
+		$(this.el).find('#searchTeacher').button({
+			icons: { primary: "ui-icon-search"},
+		    text: false
+		})
 
 		if (this.collection.length == 1){
 			moderator.setMainScreenTeacherSchedule(this.collection.at(0));
@@ -132,8 +120,29 @@ var TeachersIndexView = Backbone.View.extend({
 		var teacher = this.collection.get(id);
 		moderator.setMainScreenTeacherSchedule(teacher);
 	},
+	showTeacherInfo: function(e){
+		var id = $(e.currentTarget).data("id");
+		var teacher = this.collection.get(id);
+		moderator.setMainScreenShowTeacherDetails(teacher);
+	},
 	showAddTeacherScreen: function(e) {
 		moderator.setMainScreenAddTeacher();
+	},
+	searchTeacher: function(e){
+		var string = $(this.el).find('input[name=searchTeacher]').val();
+		if (!this.originalCollection){
+			this.originalCollection = this.collection;
+		}
+		if (string == ''){this.collection = this.originalCollection}
+		else {
+			this.collection = new Students();
+			this.originalCollection.each( function(element, index, list){
+				if (element.get('firstname').startsWith(string) || element.get('lastname').startsWith(string)) {
+					this.collection.add(element);
+				}
+			}, this);
+		}
+		this.render();
 	}
 });
 
@@ -148,10 +157,12 @@ var TeacherDetailsView = Backbone.View.extend({
 		if (this.teacher === undefined){this.teacher = new Teacher();}
 		
 		var argumentHash = {
-			teacherName: this.teacher.getName(),
-			teacherCourses: this.teacher.getCourses(),
+			firstname: this.teacher.get('firstname'),
+			lastname: this.teacher.get('lastname'),
+			courses: this.teacher.getCourses(),
 			periodOpenTime: period.getTime('open'),
-			periodCloseTime: period.getTime('close')
+			periodCloseTime: period.getTime('close'),
+			bio: this.teacher.get('bio')
 		};
 		var teacher = this.teacher;
 		_.each(['monday','tuesday', 'wednesday', 'thursday', 'friday','saturday', 'sunday'], function(element, index, list){
@@ -164,6 +175,7 @@ var TeacherDetailsView = Backbone.View.extend({
 
 		$(this.el).html(Mustache.render(this.options.template.html(),argumentHash));
 		$(this.el).find("button.submitButton").button();
+
 
 		return this;
 	},
@@ -180,7 +192,8 @@ var TeacherDetailsView = Backbone.View.extend({
 			teacher.setTeachingTime('start', element, start);
 			teacher.setTeachingTime('end',element, end);
 		});
-		teacher.set('name', domElement.find('input[name=name]').val());
+		teacher.set('firstname', domElement.find('input[name=firstname]').val());
+		teacher.set('lastname', domElement.find('input[name=lastname]').val());
 		teacher.set('courses', domElement.find('input[name=courses]').val());
 		teacher.set('bio', domElement.find('textarea[name=bio]').val());
 
@@ -239,3 +252,30 @@ var TeacherTeachingDropDownView = DropDownView.extend({
 	}
 });
 
+var TeacherShowDetailsView = Backbone.View.extend({
+	events: {
+		"click .submitButton":"editTeacher"
+	},
+	render:function(){
+		var argumentHash = {
+			firstname: this.teacher.get('firstname'),
+			lastname: this.teacher.get('lastname'),
+			courses: this.teacher.getCourses(),
+			periodOpenTime: period.getTime('open'),
+			periodCloseTime: period.getTime('close'),
+			bio: this.teacher.get('bio')
+		};
+		var teacher = this.teacher;
+		_.each(['monday','tuesday', 'wednesday', 'thursday', 'friday','saturday', 'sunday'], function(element, index, list){
+			argumentHash[element+'StartTime'] = teacher.getTeachingTime('start', element);
+			argumentHash[element+'EndTime'] = teacher.getTeachingTime('end', element);
+			argumentHash[element+'Teaching'] = teacher.getTeachingDay(element);
+		});
+
+		$(this.el).html(Mustache.render(this.options.template.html(),argumentHash));
+		$(this.el).find('.submitButton').button();
+	},
+	editTeacher: function(e){
+		moderator.setMainScreenEditTeacher(this.teacher);
+	}
+})

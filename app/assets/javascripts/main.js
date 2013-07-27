@@ -4,10 +4,22 @@ main = function() {
 
 	allStudents = new Students();
 	allStudents.fetch({
-		success: function () {
+		success: function(collection, response, options) {
 			if (allStudents.length == 1) {
 				current_student = allStudents.at(0);
 			}
+		},
+		error: function(collection, response, options){
+				standardHTTPErrorHandling(collection, response, options);
+		}
+	});
+	allClosingPeriods = new ClosingPeriods();
+	allClosingPeriods.fetch({
+		success: function(collection, response, options){
+			;
+		},
+		error: function(collection, response, options){
+			standardHTTPErrorHandling(collection, response, options);
 		}
 	});
 
@@ -16,6 +28,7 @@ main = function() {
 		data:{'active': true}
 	});
 
+	$('#sidebar,#middle').mCustomScrollbar();
 	$( "nav" ).buttonset();
 	$("nav #teachers").on("click", function (event){
 		moderator.showMainScreenTeacherIndex();
@@ -53,3 +66,17 @@ function pad(num, size) {
 	var s = "000000000" + num;
 	return s.substr(s.length-size);
 };
+if (typeof String.prototype.startsWith != 'function') {
+  String.prototype.startsWith = function (str){
+    return this.toLowerCase().slice(0, str.length) == str.toLowerCase();
+  };
+}
+Date.prototype.stdTimezoneOffset = function() {
+    var jan = new Date(this.getFullYear(), 0, 1);
+    var jul = new Date(this.getFullYear(), 6, 1);
+    return Math.max(jan.getTimezoneOffset(), jul.getTimezoneOffset());
+}
+
+Date.prototype.dst = function() {
+    return this.getTimezoneOffset() < this.stdTimezoneOffset();
+}

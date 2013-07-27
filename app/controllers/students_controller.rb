@@ -35,7 +35,7 @@ class StudentsController < ApplicationController
   # POST /students.json
   def create
 
-    if params.has_key?(:email) #&& params[:create_user] == true
+    if params.has_key?(:email) && params[:email] != "" #&& params[:create_user] == true
       @user = User.new({
         email: params[:email],
         password: "rockschool",
@@ -46,25 +46,32 @@ class StudentsController < ApplicationController
         #sendgrid mail app
         UserMailer.welcome_email(@user).deliver
       end
+      no_user = false
+    else 
+      no_user = true
     end
     respond_to do |format|
-      if @user.save
+      if no_user || @user.save 
+        if no_user 
+          user_id = 0 
+        else
+          user_id = @user.id
+        end
         @student = Student.new({
           firstname: params[:firstname],
           lastname: params[:lastname], 
           phone: params[:phone], 
           address1: params[:address1], 
           address2: params[:address2],
-          user_id: @user.id
+          user_id: user_id
         })
         if @student.save
           @student.retrieve_virtual_attributes
-          @student.new_user = true
           format.json { render json: @student, status: :created, location: @student }
-          @user.role_id = @student.id
-          @user.save
+          @user.role_id = @student.id unless no_user
+          @user.save unless no_user
         else
-          @user.destroy
+          @user.destroy unless no_user
           format.json { render json: {errors: @student.errors.full_messages}, status: :unprocessable_entity }
         end
       else
@@ -79,8 +86,7 @@ class StudentsController < ApplicationController
     @student = Student.find(params[:id])
     @madeNewUser = false
 
-    if params.has_key?(:email) && params[:email] != @student.user.email
- 
+    if params.has_key?(:email) && params[:email] != "" && (@student.user.nil? || params[:email] != @student.user.email )
       @newUser = User.new({
         email: params[:email],
         password: "rockschool",
@@ -96,13 +102,11 @@ class StudentsController < ApplicationController
           cookies.permanent[:remember_token] = @newUser.remember_token
           @student.new_user = true
         end
-        @student.user.destroy
+        @student.user.destroy unless @student.user.nil?
         params[:student][:user_id] = @newUser.id
         @madeNewUser = true
       else
-        respond_to do |format|
-          format.json { render json: {errors: @newUser.errors.full_messages}, status: :unprocessable_entity }
-        end
+        return render json: {errors: @newUser.errors.full_messages}, status: :unprocessable_entity 
       end
     end
 
@@ -111,11 +115,10 @@ class StudentsController < ApplicationController
       if @madeNewUser 
         @student.new_user = true
       end
-      respond_to do |format|
-        format.json {  render json: @student }
-      end
+      render json: @student 
+      
     else
-      format.json { render json: {errors: @student.errors.full_messages}, status: :unprocessable_entity }
+      render json: {errors: @student.errors.full_messages}, status: :unprocessable_entity 
     end
   end
 

@@ -1,19 +1,19 @@
 var Lesson = Backbone.Model.extend({
 	defaults: {
-		// startTime: (new Date()),
-		// duration: standardLessonLength,
-		// teacher: 1,
-		// student: 1
 	},
-	//url: "/lessons",
+	urlRoot: "/lessons",
 	initialize: function() {
 		this.attributes.duration = (this.attributes.endTime.getHours() - this.attributes.startTime.getHours())*60 + (this.attributes.endTime.getMinutes() - this.attributes.startTime.getMinutes());
 	},
 	parse: function(response){
 		var startTime = new Date(response.starttime);
-		//startTime.addMinutes(-(startTime.getTimezoneOffset()));
+		if (!startTime.dst()){
+			startTime.addMinutes(-(startTime.getTimezoneOffset()));	
+		}
 		var endTime = new Date(response.endtime);
-		//endTime.addMinutes(-(endTime.getTimezoneOffset()))
+		if (!endTime.dst()){
+			endTime.addMinutes(-(endTime.getTimezoneOffset()))
+		}
 		var students = _.map(response.students, function(obj){
 			if (obj === undefined) {return undefined;}
 			else {return allStudents.get(obj.id);}
@@ -107,7 +107,7 @@ var LessonDropDownView = DropDownView.extend({
 
 			var argumentHash = {
 				studentName: this.options.lesson.get("students")[0].getName(),
-				teacher: allTeachers.get(this.options.lesson.get("teacher")).toJSON(),
+				teacherName: allTeachers.get(this.options.lesson.get("teacher")).getName(),
 				datetime: this.options.lesson.get('startTime').toString("ddd dd MMM yyyy, HH:mm"),
 				status: this.options.lesson.statusToDutch(),
 				choicesmenu: (choicesArray.length > 0),
@@ -122,10 +122,16 @@ var LessonDropDownView = DropDownView.extend({
 		}
 	},
 	changeStatus: function(e){
+		var action =  $(e.target).data("action");
 		this.options.lesson.save({
-				data: {action: $(e.target).data("action")}},{
-				success: function(){
+				data: {action: action}},{
+				success: function(model, response, options){
 					moderator.reloadMainscreen();
+					if (action == "absentok"){
+						moderator.showDialog('newLessonDialog',{
+							oldLesson: model
+						})
+					}
 				},
 				error: function(model, response, options) {
 					standardHTTPErrorHandling(model, response, options);
@@ -187,5 +193,48 @@ var LessonsSearchView = Backbone.View.extend({
 		var lesson = this.collection.get($(event.target).data('id'));
 
 		moderator.showLessonDropDown(event.pageX, event.pageY, lesson);
+	}
+});
+var NewLessonDialog = Backbone.View.extend({
+	initialize: function (){
+	},
+	id: 'newLessonDialog',
+	render: function (){
+		$("body").append(Mustache.render(this.options.template.html(),{}));
+		var newLessonDialog = $('#'+this.id);
+		var self = this;
+
+		newLessonDialog.dialog({
+			autoOpen: true,
+			height: 250,
+			width: 450,
+			modal: true,
+			buttons:{
+				Ja: function() {
+					$( this ).dialog( "close" );
+					var lesson = new Lesson({
+						startTime: self.oldLesson.get('startTime'),
+						endTime: self.oldLesson.get('endTime'),
+						teacher: self.oldLesson.get('teacher'),
+						students: self.oldLesson.get('students'),
+						lessongroup_id: self.oldLesson.get('lessongroup_id')
+					});
+					lesson.save(null,{
+						success:function(model, response, options){
+							moderator.showDialog('generalDialog', {
+								title: "Nieuwe les gemaakt",
+								text:"Er is een nieuwe les aangemaakt, op " + model.get('startTime').toString('dd/MM/yyyy') + ' !'
+							})
+						},
+						error: function(model, response, options) {
+							standardHTTPErrorHandling(model, response, options);
+						}
+					});
+				},
+				Nee: function() {
+					$( this ).dialog( "close" );
+				}
+			}
+		});
 	}
 });

@@ -1,7 +1,7 @@
-/*! jQuery UI - v1.10.3 - 2013-05-28
+/*! jQuery UI - v1.10.3 - 2013-07-27
 * http://jqueryui.com
 * Includes: jquery.ui.core.css, jquery.ui.resizable.css, jquery.ui.selectable.css, jquery.ui.accordion.css, jquery.ui.autocomplete.css, jquery.ui.button.css, jquery.ui.datepicker.css, jquery.ui.dialog.css, jquery.ui.menu.css, jquery.ui.progressbar.css, jquery.ui.slider.css, jquery.ui.spinner.css, jquery.ui.tabs.css, jquery.ui.tooltip.css
-* To view and modify this theme, visit http://jqueryui.com/themeroller/?ffDefault=Arial%2Csans-serif&fwDefault=bold&fsDefault=1.3em&cornerRadius=4px&bgColorHeader=0b3e6f&bgTextureHeader=diagonals_thick&bgImgOpacityHeader=15&borderColorHeader=0b3e6f&fcHeader=f6f6f6&iconColorHeader=98d2fb&bgColorContent=111111&bgTextureContent=gloss_wave&bgImgOpacityContent=20&borderColorContent=000000&fcContent=d9d9d9&iconColorContent=9ccdfc&bgColorDefault=333333&bgTextureDefault=dots_small&bgImgOpacityDefault=20&borderColorDefault=333333&fcDefault=ffffff&iconColorDefault=9ccdfc&bgColorHover=00498f&bgTextureHover=dots_small&bgImgOpacityHover=40&borderColorHover=222222&fcHover=ffffff&iconColorHover=ffffff&bgColorActive=292929&bgTextureActive=flat&bgImgOpacityActive=40&borderColorActive=096ac8&fcActive=75abff&iconColorActive=00498f&bgColorHighlight=0b58a2&bgTextureHighlight=dots_medium&bgImgOpacityHighlight=30&borderColorHighlight=052f57&fcHighlight=ffffff&iconColorHighlight=ffffff&bgColorError=a32d00&bgTextureError=dots_small&bgImgOpacityError=30&borderColorError=cd0a0a&fcError=ffffff&iconColorError=ffffff&bgColorOverlay=aaaaaa&bgTextureOverlay=flat&bgImgOpacityOverlay=0&opacityOverlay=30&bgColorShadow=aaaaaa&bgTextureShadow=flat&bgImgOpacityShadow=0&opacityShadow=30&thicknessShadow=8px&offsetTopShadow=-8px&offsetLeftShadow=-8px&cornerRadiusShadow=8px
+* To view and modify this theme, visit http://jqueryui.com/themeroller/?ffDefault=Arial%2Csans-serif&fwDefault=bold&fsDefault=16px&cornerRadius=4px&bgColorHeader=%230b3e6f&bgTextureHeader=diagonals_thick&bgImgOpacityHeader=15&borderColorHeader=%230b3e6f&fcHeader=%23f6f6f6&iconColorHeader=%2398d2fb&bgColorContent=%23111111&bgTextureContent=dots_medium&bgImgOpacityContent=20&borderColorContent=%23000000&fcContent=%23d9d9d9&iconColorContent=%239ccdfc&bgColorDefault=%23333333&bgTextureDefault=dots_small&bgImgOpacityDefault=20&borderColorDefault=%23333333&fcDefault=%23ffffff&iconColorDefault=%239ccdfc&bgColorHover=%2300498f&bgTextureHover=dots_small&bgImgOpacityHover=40&borderColorHover=%23222222&fcHover=%23ffffff&iconColorHover=%23ffffff&bgColorActive=%23292929&bgTextureActive=flat&bgImgOpacityActive=40&borderColorActive=%23096ac8&fcActive=%2375abff&iconColorActive=%2300498f&bgColorHighlight=%230b58a2&bgTextureHighlight=dots_medium&bgImgOpacityHighlight=30&borderColorHighlight=%23052f57&fcHighlight=%23ffffff&iconColorHighlight=%23ffffff&bgColorError=%23a32d00&bgTextureError=dots_small&bgImgOpacityError=30&borderColorError=%23cd0a0a&fcError=%23ffffff&iconColorError=%23ffffff&bgColorOverlay=%23aaaaaa&bgTextureOverlay=flat&bgImgOpacityOverlay=0&opacityOverlay=30&bgColorShadow=%23aaaaaa&bgTextureShadow=flat&bgImgOpacityShadow=0&opacityShadow=30&thicknessShadow=8px&offsetTopShadow=-8px&offsetLeftShadow=-8px&cornerRadiusShadow=8px
 * Copyright 2013 jQuery Foundation and other contributors Licensed MIT */
 
 /* Layout helpers
@@ -787,7 +787,7 @@ body .ui-tooltip {
 ----------------------------------*/
 .ui-widget {
 	font-family: Arial,sans-serif;
-	font-size: 1.3em;
+	font-size: 16px;
 }
 .ui-widget .ui-widget {
 	font-size: 1em;
@@ -801,7 +801,7 @@ body .ui-tooltip {
 }
 .ui-widget-content {
 	border: 1px solid #000000;
-	background: #111111 url(images/ui-bg_gloss-wave_20_111111_500x100.png) 50% top repeat-x;
+	background: #111111 url(images/ui-bg_dots-medium_20_111111_4x4.png) 50% 50% repeat;
 	color: #d9d9d9;
 }
 .ui-widget-content a {

@@ -43,7 +43,7 @@ var EnrollmentDialogView = Backbone.View.extend({
 		$("body").append(Mustache.render(
 			this.options.template.html(),{
 			"studentName": studentName,
-			"teacherName": this.teacher.get('name'),
+			"teacherName": this.teacher.getName(),
 			"teachingDay": this.startTime.toString("ddd dd MMM yyyy"),
 			"startLessonHour": this.startTime.toString("HH:mm")
 		}));
@@ -93,6 +93,10 @@ var EnrollmentDialogView = Backbone.View.extend({
 		var student;
 		if (current_student !== undefined) {student = current_student}
 		else {student = this.selectedStudent}
+
+		if (!this.startTime.dst()){
+			this.startTime.addMinutes(this.startTime.getTimezoneOffset());
+		}
 		var enrollment = new Enrollment({
 			student: student,
 			teacher: this.teacher,
@@ -140,7 +144,7 @@ var EnrollmentBoxView = Backbone.View.extend({
 		argumentHash = _.extend(argumentHash, this.options.enrollment.toJSON());
 		$(this.el).html(Mustache.to_html(this.template.html(), argumentHash));
 	},
-	showEnrollmentDropDown: function(){
+	showEnrollmentDropDown: function(event){
 		moderator.showEnrollmentDropDown(event.pageX, event.pageY, this.options.enrollment, this);
 	}
 });
@@ -192,8 +196,9 @@ var EnrollmentDropDownView = DropDownView.extend({
 		"click .status": "changeStatus",
 	},
 	renderInnerHTML: function(){
+		var choices = [];
 		if (current_user_role == "admin") {
-			var choices = [EnrollmentActions.removeenrollment];
+			choices = [EnrollmentActions.removeenrollment];
 		
 			if (this.options.enrollment.get('approved') == false){
 				choices.push(EnrollmentActions.accept);
@@ -206,8 +211,8 @@ var EnrollmentDropDownView = DropDownView.extend({
 		}
 		
 		var argumentHash= {
-			student: allStudents.get(this.options.enrollment.get("student_id")).toJSON(),
-			teacher: allTeachers.get(this.options.enrollment.get("teacher_id")).toJSON(),
+			studentName: allStudents.get(this.options.enrollment.get("student_id")).getName(),
+			teacherName: allTeachers.get(this.options.enrollment.get("teacher_id")).getName(),
 			datetime: this.options.enrollment.get('startTime').toString("dddd, HH:mm"),
 			choicesmenu: (choices.length > 0),
 			choices: choices

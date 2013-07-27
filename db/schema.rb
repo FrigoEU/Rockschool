@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130722191520) do
+ActiveRecord::Schema.define(:version => 20130726210112) do
 
   create_table "closingperiods", :force => true do |t|
     t.date     "startdate"
@@ -77,7 +77,6 @@ ActiveRecord::Schema.define(:version => 20130722191520) do
   end
 
   create_table "teachers", :force => true do |t|
-    t.string   "name"
     t.datetime "created_at",              :null => false
     t.datetime "updated_at",              :null => false
     t.integer  "start_hours_monday"
@@ -110,6 +109,8 @@ ActiveRecord::Schema.define(:version => 20130722191520) do
     t.integer  "end_minutes_sunday"
     t.string   "bio"
     t.string   "courses"
+    t.string   "firstname"
+    t.string   "lastname"
   end
 
   create_table "users", :force => true do |t|

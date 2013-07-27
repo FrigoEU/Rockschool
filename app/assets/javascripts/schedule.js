@@ -47,7 +47,7 @@ var ScheduleView = Backbone.View.extend({
 		for (var i = 0; i < scheduleMatrix.length-2; i++) {
 			var renderDate = new Date(this.collection.meta("startDate"));
 			renderDate.add({days: i});
-			renderedScheduleMatrix = renderedScheduleMatrix.concat('<td class = "date ui-state-default">' + renderDate.toString("ddd dd MMM yyyy") + '</td>');
+			renderedScheduleMatrix = renderedScheduleMatrix.concat('<td class = "date ui-state-default">' + renderDate.toString("dd/MM/yyyy") + '</td>');
 		};
 
 		// "horizontale" loop, maakt i aantal rijen aan, gebaseerd op de kolom die het meeste children heeft. Dit zal steeds de eerste kolom zijn.
@@ -107,7 +107,8 @@ var ScheduleView = Backbone.View.extend({
 		};
 		renderedScheduleMatrix = renderedScheduleMatrix.concat('</table>');
 		$(this.el).html(renderedScheduleMatrix);
-		$(this.el).find('.navbutton').each(function() {$(this).button();});
+		$(this.el).find('#navbackward').each(function() {$(this).button({icons:{primary: 'ui-icon-circle-arrow-w'}, text: false});});
+		$(this.el).find('#navforward').each(function() {$(this).button({icons:{primary: 'ui-icon-circle-arrow-e'}, text: false});});
 	},
 	buildScheduleMatrix: function() {
 		var startDate = new Date(this.collection.meta("startDate"));
@@ -177,14 +178,17 @@ var ScheduleView = Backbone.View.extend({
 			schoolOpenDate.add({days: i});
 			schoolOpenDate.addHours(period.get('openingTimeHours'));
 			schoolOpenDate.addMinutes(period.get('openingTimeMinutes'));
-			if ((schoolOpenDate.is().monday() && period.get('openOnMonday') == true)
+			if (allClosingPeriods.hasInside(schoolOpenDate)){;}
+			else {
+				if ((schoolOpenDate.is().monday() && period.get('openOnMonday') == true)
 				|| (schoolOpenDate.is().tuesday() && period.get('openOnTuesday') == true)
 				|| (schoolOpenDate.is().wednesday() && period.get('openOnWednesday') == true)
 				|| (schoolOpenDate.is().thursday() && period.get('openOnThursday') == true)
 				|| (schoolOpenDate.is().friday() && period.get('openOnFriday') == true)
 				|| (schoolOpenDate.is().saturday() && period.get('openOnSaturday') == true)
 				|| (schoolOpenDate.is().sunday() && period.get('openOnSunday') == true)) {
-				resultingSchoolOpeningHours.add(new TimeRange({"startTime": schoolOpenDate, "duration" : duration, "type" : "schoolopen"}));
+					resultingSchoolOpeningHours.add(new TimeRange({"startTime": schoolOpenDate, "duration" : duration, "type" : "schoolopen"}));
+				}
 			}
 		};
 

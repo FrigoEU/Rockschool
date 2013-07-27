@@ -11,7 +11,7 @@ $lessonabsentokcolor: darkgray;
 $lessonabsentnokcolor: brown;
 $lessondonecolor: blue;
 $lessonabsentreqcolor: purple;
-$schedulecolumnwidth: 147px;
+$schedulecolumnwidth: 140px;
 $schedulelineheight: 32px;
 $darkgraybackground: #333333 url(images/ui-bg_dots-small_20_333333_2x2.png) 50% 50% repeat;
 $schedulecellheight: 4px;
@@ -23,12 +23,13 @@ body {
 	background-image: url(greybackground.jpg);
 	//background-color: rgb(192, 192, 192);
 	font-family: verdana, arial, helvetica, sans-serif;
-  	font-size: 13px;
+  	font-size: 12px;
   	line-height: 18px;
 }
 #topbar {
 	background-color: $orangebackground; 
 	padding: 10px;
+	height:15%;
 	h1 {
 		margin: 0px;
 		padding: 10px;
@@ -40,12 +41,16 @@ body {
 	position: absolute;
 	left: 10px;
 	top: 100px;
+	overflow: auto;
+	height:83%;
 }
 #middle {
 	position: absolute;
-	left: 225px;
+	left: 240px;
 	top: 100px;
 	overflow:auto;
+	height:83%;
+	width: 1024px;
 } 
 #lessenrooster th {
 	border: 1px solid blue;
@@ -87,7 +92,9 @@ body {
 }
 #lessenrooster td {
 	width: $schedulecolumnwidth;
+	min-width: $schedulecolumnwidth;
 	height: $schedulecellheight;
+	min-height: $schedulecellheight;
 	font-family: Verdana,Arial,sans-serif;
 }
 #lessenrooster td.timeindication {
@@ -99,21 +106,29 @@ body {
 #lessenrooster td.date{
 	height: 20px;
 	padding: .4em .4em .4em .6em;
+	width: $schedulecolumnwidth/2;
+	min-width: $schedulecolumnwidth/2;
+	font-size: 11px;
+	text-align: center;
 }
 
 #lessenrooster td.hour {
 	text-align: center;
 	width: $schedulecolumnwidth/2;
+	min-width: $schedulecolumnwidth/2;
 }
 #lessenrooster td.navbutton {
 	display: table-cell; // om ui-button tegen te gaan
 	height: 20px;
-	width: $schedulecolumnwidth/2;
+	width: $schedulecolumnwidth/4;
+	min-width: $schedulecolumnwidth/4;
 	font-size: 8px;
 	padding: .4em .4em .4em .6em;
 }
 #lessenrooster td.boundary {
 	background-color: lightgray;
+	width: $schedulecolumnwidth/2;
+	min-width: $schedulecolumnwidth/2;
 }
 #lessenrooster td.schoolopen {
 	background-color: $lessonabsentokcolor;
@@ -129,7 +144,8 @@ body {
 	text-align: center;
 	cursor: pointer;
 	overflow:hidden;
-	text-overflow:ellipsis
+	text-overflow:ellipsis;
+	/*font-size: 11px;*/
 }
 #lessenrooster td.lesson-null {
 	text-align: center;
@@ -152,7 +168,7 @@ body {
 	background-color: $lessonabsentnokcolor;
 }
 .lesson-absentok {
-	color: white;
+	color: black;
 	background-color: $lessonabsentokcolor;
 }
 .lesson-done {
@@ -162,8 +178,8 @@ body {
 .configScreen {
 	background: $darkgraybackground;
 	color: white;
-	width: 1024px;
-	height: 520px;
+	/*width: 1024px;*/
+	/*height: 520px;*/
 	padding: 5px;
 	padding-left: 20px;
 	border-radius: $standardborderradius;
@@ -182,9 +198,18 @@ body {
 .ui-dialog {
 	
 }
-.ui-button{
-	border-width: 5px;
-	border-color: $orangebackground;
+#accordion .ui-accordion-content {
+	padding: 3px 45px;
+	font-weight: bold;
+	font-size: 14px;
+	background: #4D4D4D;
+	border: 1px solid #096ac8;
+	span {
+	 cursor: pointer;	
+	}
+}
+.configScreen .ui-button{
+	/*border: 1px solid black;*/
 }
 .ui-autocomplete {
     max-height: 100px;
@@ -216,9 +241,6 @@ textarea {
 input:focus::-webkit-input-placeholder { color:transparent; }
 input:focus:-moz-placeholder { color:transparent; }
 
-.timeInput {
-	width: 75px;
-}
 input[type=checkbox].niceCheckbox {
 	display:none;
 }
@@ -241,12 +263,44 @@ input[type=checkbox].niceCheckbox:checked + label.niceCheckboxLabel {
 
 .niceCheckboxLabel{ background-image:url(http://csscheckbox.com/checkboxes/dark-check-orange.png); }
 
-#teacherDetails #timeTable td{
-	text-align:center;
-	width: 100px;
+.detailsScreen {
+	span .showInfo {
+		
+	}
+	.info td {
+		width: 149px;
+		min-width: 149px;
+		height: 16px;
+		min-height: 16px;
+		margin: 2px;
+	}
+	.info .infoLabel, .info label {
+		font-weight: bold;
+	}
+	.info .infoTableCell, #timeTable .infoTableCell {
+		background: darkgray;
+		border: 3px solid $orangebackground;
+		border-radius: 5px;
+		color: black;
+		padding: 5px;
+	}
+	#timeTable td, .timeInput{
+		text-align:center;
+		width: 100px;
+	}
+	.info .infoTableCell.textAreaInfo{
+		width: 328px;
+		min-width: 328px;
+		height: 70px;
+		min-height: 70px;
+		overflow: auto;
+	}
 }
 .closingperiod {
 	padding: 3px;
 	border-radius: $standardborderradius;
 	border: 1px solid $orangebackground;
+}
+#sidebar .searchButton {
+	width: 32px;
 }

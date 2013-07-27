@@ -18,7 +18,13 @@ class LessongroupsController < ApplicationController
 				maximum_number_of_students: @maximum_number_of_students
 			})
 		@lessons = @lessongroup.lessons
-		@lessons.each {|lesson| lesson.retrieve_virtual_attributes}
+		get_current_user
+		@lessons.each do
+			|lesson|
+			authorized = lesson.authorized?(@current_user)
+	        lesson.retrieve_virtual_attributes(authorized)
+	        lesson.adapt_status_to_authorization(authorized) 
+		end
 		if @lessongroup.save
 			respond_to do |format|
 					format.json{ render json:{lessongroup: @lessongroup, :lessons => @lessongroup.lessons}, status: :created }

@@ -14,11 +14,28 @@ var ClosingPeriod = Backbone.Model.extend({
 	},
 	getEndDate: function(){
 		return this.get('enddate').toString('dd/MM/yyyy')
+	},
+	hasInside: function(date){
+		var comparingDate = new Date(this.get('startdate'));
+		while (comparingDate <= this.get('enddate')) {
+			if (date.toString('dd/MM/yyyy') == comparingDate.toString('dd/MM/yyyy')) { return true}
+			comparingDate.add({days: 1});
+		}
+		return false;
 	}
 });
 var ClosingPeriods = Backbone.Collection.extend({
 	model: ClosingPeriod,
-	url: "/closing_periods"
+	url: "/closing_periods",
+	hasInside: function(date){
+		var result = false;
+		this.each(function(element, index, list){
+			if (element.hasInside(date)){
+				result = true;
+			}
+		}, this);
+		return result;
+	}
 });
 var ClosingPeriodsOptionsView = Backbone.View.extend({
 	initialize: function () {},
@@ -27,18 +44,7 @@ var ClosingPeriodsOptionsView = Backbone.View.extend({
 		"click .submitButton": "addClosingPeriod"
 	},
 	render: function(){
-		if (!this.collection) {
-			this.collection = new ClosingPeriods();
-			var self = this;
-			this.collection.fetch({
-				success: function(collection, response, options){
-					self.render();
-				},
-				error: function(collection, response, options){
-					standardHTTPErrorHandling(collection, response, options);
-				}
-			});
-		}			
+		this.collection = allClosingPeriods;
 		
 		$(this.el).html(Mustache.to_html(this.options.template,{closingPeriods: this.collection.models})); 
 		$('.deleteButton').button();

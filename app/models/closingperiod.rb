@@ -4,7 +4,7 @@ class Closingperiod < ActiveRecord::Base
 	validate :should_not_be_inside_another_closingperiod
 
   def enddate_must_be_bigger_than_startdate
-    if startdate >= enddate
+    if startdate > enddate
       errors.add(:base, "Einddatum moet groter zijn dan startdatum")
     end
   end

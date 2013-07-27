@@ -36,6 +36,19 @@ class LessonsController < ApplicationController
     @teacher_id = params[:teacher].to_i
     @status = params[:status]
     @lessongroup = @lesson.lessongroup
+    
+    if params[:data][:action] == 'absentreq' || params[:data][:action] == 'absentok'
+      absentcount = 0
+      @lessongroup.lessons.each do
+        |lesson|
+        if (lesson.status == 'absentreq' || lesson.status == 'absentok') && lesson.id != @lesson.id
+          absentcount = absentcount + 1
+        end
+      end
+      if absentcount >= 2 
+        return render json: {errors: ["Je mag slechts 2 lessen wettelijk afwezig zijn per schooljaar"]}, status: :unprocessable_entity 
+      end
+    end
 
     case params[:data][:action]
     when 'acceptenrollment'
@@ -72,10 +85,6 @@ class LessonsController < ApplicationController
 
     respond_to do |format|
       if @lesson.update_attributes({
-      starttime: @starttime,
-      endtime: @endtime,
-      lessongroup_id: @lessongroup_id,
-      teacher_id: @teacher_id,
       status: @status
       })
         get_current_user
@@ -98,6 +107,17 @@ class LessonsController < ApplicationController
     respond_to do |format|
       format.html { redirect_to lessons_url }
       format.json { head :no_content }
+    end
+  end
+  def create
+    if params.has_key?(:lessongroup_id)
+      @lessongroup = Lessongroup.find(params[:lessongroup_id])
+      @lessongroup.make_lesson_at_the_end
+      if @lessongroup.save
+        render json: @lessongroup.lessons.last.to_json
+      else
+        render json: {:errors => @lessongroup.errors.full_messages}, status: :unprocessable_entity 
+      end
     end
   end
 end
