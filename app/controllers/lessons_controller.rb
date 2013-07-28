@@ -101,6 +101,9 @@ class LessonsController < ApplicationController
   # DELETE /lessons/1
   # DELETE /lessons/1.json
   def destroy
+    get_current_user
+    return (render json: {errors: ["Je bent niet geauthoriseerd om dit te doen"]}, status: :unprocessable_entity) unless @current_user.isAdmin
+
     @lesson = Lesson.find(params[:id])
     @lesson.destroy
 
@@ -110,6 +113,9 @@ class LessonsController < ApplicationController
     end
   end
   def create
+    get_current_user
+    return (render json: {errors: ["Je bent niet geauthoriseerd om dit te doen"]}, status: :unprocessable_entity) unless @current_user.isAdmin
+    
     if params.has_key?(:lessongroup_id)
       @lessongroup = Lessongroup.find(params[:lessongroup_id])
       @lessongroup.make_lesson_at_the_end

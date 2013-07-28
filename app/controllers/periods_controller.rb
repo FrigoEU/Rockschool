@@ -1,4 +1,5 @@
 class PeriodsController < ApplicationController
+	include ApplicationHelper
 	# GET /periods
     # GET /periods.json
     include PeriodsHelper
@@ -13,12 +14,15 @@ class PeriodsController < ApplicationController
 	end
 
 	def create
+		get_current_user
+		return (render json: {errors: ["Je bent niet geauthoriseerd om dit te doen"]}, status: :unprocessable_entity) unless @current_user.isAdmin
+		
 		Period.update_all({active: false}, {active: true})
 
 		@beginDateParsed = jsdate_to_railsdate(params[:beginDate])
       	@endNormalEnrollmentsDate = jsdate_to_railsdate(params[:endNormalEnrollmentsDate])  
 
-		@newPeriod = Period.create({
+		@newPeriod = Period.new({
 			closinghours: params[:closingTimeHours].to_i, 
 			closingminutes: params[:closingTimeMinutes].to_i, 
 			enddate: @endNormalEnrollmentsDate,
@@ -35,9 +39,10 @@ class PeriodsController < ApplicationController
 			startdate: @beginDateParsed,
 			active: true
 			})
-		respond_to do |format|
-      		format.html # index.html.erb
-      		format.json { render json: @newPeriod }
+		if @newPeriod.save
+      		render json: @newPeriod
+      	else
+      		render json: {:errors => @newPeriod.errors.full_messages}, status: :unprocessable_entity 
       	end
 	end
 	

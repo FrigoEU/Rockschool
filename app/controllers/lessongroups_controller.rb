@@ -1,8 +1,12 @@
 class LessongroupsController < ApplicationController
+	include ApplicationHelper
+
 	def create
 		#unless argumentok?(params, :teacher) && argumentok?(params, :type) && argumentok?(params, :startTime) && argumentok?(params, :duration) && argumentok?(params, :maxNumberOfStudents)
 		#	raise ArgumentException, "Incorrect parameters to make a new lessongroup"
 		#end
+		get_current_user
+		return (render json: {errors: ["Je bent niet geauthoriseerd om dit te doen"]}, status: :unprocessable_entity) unless @current_user.isAdmin
 
 		@maximum_number_of_students = params[:maxNumberOfStudents].to_i
 		@teacher = Teacher.find(params[:teacher][:id].to_i)

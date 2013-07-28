@@ -1,4 +1,5 @@
 class TeachersController < ApplicationController
+  include ApplicationHelper
   # GET /teachers
   # GET /teachers.json
   def index
@@ -10,14 +11,12 @@ class TeachersController < ApplicationController
     end
   end
 
-  # GET /teachers/1/edit
-  def edit
-    @teacher = Teacher.find(params[:id])
-  end
-
   # POST /teachers
   # POST /teachers.json
   def create
+    get_current_user
+    return (render json: {errors: ["Je bent niet geauthoriseerd om dit te doen"]}, status: :unprocessable_entity) unless @current_user.isAdmin
+
     @teacher = Teacher.new(params[:teacher])
 
     respond_to do |format|
@@ -32,6 +31,9 @@ class TeachersController < ApplicationController
   # PUT /teachers/1
   # PUT /teachers/1.json
   def update
+    get_current_user
+    return (render json: {errors: ["Je bent niet geauthoriseerd om dit te doen"]}, status: :unprocessable_entity) unless @current_user.isAdmin
+
     @teacher = Teacher.find(params[:id])
 
     respond_to do |format|
@@ -46,6 +48,9 @@ class TeachersController < ApplicationController
   # DELETE /teachers/1
   # DELETE /teachers/1.json
   def destroy
+    get_current_user
+    return (render json: {errors: ["Je bent niet geauthoriseerd om dit te doen"]}, status: :unprocessable_entity) unless @current_user.isAdmin
+
     @teacher = Teacher.find(params[:id])
     @teacher.destroy
 

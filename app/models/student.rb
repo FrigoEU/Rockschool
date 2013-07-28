@@ -4,6 +4,11 @@ class Student < ActiveRecord::Base
   	has_many :enrollments
   	belongs_to :user, :dependent => :destroy
     validate :name_should_be_unique
+    validates :firstname, :presence => { :message => "Voornaam is verplicht." }
+    validates :lastname, :presence => { :message => "Achternaam is verplicht." }
+    validates :phone, :presence => { :message => "Telefoonnummer is verplicht." }
+    validates :address1, :presence => { :message => "Adreslijn 1 is verplicht." }
+    validates :address2, :presence => { :message => "Adreslijn 2 is verplicht." }
 
   	def retrieve_virtual_attributes
       if self.user

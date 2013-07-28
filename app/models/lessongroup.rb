@@ -8,6 +8,7 @@ class Lessongroup < ActiveRecord::Base
 	has_many :enrollments, :dependent => :destroy
 	has_many :students, through: :enrollments
 	validate :lessonerrors 
+	validate :enrollment_restrictions
 	accepts_nested_attributes_for :lessons
 
 	def initialize(args)
@@ -148,6 +149,13 @@ class Lessongroup < ActiveRecord::Base
 	def lessonerrors
     	@errors.add(:base, "Les niet vrij op: " + date_to_be_format(@errorlesson.starttime.to_date)) unless @errorlesson.blank?
     	@errors.add(:base, "Les valt buiten schooljaar") if @errorperiod == true
+  	end
+  	def enrollment_restrictions
+  		myEnrollments = self.enrollments
+  		myStudentids = myEnrollments.map(&:student_id)
+  		
+  		@errors.add(:base, "Maximum aantal studenten overschreden, maximum " + self.maximum_number_of_students.to_s + " student(en).") if myEnrollments.size > self.maximum_number_of_students
+  		@errors.add(:base, "Deze student is reeds ingeschreven.") if myStudentids.size != myStudentids.uniq.size
   	end
   	def date_to_be_format(date)
   		string = date.to_s;

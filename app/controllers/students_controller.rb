@@ -83,6 +83,9 @@ class StudentsController < ApplicationController
   # PUT /students/1
   # PUT /students/1.json
   def update 
+    get_current_user
+    return (render json: {errors: ["Je bent niet geauthoriseerd om dit te doen"]}, status: :unprocessable_entity) unless (@current_user.isAdmin || (@current_user.isStudent && @current_user.role_id == params[:id]))
+
     @student = Student.find(params[:id])
     @madeNewUser = false
 
@@ -96,7 +99,6 @@ class StudentsController < ApplicationController
         })
 
       if @newUser.save
-        get_current_user
         if @current_user.isStudent
           cookies.delete(:remember_token)
           cookies.permanent[:remember_token] = @newUser.remember_token

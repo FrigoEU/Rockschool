@@ -27,38 +27,35 @@ class EnrollmentsController < ApplicationController
 				maximum_number_of_students: 1
 			 })
 		end
-		if @lessongroup.errors.empty?
-			if @lessongroup.save
-				@enrollment = Enrollment.new({
-					lessongroup_id: @lessongroup.id,
-					student_id: @student.id,
-					paid: false,
-					approved: false
-				})
-				respond_to do |format|
-					if @enrollment.save
-						lessons = @lessongroup.lessons
-						get_current_user
-						lessons.each  do 
-						  |lesson|
-						  authorized = true
-						  lesson.retrieve_virtual_attributes(authorized)
-						  lesson.adapt_status_to_authorization(authorized)
-						end
-						format.json { render json: {:enrollment => @enrollment, :lessongroup => @lessongroup, :lessons => lessons}, status: :created }
-					else
-						format.json { render json: @enrollment.errors, status: :unprocessable_entity }	
-					end
-				end
-			else
-				respond_to do |format|
-					format.json{ render json:{:errors => @lessongroup.errors.full_messages}, status: :unprocessable_entity }
-				end
-			end
+		if not @lessongroup.errors.empty?
+			return render json:{:errors => @lessongroup.errors.full_messages}, status: :unprocessable_entity 
+		end
+
+		if @lessongroup.save
 		else
-			respond_to do |format|
-				format.json{ render json:{:errors => @lessongroup.errors.full_messages}, status: :unprocessable_entity }
+			return render json:{:errors => @lessongroup.errors.full_messages}, status: :unprocessable_entity 
+		end
+
+		@enrollment = @lessongroup.enrollments.build({
+			student_id: @student.id,
+			paid: false,
+			approved: false
+		})
+		if not @lessongroup.valid? #om validaties op max_number_of_students enzo te doen
+			return render json:{:errors => @lessongroup.errors.full_messages}, status: :unprocessable_entity 
+		end
+		if @enrollment.save
+			lessons = @lessongroup.lessons
+			get_current_user
+			lessons.each  do 
+			  |lesson|
+			  authorized = true
+			  lesson.retrieve_virtual_attributes(authorized)
+			  lesson.adapt_status_to_authorization(authorized)
 			end
+			render json: {:enrollment => @enrollment, :lessongroup => @lessongroup, :lessons => lessons}, status: :created 
+		else
+			render json: {errors: @enrollment.errors}, status: :unprocessable_entity
 		end
 	end
 	def index
@@ -92,6 +89,9 @@ class EnrollmentsController < ApplicationController
 		end
 	end
 	def update
+		get_current_user
+		return (render json: {errors: ["Je bent niet geauthoriseerd om dit te doen"]}, status: :unprocessable_entity) unless @current_user.isAdmin
+
 		@enrollment = Enrollment.find(params[:id])
 	    respond_to do |format|
 	      	if @enrollment.update_attributes(params[:enrollment])
@@ -103,6 +103,9 @@ class EnrollmentsController < ApplicationController
 	    end
 	end
 	def destroy
+		get_current_user
+		return (render json: {errors: ["Je bent niet geauthoriseerd om dit te doen"]}, status: :unprocessable_entity) unless @current_user.isAdmin
+		
 		@enrollment = Enrollment.find(params[:id])
 		@enrollment.destroy
 		return render json: {}

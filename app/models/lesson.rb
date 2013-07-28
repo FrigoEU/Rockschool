@@ -6,10 +6,11 @@ class Lesson < ActiveRecord::Base
   	has_one :teacher
   	belongs_to :lessongroup, :inverse_of => :lessons
   	validate :start_and_endtime
+    validates :status, inclusion: { in: %w(open absentreq absentok absentnok done), message: "%{value} is geen correcte status voor een les" }
 
   	def start_and_endtime
-  		@errors.add(:base, "Starttime can not be later than endtime") unless self.starttime < self.endtime
-  		@errors.add(:base, "Starttime and endtime should be on the same day") unless self.starttime.yday == self.endtime.yday
+  		@errors.add(:base, "Starttijd mag niet later zijn dan eindtijd") unless self.starttime < self.endtime
+  		@errors.add(:base, "Start en eindtijd moeten op dezelfde dag zijn") unless self.starttime.yday == self.endtime.yday
   	end
 
   	def retrieve_virtual_attributes(authorized)
