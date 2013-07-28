@@ -77,6 +77,10 @@ var EnrollmentDialogView = Backbone.View.extend({
 		        $( "#studentsSelect" ).val( ui.item.label );
 		        self.selectedStudent = allStudents.get(ui.item.id);
 		        return false;
+		    },
+		    open: function(event, ui) {
+	    		$('.ui-autocomplete')
+	    		.mCustomScrollbar();
 		    }
     	})
     	.data( "ui-autocomplete" )._renderItem = function( ul, item ) {
@@ -84,7 +88,6 @@ var EnrollmentDialogView = Backbone.View.extend({
 	        .append( "<a>" + item.label + "</a>" )
 	        .appendTo( ul );
 	    };
-
 	},
 	makeEnrollment: function(){
 		var type = $('input:radio[name="enrollmentType"]:checked').val();

@@ -4,7 +4,7 @@ include ApplicationHelper
 
 class Lessongroup < ActiveRecord::Base
 	attr_accessible :maximum_number_of_students
-	has_many :lessons, autosave: true, :inverse_of => :lessongroup
+	has_many :lessons, autosave: true, :inverse_of => :lessongroup, :dependent => :destroy
 	has_many :enrollments, :dependent => :destroy
 	has_many :students, through: :enrollments
 	validate :lessonerrors 
@@ -101,9 +101,6 @@ class Lessongroup < ActiveRecord::Base
 		end
 	end
 	def slot_has_lesson?(date, hour, minute, duration, teacher)
-		logger.debug("minute:")
-		logger.debug(minute)
-
 		starttimenew = date + hour.hours + minute.minutes
 		endtimenew = date + hour.hours + minute.minutes + duration.minutes
 		lesson = Lesson.where("teacher_id = :teacher_id AND 
@@ -149,6 +146,66 @@ class Lessongroup < ActiveRecord::Base
 	def lessonerrors
     	@errors.add(:base, "Les niet vrij op: " + date_to_be_format(@errorlesson.starttime.to_date)) unless @errorlesson.blank?
     	@errors.add(:base, "Les valt buiten schooljaar") if @errorperiod == true
+  #   	lesson = self.lessons.last
+  #   	teacher = Teacher.find(lesson.teacher_id)
+		# case lesson.starttime.wday
+		# when 0
+		# 	day_start_hours = teacher.start_hours_sunday
+		# 	day_start_minutes = teacher.start_minutes_sunday
+		# 	day_end_hours = teacher.end_hours_sunday
+		# 	day_end_minutes = teacher.end_minutes_sunday
+		# when 1
+		# 	day_start_hours = teacher.start_hours_monday
+		# 	day_start_minutes = teacher.start_minutes_monday
+		# 	day_end_hours = teacher.end_hours_monday
+		# 	day_end_minutes = teacher.end_minutes_monday
+		# when 2
+		# 	day_start_hours = teacher.start_hours_tuesday
+		# 	day_start_minutes = teacher.start_minutes_tuesday
+		# 	day_end_hours = teacher.end_hours_tuesday
+		# 	day_end_minutes = teacher.end_minutes_tuesday
+		# when 3
+		# 	day_start_hours = teacher.start_hours_wednesday
+		# 	day_start_minutes = teacher.start_minutes_wednesday
+		# 	day_end_hours = teacher.end_hours_wednesday
+		# 	day_end_minutes = teacher.end_minutes_wednesday
+		# when 4
+		# 	day_start_hours = teacher.start_hours_thursday
+		# 	day_start_minutes = teacher.start_minutes_thursday
+		# 	day_end_hours = teacher.end_hours_thursday
+		# 	day_end_minutes = teacher.end_minutes_thursday
+		# when 5
+		# 	day_start_hours = teacher.start_hours_friday
+		# 	day_start_minutes = teacher.start_minutes_friday
+		# 	day_end_hours = teacher.end_hours_friday
+		# 	day_end_minutes = teacher.end_minutes_friday
+		# when 6
+		# 	day_start_hours = teacher.start_hours_saturday
+		# 	day_start_minutes = teacher.start_minutes_saturday
+		# 	day_end_hours = teacher.end_hours_saturday
+		# 	day_end_minutes = teacher.end_minutes_saturday
+		# end
+  #   	logger.debug("lesson.starttime:")
+  #   	logger.debug(lesson.starttime)
+
+  #   	logger.debug("lesson.endtime:")
+  #   	logger.debug(lesson.endtime)
+
+  #   	logger.debug("day_start_hours:")
+  #   	logger.debug(day_start_hours)
+
+  #   	logger.debug("day_start_minutes:")
+  #   	logger.debug(day_start_minutes)
+
+  #   	logger.debug("day_end_hours:")
+  #   	logger.debug(day_end_hours)
+
+  #   	logger.debug("day_end_minutes:")
+  #   	logger.debug(day_end_minutes)
+
+		# if (lesson.starttime.hour*60 + lesson.starttime.min < day_start_hours*60 + day_start_minutes ) || (lesson.endtime.hour*60 + lesson.endtime.min > day_end_hours*60 + day_end_minutes )
+		# 	@errors.add(:base, "De les valt niet in de periode waarin de leeraar lesgeeft")
+		# end
   	end
   	def enrollment_restrictions
   		myEnrollments = self.enrollments

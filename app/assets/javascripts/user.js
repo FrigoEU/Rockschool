@@ -18,13 +18,16 @@ var PasswordDialog = Backbone.View.extend({
 				password: passwordDialog.find('input[name=password]').val(),
 				password_confirmation: passwordDialog.find('input[name=password_confirmation]').val()
 			});
+			var success = function(model, response){
+				$('#'+this.id).dialog("close");
+        		moderator.showDialog('generalDialog', {
+        			title: "Succes",
+        			text: "Paswoord opgeslagen!"
+        		});
+        	}
+        	success = _.bind(success, this);
 			user.save(null,{
-				success: function(model, response){
-	        		moderator.showDialog('generalDialog', {
-	        			title: "Succes",
-	        			text: "Paswoord opgeslagen!"
-	        		});
-	        	},
+				success: success,
 	    		error: function(model, response, options){
 					standardHTTPErrorHandling(model, response, options);
 				} 

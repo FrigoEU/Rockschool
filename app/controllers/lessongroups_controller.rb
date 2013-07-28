@@ -39,4 +39,12 @@ class LessongroupsController < ApplicationController
 				end
 		end
 	end
+	def destroy
+	    get_current_user
+	    return (render json: {errors: ["Je bent niet geauthoriseerd om dit te doen"]}, status: :unprocessable_entity) unless @current_user.isAdmin
+
+	    @lessongroup = Lessongroup.find(params[:id])
+	    @lessongroup.destroy
+	    head :no_content 
+	end
 end

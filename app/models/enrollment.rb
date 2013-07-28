@@ -6,7 +6,7 @@ class Enrollment < ActiveRecord::Base
 	attr_accessible :lessongroup_id, :paid, :student_id, :approved
 	attr_accessor :starttime, :endtime, :teacher_id
 	belongs_to :student
-	belongs_to :lessongroup
+	belongs_to :lessongroup, :dependent => :destroy
 	validates :lessongroup_id, :student_id, :presence => {:message => ' moet ingevuld zijn, Inschrijving niet opgeslagen'}
 	validates :paid, :approved, inclusion: { in: [true, false], message: "Betaald en/of Goedgekeurd niet ingevuld bij aanmaak nieuwe invschrijving" }
 	has_many :lessons, :through => :lessongroup

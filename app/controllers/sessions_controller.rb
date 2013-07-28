@@ -23,8 +23,6 @@ class SessionsController < ApplicationController
 	end
 	def destroy
 		cookies.delete(:remember_token)
-		respond_to do |format|
-		    format.json { head :no_content }
-	    end
+		head :no_content
 	end
 end

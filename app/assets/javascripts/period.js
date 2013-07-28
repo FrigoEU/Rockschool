@@ -18,8 +18,8 @@ Period = Backbone.Model.extend({
 	},
 	parse: function (response) {
 		return {
-			beginDate: Date.parse(USDateToEU(response.startdate)),
-			endNormalEnrollmentsDate: Date.parse(USDateToEU(response.enddate)),
+			beginDate: new Date(response.startdate),
+			endNormalEnrollmentsDate: new Date(response.enddate),
 			openingTimeHours: response.openinghours,
 			openingTimeMinutes: response.openingminutes,
 			closingTimeHours: response.closinghours,

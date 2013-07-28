@@ -43,12 +43,27 @@ var ScheduleView = Backbone.View.extend({
 
 		renderedScheduleMatrix = renderedScheduleMatrix.concat('<table id="lessenrooster" data-teacher-id= "' + this.collection.meta("teacher").get("id") + '">');
 		//Eerst alle datums er voor zetten
-		var navBackward = true;
-		var navForward = true;
+
+		var navBackward = false;
+		var navForward = false;
+		var periodBeginDate = new Date(period.get('beginDate'));
+		var periodEndDate = new Date(period.get('endNormalEnrollmentsDate'));
+		var metaStartDate = new Date(this.collection.meta("startDate"));
+		var metaEndDate = new Date(this.collection.meta("endDate"));
+		if (current_user_role=="admin" || current_user_role == "teacher"){
+			navForward = true;
+			navBackward = true;
+		}
+		if (periodBeginDate.between(metaStartDate, metaEndDate) || periodBeginDate.toString('dd/MM/yyyy') == metaStartDate.toString('dd/MM/yyyy')){
+			navBackward = false;
+		}
+		if (periodEndDate.between(metaStartDate, metaEndDate) || periodEndDate.toString('dd/MM/yyyy') == metaEndDate.toString('dd/MM/yyyy')){
+			navForward = false;
+		}
 		if (current_user_role=="student"){
-				if (Date.today().between(this.collection.meta("startDate"), this.collection.meta("endDate"))) {navBackward = false;}
-				if (Date.today().add(1).weeks().between(this.collection.meta("startDate"), this.collection.meta("endDate"))) {navForward = false;}
-			}
+			if (Date.today().between(metaStartDate, metaEndDate)){navForward = true}
+			if (Date.today().add(1).weeks().between(metaStartDate, metaEndDate)){navBackward = true}
+		}
 		if (navBackward){
 			renderedScheduleMatrix = renderedScheduleMatrix.concat('<td class = "navbutton" id="navbackward">' + "Vorige" + '</td>');	
 		}

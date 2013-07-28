@@ -1,5 +1,5 @@
 var Lessongroup = Backbone.Model.extend({
-	url: "lessongroups"
+	urlRoot: "/lessongroups"
 });
 var NewLessongroupDialogView = Backbone.View.extend({
 	initialize:function() {
@@ -107,4 +107,4 @@ var GrouplessonDetailsDialog = Backbone.View.extend({
 			}
 		});
 	},
-})
+});

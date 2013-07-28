@@ -15,7 +15,7 @@ class Student < ActiveRecord::Base
       @students = Student.all
       @students.each do
         |student|
-        if student.firstname == firstname && student.lastname == lastname
+        if student.firstname == firstname && student.lastname == lastname && student.id != id
           errors.add(:base, "Voornaam + Naam moet uniek zijn.")
           return
         end

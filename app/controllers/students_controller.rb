@@ -10,6 +10,7 @@ class StudentsController < ApplicationController
     elsif @current_user.isTeacher
       teacher = Teacher.find(@current_user.role_id)
       @students = teacher.students
+      @students.each{ |student| student.retrieve_virtual_attributes}
     elsif @current_user.isStudent
       @students = Student.find(@current_user.role_id)
       @students.retrieve_virtual_attributes
@@ -73,7 +74,7 @@ class StudentsController < ApplicationController
   # PUT /students/1.json
   def update 
     get_current_user
-    return (render json: {errors: ["Je bent niet geauthoriseerd om dit te doen"]}, status: :unprocessable_entity) unless (@current_user.isAdmin || (@current_user.isStudent && @current_user.role_id == params[:id]))
+    return (render json: {errors: ["Je bent niet geauthoriseerd om dit te doen"]}, status: :unprocessable_entity) unless (@current_user.isAdmin || (@current_user.isStudent && @current_user.role_id == params[:id].to_i))
 
     @student = Student.find(params[:id])
     @madeNewUser = false
@@ -81,16 +82,16 @@ class StudentsController < ApplicationController
     if params.has_key?(:email) && params[:email] != "" && (@student.user.nil? || params[:email] != @student.user.email )
       @new_user = make_new_user(params[:email], "student", @student.id)
 
-      if @newUser.save
+      if @new_user.save
         if @current_user.isStudent
           cookies.delete(:remember_token)
-          cookies.permanent[:remember_token] = @newUser.remember_token
+          cookies.permanent[:remember_token] = @new_user.remember_token
         end
         @student.user.destroy unless @student.user.nil?
-        params[:student][:user_id] = @newUser.id
+        params[:student][:user_id] = @new_user.id
         @madeNewUser = true
       else
-        return render json: {errors: @newUser.errors.full_messages}, status: :unprocessable_entity 
+        return render json: {errors: @new_user.errors.full_messages}, status: :unprocessable_entity 
       end
     end
 

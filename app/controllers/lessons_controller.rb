@@ -70,15 +70,15 @@ class LessonsController < ApplicationController
         enrollment.save
       end
     when 'open'
-      @status = :open
+      @status = 'open'
     when 'absentreq'
-      @status = :absentreq
+      @status = 'absentreq'
     when 'absentok'
-      @status = :absentok
+      @status = 'absentok'
     when 'absentnok'
-      @status = :absentnok
+      @status = 'absentnok'
     when 'done'
-      @status = :done
+      @status = 'done'
     else
       raise ArgumentError, 'Incorrect action parameter in lesson update'
     end

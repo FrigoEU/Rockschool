@@ -46,7 +46,7 @@ var Lesson = Backbone.Model.extend({
 	},
 	userIsAuthorized: function(){
 		//Status wordt als nil meegegeven vanuit server als de user niet geauthoriseerd was!
-		return !(this.status == null || this.status == undefined)
+		return !(this.get('status') == null || this.get('status') == undefined)
 	}
 });
 
@@ -81,7 +81,8 @@ var LessonDropDownView = DropDownView.extend({
 	events: {
 		"click .status": "changeStatus",
 		"click .enroll": "enrollment",
-		"click .grouplessonDetails": "grouplessonDetails"
+		"click .grouplessonDetails": "grouplessonDetails",
+		"click .deleteGrouplesson": "deleteGrouplesson"
 	},
 	render: function() {
 		this.constructor.__super__.render.apply(this);
@@ -165,11 +166,22 @@ var LessonDropDownView = DropDownView.extend({
 				});
 			}
 		});
+	},
+	deleteGrouplesson: function(e){
+		var id = this.options.lesson.get('lessongroup_id');
+		var lessongroup = new Lessongroup({id: id});
+		lessongroup.destroy({
+			success: function(model, response, options) {
+				moderator.reloadMainscreen();
+			},
+			error: function(model, response, options) {
+				standardHTTPErrorHandling(model, response, options);
+			}
+		})
 	}
 });
 var LessonsSearchView = Backbone.View.extend({
 	initialize: function () {
-
 	},
 	events: {
 		"click input[type=radio]": "searchLessons",
