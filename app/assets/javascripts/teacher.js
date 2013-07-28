@@ -162,7 +162,8 @@ var TeacherDetailsView = Backbone.View.extend({
 			courses: this.teacher.getCourses(),
 			periodOpenTime: period.getTime('open'),
 			periodCloseTime: period.getTime('close'),
-			bio: this.teacher.get('bio')
+			bio: this.teacher.get('bio'),
+			email: this.teacher.get('email')
 		};
 		var teacher = this.teacher;
 		_.each(['monday','tuesday', 'wednesday', 'thursday', 'friday','saturday', 'sunday'], function(element, index, list){
@@ -170,8 +171,6 @@ var TeacherDetailsView = Backbone.View.extend({
 			argumentHash[element+'EndTime'] = teacher.getTeachingTime('end', element);
 			argumentHash[element+'Teaching'] = teacher.getTeachingDay(element);
 		});
-
-
 
 		$(this.el).html(Mustache.render(this.options.template.html(),argumentHash));
 		$(this.el).find("button.submitButton").button();
@@ -196,15 +195,24 @@ var TeacherDetailsView = Backbone.View.extend({
 		teacher.set('lastname', domElement.find('input[name=lastname]').val());
 		teacher.set('courses', domElement.find('input[name=courses]').val());
 		teacher.set('bio', domElement.find('textarea[name=bio]').val());
+		teacher.set('email', domElement.find('input[name=email]').val());
 
 		teacher.save({},{
 			success: function (model, response, options) {
 				allTeachers.set(teacher,{remove:false});
-				moderator.showDialog('generalDialog', {
-	        			title: "Succes",
-	        			text: "Registratie gelukt!"
-	        		})
 				moderator.showMainScreenTeacherIndex();
+				if (('new_user' in response) && response.new_user == true) {
+						moderator.showDialog('passwordDialog', {
+							text: "Registratie gelukt! We hebben je het standaardpaswoord 'rockschool' gegeven.",
+							user_id: model.get('user_id')
+						})
+					}
+					else {
+						moderator.showDialog('generalDialog', {
+		        			title: "Succes",
+		        			text: "Registratie gelukt!"
+		        		});
+					}
 			},
 			error: function(model, response, options){
 				standardHTTPErrorHandling(model, response, options);

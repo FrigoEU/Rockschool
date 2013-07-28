@@ -10,11 +10,7 @@ class Student < ActiveRecord::Base
     validates :address1, :presence => { :message => "Adreslijn 1 is verplicht." }
     validates :address2, :presence => { :message => "Adreslijn 2 is verplicht." }
 
-  	def retrieve_virtual_attributes
-      if self.user
-  		  self.email = self.user.email
-      end
-  	end
+  	
     def name_should_be_unique
       @students = Student.all
       @students.each do
@@ -25,8 +21,12 @@ class Student < ActiveRecord::Base
         end
       end
     end
-
-	def as_json options=nil
+    def retrieve_virtual_attributes
+      if self.user
+        self.email = self.user.email
+      end
+    end
+	  def as_json options=nil
       options ||= {}
       options[:methods] = ((options[:methods] || []) + [:email, :new_user])
       super options

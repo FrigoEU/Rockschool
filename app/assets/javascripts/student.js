@@ -130,8 +130,6 @@ var EditStudentView = Backbone.View.extend({
 		        			text: "Registratie gelukt!"
 		        		});
 					}
-	        		
-	        		
 	        	},
 	    		error: function(model, response, options){
 					standardHTTPErrorHandling(model, response, options);

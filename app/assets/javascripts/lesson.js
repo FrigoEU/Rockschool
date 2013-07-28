@@ -35,7 +35,7 @@ var Lesson = Backbone.Model.extend({
 		return LessonStatusses[status].name;
 	},
 	getStudentName: function() {
-		if (this.isGroupLesson()) {return "Groepsles";}
+		if (this.isGroupLesson() && this.userIsAuthorized()) {return "Groepsles";}
 		else {
 			if (this.get("students")[0] !== undefined) {return this.get("students")[0].getName();}
 			else {return ''}
@@ -43,6 +43,10 @@ var Lesson = Backbone.Model.extend({
 	},
 	isGroupLesson: function() {
 		return (this.get("maximumNumberOfStudents") > 1);
+	},
+	userIsAuthorized: function(){
+		//Status wordt als nil meegegeven vanuit server als de user niet geauthoriseerd was!
+		return !(this.status == null || this.status == undefined)
 	}
 });
 

@@ -9,8 +9,7 @@ class StudentsController < ApplicationController
       @students.each{ |student| student.retrieve_virtual_attributes}
     elsif @current_user.isTeacher
       teacher = Teacher.find(@current_user.role_id)
-      @students = teacher.lessongroups.students
-      @students.each{ |student| student.retrieve_virtual_attributes}
+      @students = teacher.students
     elsif @current_user.isStudent
       @students = Student.find(@current_user.role_id)
       @students.retrieve_virtual_attributes
@@ -36,42 +35,32 @@ class StudentsController < ApplicationController
   def create
 
     if params.has_key?(:email) && params[:email] != "" #&& params[:create_user] == true
-      @user = User.new({
-        email: params[:email],
-        password: "rockschool",
-        password_confirmation: "rockschool", 
-        role: "student"
-      })
-      if params[:mail_student] == true
-        #sendgrid mail app
-        UserMailer.welcome_email(@user).deliver
-      end
-      no_user = false
+      @user = make_new_user(params[:email], "student")
+      @madeNewUser = true
+      @no_user = false
     else 
-      no_user = true
+      @no_user = true
     end
     respond_to do |format|
-      if no_user || @user.save 
-        if no_user 
+      if @no_user || @user.save 
+        if @no_user 
           user_id = 0 
         else
           user_id = @user.id
         end
-        @student = Student.new({
-          firstname: params[:firstname],
-          lastname: params[:lastname], 
-          phone: params[:phone], 
-          address1: params[:address1], 
-          address2: params[:address2],
-          user_id: user_id
-        })
+
+        @student = Student.new(params[:student])
+        @student.user_id = user_id
+        if @madeNewUser 
+          @student.new_user = true
+        end
         if @student.save
           @student.retrieve_virtual_attributes
           format.json { render json: @student, status: :created, location: @student }
-          @user.role_id = @student.id unless no_user
-          @user.save unless no_user
+          @user.role_id = @student.id unless @no_user
+          @user.save unless @no_user
         else
-          @user.destroy unless no_user
+          @user.destroy unless @no_user
           format.json { render json: {errors: @student.errors.full_messages}, status: :unprocessable_entity }
         end
       else
@@ -90,19 +79,12 @@ class StudentsController < ApplicationController
     @madeNewUser = false
 
     if params.has_key?(:email) && params[:email] != "" && (@student.user.nil? || params[:email] != @student.user.email )
-      @newUser = User.new({
-        email: params[:email],
-        password: "rockschool",
-        password_confirmation: "rockschool",
-        role: "student", 
-        role_id: @student.id
-        })
+      @new_user = make_new_user(params[:email], "student", @student.id)
 
       if @newUser.save
         if @current_user.isStudent
           cookies.delete(:remember_token)
           cookies.permanent[:remember_token] = @newUser.remember_token
-          @student.new_user = true
         end
         @student.user.destroy unless @student.user.nil?
         params[:student][:user_id] = @newUser.id

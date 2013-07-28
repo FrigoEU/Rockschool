@@ -43,7 +43,25 @@ var ScheduleView = Backbone.View.extend({
 
 		renderedScheduleMatrix = renderedScheduleMatrix.concat('<table id="lessenrooster" data-teacher-id= "' + this.collection.meta("teacher").get("id") + '">');
 		//Eerst alle datums er voor zetten
-		renderedScheduleMatrix = renderedScheduleMatrix.concat('<td class = "navbutton" id="navbackward">' + "Vorige" + '</td><td class = "navbutton" id="navforward">' + "Volgende" + '</td>');
+		var navBackward = true;
+		var navForward = true;
+		if (current_user_role=="student"){
+				if (Date.today().between(this.collection.meta("startDate"), this.collection.meta("endDate"))) {navBackward = false;}
+				if (Date.today().add(1).weeks().between(this.collection.meta("startDate"), this.collection.meta("endDate"))) {navForward = false;}
+			}
+		if (navBackward){
+			renderedScheduleMatrix = renderedScheduleMatrix.concat('<td class = "navbutton" id="navbackward">' + "Vorige" + '</td>');	
+		}
+		else{
+			renderedScheduleMatrix = renderedScheduleMatrix.concat('<td class = "navbutton"></td>');
+		}
+		if (navForward){
+			renderedScheduleMatrix = renderedScheduleMatrix.concat('<td class = "navbutton" id="navforward">' + "Volgende" + '</td>');
+		}
+		else{
+			renderedScheduleMatrix = renderedScheduleMatrix.concat('<td class = "navbutton"></td>');
+		}
+
 		for (var i = 0; i < scheduleMatrix.length-2; i++) {
 			var renderDate = new Date(this.collection.meta("startDate"));
 			renderDate.add({days: i});
@@ -107,8 +125,12 @@ var ScheduleView = Backbone.View.extend({
 		};
 		renderedScheduleMatrix = renderedScheduleMatrix.concat('</table>');
 		$(this.el).html(renderedScheduleMatrix);
-		$(this.el).find('#navbackward').each(function() {$(this).button({icons:{primary: 'ui-icon-circle-arrow-w'}, text: false});});
-		$(this.el).find('#navforward').each(function() {$(this).button({icons:{primary: 'ui-icon-circle-arrow-e'}, text: false});});
+		$(this.el).find('#navbackward').each(function() {
+			$(this).button({icons:{primary: 'ui-icon-circle-arrow-w'}, text: false});	
+		});
+		$(this.el).find('#navforward').each(function() {
+			$(this).button({icons:{primary: 'ui-icon-circle-arrow-e'}, text: false});	
+		});
 	},
 	buildScheduleMatrix: function() {
 		var startDate = new Date(this.collection.meta("startDate"));

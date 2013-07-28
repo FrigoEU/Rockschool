@@ -17,14 +17,35 @@ class TeachersController < ApplicationController
     get_current_user
     return (render json: {errors: ["Je bent niet geauthoriseerd om dit te doen"]}, status: :unprocessable_entity) unless @current_user.isAdmin
 
-    @teacher = Teacher.new(params[:teacher])
-
-    respond_to do |format|
-      if @teacher.save
-        format.json { render json: @teacher, status: :created, location: @teacher }
+    if params.has_key?(:email) && params[:email] != "" 
+      @user = make_new_user(params[:email], "teacher")
+      @madeNewUser = true
+      @no_user = false
+    else 
+      @no_user = true
+    end
+    if @no_user || @user.save 
+      if @no_user 
+        user_id = 0 
       else
-        format.json { render json: {errors: @teacher.errors.full_messages}, status: :unprocessable_entity }
+        user_id = @user.id
       end
+      @teacher = Teacher.new(params[:teacher])
+      @teacher.user_id = user_id
+      if @madeNewUser 
+        @teacher.new_user = true
+      end
+      if @teacher.save
+        @teacher.retrieve_virtual_attributes
+        render json: @teacher, status: :created, location: @teacher
+        @user.role_id = @teacher.id unless @no_user
+        @user.save unless @no_user
+      else
+        @user.destroy unless @no_user
+        render json: {errors: @teacher.errors.full_messages}, status: :unprocessable_entity 
+      end
+    else
+     render json: {errors: @user.errors.full_messages}, status: :unprocessable_entity
     end
   end
 
@@ -32,16 +53,36 @@ class TeachersController < ApplicationController
   # PUT /teachers/1.json
   def update
     get_current_user
-    return (render json: {errors: ["Je bent niet geauthoriseerd om dit te doen"]}, status: :unprocessable_entity) unless @current_user.isAdmin
+    return (render json: {errors: ["Je bent niet geauthoriseerd om dit te doen"]}, status: :unprocessable_entity) unless (@current_user.isAdmin || (@current_user.isTeacher && @current_user.role_id == params[:id]))
 
     @teacher = Teacher.find(params[:id])
+    @madeNewUser = false
 
-    respond_to do |format|
-      if @teacher.update_attributes(params[:teacher])
-        format.json { head :no_content }
+    if params.has_key?(:email) && params[:email] != "" && (@teacher.user.nil? || params[:email] != @teacher.user.email )
+      @newUser = make_new_user(params[:email], "teacher", @teacher.id)
+
+      if @newUser.save
+        if @current_user.isTeacher
+          cookies.delete(:remember_token)
+          cookies.permanent[:remember_token] = @newUser.remember_token
+        end
+        @teacher.user.destroy unless @teacher.user.nil?
+        params[:teacher][:user_id] = @newUser.id
+        @madeNewUser = true
       else
-        format.json { render json: {errors: @teacher.errors.full_messages}, status: :unprocessable_entity }
+        return render json: {errors: @newUser.errors.full_messages}, status: :unprocessable_entity 
       end
+    end
+
+    if @teacher.update_attributes(params[:teacher])
+      @teacher.retrieve_virtual_attributes
+      if @madeNewUser 
+        @teacher.new_user = true
+      end
+      render json: @teacher 
+      
+    else
+      render json: {errors: @teacher.errors.full_messages}, status: :unprocessable_entity 
     end
   end
 

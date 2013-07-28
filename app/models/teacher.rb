@@ -1,7 +1,10 @@
 class Teacher < ActiveRecord::Base
-  attr_accessible :firstname, :lastname, :bio, :courses, :start_hours_monday, :start_minutes_monday, :end_hours_monday, :end_minutes_monday, :start_hours_tuesday, :start_minutes_tuesday, :end_hours_tuesday, :end_minutes_tuesday, :start_hours_wednesday, :start_minutes_wednesday, :end_hours_wednesday, :end_minutes_wednesday, :start_hours_thursday, :start_minutes_thursday, :end_hours_thursday, :end_minutes_thursday, :start_hours_friday, :start_minutes_friday, :end_hours_friday, :end_minutes_friday, :start_hours_saturday, :start_minutes_saturday, :end_hours_saturday, :end_minutes_saturday, :start_hours_sunday, :start_minutes_sunday, :end_hours_sunday, :end_minutes_sunday
+  attr_accessible :firstname, :lastname, :bio, :courses, :start_hours_monday, :start_minutes_monday, :end_hours_monday, :end_minutes_monday, :start_hours_tuesday, :start_minutes_tuesday, :end_hours_tuesday, :end_minutes_tuesday, :start_hours_wednesday, :start_minutes_wednesday, :end_hours_wednesday, :end_minutes_wednesday, :start_hours_thursday, :start_minutes_thursday, :end_hours_thursday, :end_minutes_thursday, :start_hours_friday, :start_minutes_friday, :end_hours_friday, :end_minutes_friday, :start_hours_saturday, :start_minutes_saturday, :end_hours_saturday, :end_minutes_saturday, :start_hours_sunday, :start_minutes_sunday, :end_hours_sunday, :end_minutes_sunday, :user_id
   has_many :lessons
   has_many :lessongroups, :through => :lessons
+  has_many :students, :through => :lessongroups, :uniq => true
+  attr_accessor :email, :new_user
+  belongs_to :user, :dependent => :destroy
   validate :name_should_be_unique
   validates :firstname, presence: { message:  'De voornaam van de leeraar ontbreekt.'}
   validates :lastname, presence: { message:  'De achternaam van de leeraar ontbreekt.'}
@@ -19,5 +22,15 @@ class Teacher < ActiveRecord::Base
         end
       end
   end
+  def retrieve_virtual_attributes
+      if self.user
+        self.email = self.user.email
+      end
+    end
+    def as_json options=nil
+      options ||= {}
+      options[:methods] = ((options[:methods] || []) + [:email, :new_user])
+      super options
+    end
 
 end

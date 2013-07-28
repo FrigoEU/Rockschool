@@ -99,11 +99,17 @@ var moderator = {
 		}
 		else {
 			//eerste en laatste dag van deze week
-			if (Date.today().is().monday()) {firstDateForServer = Date.today();}
-			else{firstDateForServer = Date.today().last().monday();}
+			var periodStartDate = new Date(period.get('beginDate'));
+			var scheduleDate;
 
-			if (Date.today().is().sunday()) {lastDateForServer = Date.today();}
-			else{lastDateForServer = Date.today().next().sunday();}
+			if (Date.today().compareTo(periodStartDate) == 1){scheduleDate = Date.today();}
+			else {scheduleDate = periodStartDate;}
+
+			if (scheduleDate.is().monday()) {firstDateForServer = scheduleDate;}
+			else{firstDateForServer = (new Date(scheduleDate)).last().monday();}
+
+			if (scheduleDate.is().sunday()) {lastDateForServer = scheduleDate;}
+			else{lastDateForServer = (new Date(scheduleDate)).next().sunday();}	
 		}
 
 		//console.log("firstDateForServer = " + firstDateForServer);
