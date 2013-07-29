@@ -163,7 +163,8 @@ var TeacherDetailsView = Backbone.View.extend({
 			periodOpenTime: period.getTime('open'),
 			periodCloseTime: period.getTime('close'),
 			bio: this.teacher.get('bio'),
-			email: this.teacher.get('email')
+			email: this.teacher.get('email'),
+			phone: this.teacher.get('phone')
 		};
 		var teacher = this.teacher;
 		_.each(['monday','tuesday', 'wednesday', 'thursday', 'friday','saturday', 'sunday'], function(element, index, list){
@@ -202,6 +203,7 @@ var TeacherDetailsView = Backbone.View.extend({
 		teacher.set('courses', domElement.find('input[name=courses]').valplace());
 		teacher.set('bio', domElement.find('textarea[name=bio]').valplace());
 		teacher.set('email', domElement.find('input[name=email]').valplace());
+		teacher.set('phone', domElement.find('input[name=phone]').valplace());
 
 		teacher.save({},{
 			success: function (model, response, options) {
@@ -271,13 +273,25 @@ var TeacherShowDetailsView = Backbone.View.extend({
 		"click .submitButton":"editTeacher"
 	},
 	render:function(){
+		var showPhone = false;
+		var showEmail;
+		if (current_user_role == "admin" || (current_user_role == "teacher" && current_user_role_id == this.teacher.id)){
+			var showPhone = true;
+		}
+		if (current_user_role == "admin" || (current_user_role == "teacher" && current_user_role_id == this.teacher.id)){
+			var showEmail = true;
+		}
 		var argumentHash = {
 			firstname: this.teacher.get('firstname'),
 			lastname: this.teacher.get('lastname'),
 			courses: this.teacher.getCourses(),
 			periodOpenTime: period.getTime('open'),
 			periodCloseTime: period.getTime('close'),
-			bio: this.teacher.get('bio')
+			bio: this.teacher.get('bio'),
+			phone: this.teacher.get('phone'),
+			email: this.teacher.get('email'),
+			showPhone: showPhone,
+			showEmail: showEmail
 		};
 		var teacher = this.teacher;
 		_.each(['monday','tuesday', 'wednesday', 'thursday', 'friday','saturday', 'sunday'], function(element, index, list){

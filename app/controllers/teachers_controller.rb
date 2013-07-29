@@ -3,9 +3,11 @@ class TeachersController < ApplicationController
   # GET /teachers
   # GET /teachers.json
   def index
+    get_current_user
     @teachers = Teacher.find(:all)
     @teachers.each do |teacher|  
-      teacher.retrieve_virtual_attributes
+      authorized = teacher.authorized?(@current_user)
+      teacher.retrieve_virtual_attributes(authorized)
     end
 
     respond_to do |format|
@@ -39,7 +41,8 @@ class TeachersController < ApplicationController
         @teacher.new_user = true
       end
       if @teacher.save
-        @teacher.retrieve_virtual_attributes
+        authorized = @teacher.authorized?(@current_user)
+        @teacher.retrieve_virtual_attributes(authorized)
         render json: @teacher, status: :created, location: @teacher
         @user.role_id = @teacher.id unless @no_user
         @user.save unless @no_user
@@ -78,7 +81,8 @@ class TeachersController < ApplicationController
     end
 
     if @teacher.update_attributes(params[:teacher])
-      @teacher.retrieve_virtual_attributes
+      authorized = @teacher.authorized?(@current_user)
+      @teacher.retrieve_virtual_attributes(authorized)
       if @madeNewUser 
         @teacher.new_user = true
       end

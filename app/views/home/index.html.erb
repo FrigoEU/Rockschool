@@ -99,6 +99,8 @@
 				<tr><td><label for="courses">Vakken:</label></td><td><label for="email">E-mail</label></td></tr>
 				<tr><td><input type="text" name="courses" placeholder="Gitaar, Zang" value="{{courses}}"/></td>
 				<td><input type="text" name="email" value="{{email}}"/></td></tr>
+				<tr><td><label for="phone">Telefoon:</label></td></tr>
+				<tr><td><input type="text" name="phone" value="{{phone}}"/></td></tr>
 
 			</table>
 			<label for="bio">Details:</label><br>
@@ -164,8 +166,15 @@
 				<td class="infoTableCell"><span>{{firstname}}</span></td>
 				<td class="infoTableCell"><span>{{lastname}}</span></td>
 			</tr>
-			<tr><td><span class="infoLabel">Vakken:</span></td></tr>
-			<tr><td class="infoTableCell"><span>{{courses}}</span></td></tr>
+			<tr><td><span class="infoLabel">Vakken:</span></td>{{#showEmail}}<td><span class="infoLabel">Email:</span></td>{{/showEmail}}</tr>
+			<tr><td class="infoTableCell"><span>{{courses}}</span></td>
+			{{#showEmail}}
+			<td class="infoTableCell"><span>{{email}}</span></td></tr>
+			{{/showEmail}}
+			<tr>{{#showPhone}}<td><span class="infoLabel">Telefoon:</span></td>{{/showPhone}}</tr>
+			{{#showPhone}}
+			<tr><td class="infoTableCell"><span>{{phone}}</span></td></tr>
+			{{/showPhone}}
 
 		</table>
 		<table class="info">
@@ -525,6 +534,7 @@
 	window.onload = function(){
 		<% if not @current_user.role.nil? %>
 		this.current_user_role = '<%= @current_user.getRole %>';
+		this.current_user_role_id = '<%= @current_user.getRoleID %>';
 		<% end %>	
 		main();
 	}

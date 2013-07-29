@@ -16,6 +16,11 @@ class User < ActiveRecord::Base
       self.role
     end
   end 
+  def getRoleID
+    if not self.role_id.nil?
+      self.role_id
+    end
+  end 
   def isAdmin
     self.role == "admin"
   end
