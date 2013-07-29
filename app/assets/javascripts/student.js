@@ -101,12 +101,12 @@ var EditStudentView = Backbone.View.extend({
 		// 	changedEmail = true;
 		// }
 
-		this.student.set('firstname', form.find('input[name=firstname]').val());
-		this.student.set('lastname', form.find('input[name=lastname]').val());
-		this.student.set('address1', form.find('input[name=address1]').val());
-		this.student.set('address2', form.find('input[name=address2]').val());
-		this.student.set('phone', form.find('input[name=phone]').val());
-		this.student.set('email', form.find('input[name=email]').val());
+		this.student.set('firstname', form.find('input[name=firstname]').valplace());
+		this.student.set('lastname', form.find('input[name=lastname]').valplace());
+		this.student.set('address1', form.find('input[name=address1]').valplace());
+		this.student.set('address2', form.find('input[name=address2]').valplace());
+		this.student.set('phone', form.find('input[name=phone]').valplace());
+		this.student.set('email', form.find('input[name=email]').valplace());
 		//var create_user = form.find('input[name=create_user]').is(':checked');
 		//var mail_student = form.find('input[name=mail_student]').is(':checked');
 		var student = this.student;

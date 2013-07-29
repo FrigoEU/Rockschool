@@ -184,18 +184,24 @@ var TeacherDetailsView = Backbone.View.extend({
 		var teacher = this.teacher;
 		var domElement = $(this.el);
 		_.each(['monday','tuesday', 'wednesday', 'thursday', 'friday','saturday', 'sunday'], function(element, index, list){
-			var start = domElement.find('#start_hours_' + element).val();
-			var end = domElement.find('#end_hours_' + element).val();
-			if (start == ''){start = "00:00"};
-			if (end == ''){end = "00:00"};
-			teacher.setTeachingTime('start', element, start);
-			teacher.setTeachingTime('end',element, end);
+			if (!domElement.find('#' + element).prop('checked')) {
+				teacher.setTeachingTime('start',element, "00:00");
+				teacher.setTeachingTime('end',element, "00:00");
+			}
+			else {
+				var start = domElement.find('#start_hours_' + element).valplace();
+				var end = domElement.find('#end_hours_' + element).valplace();
+				if (start == ''){start = "00:00"};
+				if (end == ''){end = "00:00"};
+				teacher.setTeachingTime('start', element, start);
+				teacher.setTeachingTime('end',element, end);
+			}
 		});
-		teacher.set('firstname', domElement.find('input[name=firstname]').val());
-		teacher.set('lastname', domElement.find('input[name=lastname]').val());
-		teacher.set('courses', domElement.find('input[name=courses]').val());
-		teacher.set('bio', domElement.find('textarea[name=bio]').val());
-		teacher.set('email', domElement.find('input[name=email]').val());
+		teacher.set('firstname', domElement.find('input[name=firstname]').valplace());
+		teacher.set('lastname', domElement.find('input[name=lastname]').valplace());
+		teacher.set('courses', domElement.find('input[name=courses]').valplace());
+		teacher.set('bio', domElement.find('textarea[name=bio]').valplace());
+		teacher.set('email', domElement.find('input[name=email]').valplace());
 
 		teacher.save({},{
 			success: function (model, response, options) {

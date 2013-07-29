@@ -98,7 +98,7 @@
 				</tr>
 				<tr><td><label for="courses">Vakken:</label></td><td><label for="email">E-mail</label></td></tr>
 				<tr><td><input type="text" name="courses" placeholder="Gitaar, Zang" value="{{courses}}"/></td>
-				<td><input type="text" name="email" placeholder="Email" value="{{email}}"/></td></tr>
+				<td><input type="text" name="email" value="{{email}}"/></td></tr>
 
 			</table>
 			<label for="bio">Details:</label><br>
@@ -116,38 +116,38 @@
 					<th>Zondag</th>
 				</tr>
 				<tr class="checkboxes">
-					<td><div><input type="checkbox" class="niceCheckbox" id="Monday" name="monday" {{#mondayTeaching}}checked{{/mondayTeaching}}/>
-						<label class = "niceCheckboxLabel" for="Monday"></label></div></td>
-					<td><div><input type="checkbox" class="niceCheckbox" id="Tuesday" name="tuesday" {{#tuesdayTeaching}}checked{{/tuesdayTeaching}}/>
-						<label class = "niceCheckboxLabel" for="Tuesday"></label></div></td>
-					<td><div><input type="checkbox" class="niceCheckbox" id="Wednesday" name="wednesday" {{#wednesdayTeaching}}checked{{/wednesdayTeaching}}/>
-						<label class = "niceCheckboxLabel" for="Wednesday"></label></div></td>
-					<td><div><input type="checkbox" class="niceCheckbox" id="Thursday" name="thursday" {{#thursdayTeaching}}checked{{/thursdayTeaching}}/>
-						<label class = "niceCheckboxLabel" for="Thursday"></label></div></td>
-					<td><div><input type="checkbox" class="niceCheckbox" id="Friday" name="friday" {{#fridayTeaching}}checked{{/fridayTeaching}}/>
-						<label class = "niceCheckboxLabel" for="Friday"></label></div></td>
-					<td><div><input type="checkbox" class="niceCheckbox" id="Saturday" name="saturday" {{#saturdayTeaching}}checked{{/saturdayTeaching}}/>
-						<label class = "niceCheckboxLabel" for="Saturday"></label></div></td>
-					<td><div><input type="checkbox" class="niceCheckbox" id="Sunday" name="sunday" {{#sundayTeaching}}checked{{/sundayTeaching}}/>
-						<label class = "niceCheckboxLabel" for="Sunday"></label></div></td>
+					<td><div><input type="checkbox" class="niceCheckbox" id="monday" name="monday" {{#mondayTeaching}}checked{{/mondayTeaching}}/>
+						<label class = "niceCheckboxLabel" for="monday"></label></div></td>
+					<td><div><input type="checkbox" class="niceCheckbox" id="tuesday" name="tuesday" {{#tuesdayTeaching}}checked{{/tuesdayTeaching}}/>
+						<label class = "niceCheckboxLabel" for="tuesday"></label></div></td>
+					<td><div><input type="checkbox" class="niceCheckbox" id="wednesday" name="wednesday" {{#wednesdayTeaching}}checked{{/wednesdayTeaching}}/>
+						<label class = "niceCheckboxLabel" for="wednesday"></label></div></td>
+					<td><div><input type="checkbox" class="niceCheckbox" id="thursday" name="thursday" {{#thursdayTeaching}}checked{{/thursdayTeaching}}/>
+						<label class = "niceCheckboxLabel" for="thursday"></label></div></td>
+					<td><div><input type="checkbox" class="niceCheckbox" id="friday" name="friday" {{#fridayTeaching}}checked{{/fridayTeaching}}/>
+						<label class = "niceCheckboxLabel" for="friday"></label></div></td>
+					<td><div><input type="checkbox" class="niceCheckbox" id="saturday" name="saturday" {{#saturdayTeaching}}checked{{/saturdayTeaching}}/>
+						<label class = "niceCheckboxLabel" for="saturday"></label></div></td>
+					<td><div><input type="checkbox" class="niceCheckbox" id="sunday" name="sunday" {{#sundayTeaching}}checked{{/sundayTeaching}}/>
+						<label class = "niceCheckboxLabel" for="sunday"></label></div></td>
 				</tr>
 				<tr>
-					<td><input type="text" class="timeInput timeInputMonday" id="start_hours_monday" placeholder="{{periodOpenTime}}" value="{{mondayStartTime}}" {{^mondayTeaching}}hidden{{/mondayTeaching}}></td>
-					<td><input type="text" class="timeInput timeInputTuesday" id="start_hours_tuesday" placeholder="{{periodOpenTime}}" value="{{tuesdayStartTime}}" {{^tuesdayTeaching}}hidden{{/tuesdayTeaching}}></td>
-					<td><input type="text" class="timeInput timeInputWednesday" id="start_hours_wednesday" placeholder="{{periodOpenTime}}" value="{{wednesdayStartTime}}" {{^wednesdayTeaching}}hidden{{/wednesdayTeaching}}></td>
-					<td><input type="text" class="timeInput timeInputThursday" id="start_hours_thursday" placeholder="{{periodOpenTime}}" value="{{thursdayStartTime}}" {{^thursdayTeaching}}hidden{{/thursdayTeaching}}></td>
-					<td><input type="text" class="timeInput timeInputFriday" id="start_hours_friday" placeholder="{{periodOpenTime}}" value="{{fridayStartTime}}" {{^fridayTeaching}}hidden{{/fridayTeaching}}></td>
-					<td><input type="text" class="timeInput timeInputSaturday" id="start_hours_saturday" placeholder="{{periodOpenTime}}" value="{{saturdayStartTime}}" {{^saturdayTeaching}}hidden{{/saturdayTeaching}}></td>
-					<td><input type="text" class="timeInput timeInputSunday" id="start_hours_sunday" placeholder="{{periodOpenTime}}" value="{{sundayStartTime}}" {{^sundayTeaching}}hidden{{/sundayTeaching}}></td>
+					<td><input type="text" class="timeInput timeInputmonday" id="start_hours_monday" placeholder="{{periodOpenTime}}" value="{{mondayStartTime}}" {{^mondayTeaching}}hidden{{/mondayTeaching}}></td>
+					<td><input type="text" class="timeInput timeInputtuesday" id="start_hours_tuesday" placeholder="{{periodOpenTime}}" value="{{tuesdayStartTime}}" {{^tuesdayTeaching}}hidden{{/tuesdayTeaching}}></td>
+					<td><input type="text" class="timeInput timeInputwednesday" id="start_hours_wednesday" placeholder="{{periodOpenTime}}" value="{{wednesdayStartTime}}" {{^wednesdayTeaching}}hidden{{/wednesdayTeaching}}></td>
+					<td><input type="text" class="timeInput timeInputthursday" id="start_hours_thursday" placeholder="{{periodOpenTime}}" value="{{thursdayStartTime}}" {{^thursdayTeaching}}hidden{{/thursdayTeaching}}></td>
+					<td><input type="text" class="timeInput timeInputfriday" id="start_hours_friday" placeholder="{{periodOpenTime}}" value="{{fridayStartTime}}" {{^fridayTeaching}}hidden{{/fridayTeaching}}></td>
+					<td><input type="text" class="timeInput timeInputsaturday" id="start_hours_saturday" placeholder="{{periodOpenTime}}" value="{{saturdayStartTime}}" {{^saturdayTeaching}}hidden{{/saturdayTeaching}}></td>
+					<td><input type="text" class="timeInput timeInputsunday" id="start_hours_sunday" placeholder="{{periodOpenTime}}" value="{{sundayStartTime}}" {{^sundayTeaching}}hidden{{/sundayTeaching}}></td>
 				</tr>
 				<tr>
-					<td><input type="text" class="timeInput timeInputMonday" id="end_hours_monday" placeholder="{{periodCloseTime}}" value="{{mondayEndTime}}" {{^mondayTeaching}}hidden{{/mondayTeaching}}></td>
-					<td><input type="text" class="timeInput timeInputTuesday" id="end_hours_tuesday" placeholder="{{periodCloseTime}}" value="{{tuesdayEndTime}}" {{^tuesdayTeaching}}hidden{{/tuesdayTeaching}}></td>
-					<td><input type="text" class="timeInput timeInputWednesday" id="end_hours_wednesday" placeholder="{{periodCloseTime}}" value="{{wednesdayEndTime}}" {{^wednesdayTeaching}}hidden{{/wednesdayTeaching}}></td>
-					<td><input type="text" class="timeInput timeInputThursday" id="end_hours_thursday" placeholder="{{periodCloseTime}}" value="{{thursdayEndTime}}"  {{^thursdayTeaching}}hidden{{/thursdayTeaching}}></td>
-					<td><input type="text" class="timeInput timeInputFriday" id="end_hours_friday" placeholder="{{periodCloseTime}}" value="{{fridayEndTime}}"  {{^fridayTeaching}}hidden{{/fridayTeaching}}></td>
-					<td><input type="text" class="timeInput timeInputSaturday" id="end_hours_saturday" placeholder="{{periodCloseTime}}" value="{{saturdayEndTime}}" {{^saturdayTeaching}}hidden{{/saturdayTeaching}}></td>
-					<td><input type="text" class="timeInput timeInputSunday" id="end_hours_sunday" placeholder="{{periodCloseTime}}" value="{{sundayEndTime}}" {{^sundayTeaching}}hidden{{/sundayTeaching}}></td>
+					<td><input type="text" class="timeInput timeInputmonday" id="end_hours_monday" placeholder="{{periodCloseTime}}" value="{{mondayEndTime}}" {{^mondayTeaching}}hidden{{/mondayTeaching}}></td>
+					<td><input type="text" class="timeInput timeInputtuesday" id="end_hours_tuesday" placeholder="{{periodCloseTime}}" value="{{tuesdayEndTime}}" {{^tuesdayTeaching}}hidden{{/tuesdayTeaching}}></td>
+					<td><input type="text" class="timeInput timeInputwednesday" id="end_hours_wednesday" placeholder="{{periodCloseTime}}" value="{{wednesdayEndTime}}" {{^wednesdayTeaching}}hidden{{/wednesdayTeaching}}></td>
+					<td><input type="text" class="timeInput timeInputthursday" id="end_hours_thursday" placeholder="{{periodCloseTime}}" value="{{thursdayEndTime}}"  {{^thursdayTeaching}}hidden{{/thursdayTeaching}}></td>
+					<td><input type="text" class="timeInput timeInputfriday" id="end_hours_friday" placeholder="{{periodCloseTime}}" value="{{fridayEndTime}}"  {{^fridayTeaching}}hidden{{/fridayTeaching}}></td>
+					<td><input type="text" class="timeInput timeInputsaturday" id="end_hours_saturday" placeholder="{{periodCloseTime}}" value="{{saturdayEndTime}}" {{^saturdayTeaching}}hidden{{/saturdayTeaching}}></td>
+					<td><input type="text" class="timeInput timeInputsunday" id="end_hours_sunday" placeholder="{{periodCloseTime}}" value="{{sundayEndTime}}" {{^sundayTeaching}}hidden{{/sundayTeaching}}></td>
 				</tr>
 			</table>
 			<br>
@@ -250,7 +250,7 @@
 				</tr>
 				<tr>
 					<td><input type="text" name="phone" value = "{{phone}}" placeholder="0496 12 34 56"></td>
-					<td><input type="text" name="email" value = "{{email}}" placeholder="voorbeeld@rockschool.be"></td>
+					<td><input type="text" name="email" value = "{{email}}" ></td>
 				</tr>
 			</table>
 			<table>

@@ -60,6 +60,17 @@ main = function() {
 				});
 			});
 	};
+	$.fn.valplace = function(){
+		var val = this.val();
+		var placeholder = this.attr("placeholder");
+		if (val){
+			return val;
+		}
+		else if (placeholder) {
+			return placeholder;
+		}
+			else return val;
+	}
 	
 };
 function pad(num, size) {

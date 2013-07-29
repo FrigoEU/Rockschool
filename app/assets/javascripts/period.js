@@ -67,17 +67,18 @@ PeriodOptionsView = Backbone.View.extend({
 			"active":  period.get("openForEnrollment")
 		}));
 		$(this.el).find(".datepicker").datepicker({"dateFormat": "dd/mm/yy"});
+		$(this.el).find(".submitButton").button();
   	},
 	submit: function(e) {
 		e.preventDefault();
 
 		period = new Period({
-			beginDate: Date.parse($(this.el).find('input[name=beginDate]').val()).toString('yyyy-MM-dd'),
-			endNormalEnrollmentsDate: Date.parse($(this.el).find('input[name=endNormalEnrollmentsDate]').val()).toString('yyyy-MM-dd'),
-			openingTimeHours: parseInt($(this.el).find('input[name=startTime]').val().substring(0,2)),
-			openingTimeMinutes: parseInt($(this.el).find('input[name=startTime]').val().substring(3,5)),
-			closingTimeHours: parseInt($(this.el).find('input[name=endTime]').val().substring(0,2)),
-			closingTimeMinutes: parseInt($(this.el).find('input[name=endTime]').val().substring(3,5)),
+			beginDate: Date.parse($(this.el).find('input[name=beginDate]').valplace()).toString('yyyy-MM-dd'),
+			endNormalEnrollmentsDate: Date.parse($(this.el).find('input[name=endNormalEnrollmentsDate]').valplace()).toString('yyyy-MM-dd'),
+			openingTimeHours: parseInt($(this.el).find('input[name=startTime]').valplace().substring(0,2)),
+			openingTimeMinutes: parseInt($(this.el).find('input[name=startTime]').valplace().substring(3,5)),
+			closingTimeHours: parseInt($(this.el).find('input[name=endTime]').valplace().substring(0,2)),
+			closingTimeMinutes: parseInt($(this.el).find('input[name=endTime]').valplace().substring(3,5)),
 			openOnMonday: $(this.el).find('input#monday').is(':checked'),
 			openOnTuesday: $(this.el).find('input#tuesday').is(':checked'),
 			openOnWednesday: $(this.el).find('input#wednesday').is(':checked'),
