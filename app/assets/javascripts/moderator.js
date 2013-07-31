@@ -21,7 +21,8 @@ var moderator = {
 		grouplessonDetailsDialog: {view: 'grouplessonDetailsDialog', template: '#grouplessonDetailsDialogTemplate', el: '#grouplessonDetailsDialog', class: 'GrouplessonDetailsDialog'},
 		generalDialog: {view: 'generalDialog', template: '#generalDialogTemplate', el: '#generalDialog', class: 'GeneralDialog'},
 		passwordDialog: {view: 'passwordDialog', template: '#passwordDialogTemplate', el: '#passwordDialog', class: 'PasswordDialog'},
-		newLessonDialog: {view: 'newLessonDialog', template: '#newLessonDialogTemplate', el: '#newLessonDialog', class: 'NewLessonDialog'}
+		newLessonDialog: {view: 'newLessonDialog', template: '#newLessonDialogTemplate', el: '#newLessonDialog', class: 'NewLessonDialog'},
+		passwordConfirmationDialog: {view: 'passwordConfirmationDialog', template: '#passwordConfirmationDialogTemplate', el: '#passwordConfirmationDialog', class: 'PasswordConfirmationDialog'}
 	},
 
 	showMainScreenTeacherIndex: function() {
@@ -228,11 +229,9 @@ var moderator = {
 		var dialogElement = this.DIALOGS[dialog].el;
 		var myClass = window[this.DIALOGS[dialog].class];
 
-		if (!this[dialogView]) {
-			this[dialogView] = new myClass({
-				template: $(dialogTemplate),
-				el: $(dialogElement)});
-		}
+		this[dialogView] = new myClass({
+			template: $(dialogTemplate),
+			el: $(dialogElement)});
 		_.each(options, function(value, key, list) {
 			this[dialogView][key] = value;
 		}, this);

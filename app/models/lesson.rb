@@ -49,7 +49,13 @@ class Lesson < ActiveRecord::Base
         true
       else 
         students = self.lessongroup.students
-        if (user.isStudent && students.include?(Student.find(user.role_id)))
+        user_id_in_students = false
+        students.each do |student|
+          if student.user_id = user.id 
+            user_id_in_students = true
+          end
+        end
+        if (user.isStudent && user_id_in_students)
           true
         else
           false

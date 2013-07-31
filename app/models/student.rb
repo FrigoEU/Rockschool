@@ -1,8 +1,8 @@
 class Student < ActiveRecord::Base
   	attr_accessible :firstname, :lastname, :phone, :address1, :address2, :user_id
-  	attr_accessor :email, :new_user
+  	attr_accessor :email
   	has_many :enrollments
-  	belongs_to :user, :dependent => :destroy
+  	belongs_to :user
     validate :name_should_be_unique
     validates :firstname, :presence => { :message => "Voornaam is verplicht." }
     validates :lastname, :presence => { :message => "Achternaam is verplicht." }
@@ -28,7 +28,7 @@ class Student < ActiveRecord::Base
     end
 	  def as_json options=nil
       options ||= {}
-      options[:methods] = ((options[:methods] || []) + [:email, :new_user])
+      options[:methods] = ((options[:methods] || []) + [:email])
       super options
     end
 end

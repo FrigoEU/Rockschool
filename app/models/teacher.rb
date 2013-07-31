@@ -32,7 +32,7 @@ class Teacher < ActiveRecord::Base
   def authorized?(user)
     if user.isAdmin
       true
-    elsif user.isTeacher && user.role_id == self.id
+    elsif user.isTeacher && self.user_id == user.id
       true
     else
       false

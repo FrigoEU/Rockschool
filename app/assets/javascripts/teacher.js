@@ -275,10 +275,10 @@ var TeacherShowDetailsView = Backbone.View.extend({
 	render:function(){
 		var showPhone = false;
 		var showEmail;
-		if (current_user_role == "admin" || (current_user_role == "teacher" && current_user_role_id == this.teacher.id)){
+		if (current_user_role == "admin" || (current_user_role == "teacher" && current_user_id == this.teacher.user_id)){
 			var showPhone = true;
 		}
-		if (current_user_role == "admin" || (current_user_role == "teacher" && current_user_role_id == this.teacher.id)){
+		if (current_user_role == "admin" || (current_user_role == "teacher" && current_user_id == this.teacher.user_id)){
 			var showEmail = true;
 		}
 		var argumentHash = {

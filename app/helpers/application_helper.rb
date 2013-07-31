@@ -17,18 +17,10 @@ module ApplicationHelper
 	  		@current_user = User.new
 	  	end
 	end
-	def make_new_user(email, role, role_id=0)
-	  user = User.new({
-        email: email,
-        password: "rockschool",
-        password_confirmation: "rockschool", 
-        role: role,
-        role_id: role_id
-      })
-      if params[:mail_student] == true
-        #sendgrid mail app
-        UserMailer.welcome_email(@user).deliver
-      end
-      user
-	end
+	
+	  def new_remember_token(new_user)
+	    logger.debug("saving remember_token")
+	      cookies.delete(:remember_token)
+	      cookies.permanent[:remember_token] = new_user.remember_token
+	  end
 end

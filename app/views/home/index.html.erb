@@ -516,6 +516,15 @@
 	  	{{text}}
 	</div>
 </script>
+
+<script type="text/template" class="template" id="passwordConfirmationDialogTemplate">
+	<div id="passwordConfirmationDialog" title="{{title}}">
+	  	{{text}}
+	  	<br>
+	  	<input type="password" name="password"/><br>
+	</div>
+</script>
+
 <script type="text/template" class="template" id="newLessonDialogTemplate">
 	<div id="newLessonDialog" title="Nieuwe Les">
   		Je hebt een wettelijke afwezigheid aangegeven. Wil je een nieuwe les aanmaken aan het einde van deze reeks?
@@ -534,7 +543,7 @@
 	window.onload = function(){
 		<% if not @current_user.role.nil? %>
 		this.current_user_role = '<%= @current_user.getRole %>';
-		this.current_user_role_id = '<%= @current_user.getRoleID %>';
+		this.current_user_id = '<%= @current_user.id %>';
 		<% end %>	
 		main();
 	}

@@ -54,3 +54,41 @@ var PasswordDialog = Backbone.View.extend({
 		});
 	}
 });
+
+var PasswordConfirmationDialog = Backbone.View.extend({
+	initialize: function (){
+	},
+	id: 'passwordConfirmationDialog',
+	render: function (){
+		if (this.text === undefined){this.text = ''}
+		if (this.title === undefined){this.title = 'Paswoord invoeren'}
+		$("body").append(Mustache.render(
+			this.options.template.html(),{
+				"text": this.text,
+				"title": this.title
+		}));
+		this.setElement($('#'+this.id));
+
+		var OKCB = this.OKCB;
+
+		$(this.el).dialog({
+			autoOpen: true,
+			height: 350,
+			width: 450,
+			modal: true,
+			buttons:{
+					OK:  function(){
+						$( this ).dialog( "close" );
+						OKCB({password: $(this).find('input[name=password]').val()});
+					},
+					Sluiten: function() {
+						$( this ).dialog( "close" );
+					}
+				},
+				close: function() {
+						//allFields.val( "" ).removeClass( "ui-state-error" );
+						$('#passwordConfirmationDialog').remove();
+				}
+		});
+	}
+});

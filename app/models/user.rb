@@ -1,5 +1,5 @@
 class User < ActiveRecord::Base
-  attr_accessible :email, :password, :password_confirmation, :password_digest, :remember_token, :role, :role_id
+  attr_accessible :email, :password, :password_confirmation, :password_digest, :remember_token, :role
   has_secure_password
 
   before_save {|user| user.email = email.downcase}
@@ -16,11 +16,6 @@ class User < ActiveRecord::Base
       self.role
     end
   end 
-  def getRoleID
-    if not self.role_id.nil?
-      self.role_id
-    end
-  end 
   def isAdmin
     self.role == "admin"
   end
@@ -30,9 +25,13 @@ class User < ActiveRecord::Base
   def isStudent
     self.role == "student"
   end
+ def as_json options=nil
+    super(:only => [:email, :id])
+  end
 
   private
   	def create_remember_token
+      logger.debug("changing remember_token")
 	  self.remember_token = SecureRandom.urlsafe_base64
 	end
 end

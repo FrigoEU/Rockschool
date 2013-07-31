@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130729191559) do
+ActiveRecord::Schema.define(:version => 20130731225524) do
 
   create_table "closingperiods", :force => true do |t|
     t.date     "startdate"
@@ -121,7 +121,6 @@ ActiveRecord::Schema.define(:version => 20130729191559) do
     t.datetime "created_at",      :null => false
     t.datetime "updated_at",      :null => false
     t.string   "role"
-    t.integer  "role_id"
     t.string   "remember_token"
   end
 

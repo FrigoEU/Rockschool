@@ -28,7 +28,10 @@ var GeneralDialog = Backbone.View.extend({
 	}
 });
 var standardHTTPErrorHandling = function(model, response, options){
-	var errors = $.parseJSON(response.responseText).errors;
+	var errors = [];
+	if ('responseText' in response && response.responseText != "") {
+		var errors = $.parseJSON(response.responseText).errors;
+	}
 	if (errors.length == 0){moderator.showDialog('generalDialog', {text: 'Systeemfout'});}
 	else {moderator.showDialog('generalDialog', {
 		title: "Fout",

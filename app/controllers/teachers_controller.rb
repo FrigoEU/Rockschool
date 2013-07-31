@@ -44,7 +44,6 @@ class TeachersController < ApplicationController
         authorized = @teacher.authorized?(@current_user)
         @teacher.retrieve_virtual_attributes(authorized)
         render json: @teacher, status: :created, location: @teacher
-        @user.role_id = @teacher.id unless @no_user
         @user.save unless @no_user
       else
         @user.destroy unless @no_user
@@ -59,9 +58,10 @@ class TeachersController < ApplicationController
   # PUT /teachers/1.json
   def update
     get_current_user
-    return (render json: {errors: ["Je bent niet geauthoriseerd om dit te doen"]}, status: :unprocessable_entity) unless (@current_user.isAdmin || (@current_user.isTeacher && @current_user.role_id == params[:id].to_i))
-
     @teacher = Teacher.find(params[:id])
+
+    return (render json: {errors: ["Je bent niet geauthoriseerd om dit te doen"]}, status: :unprocessable_entity) unless (@current_user.isAdmin || (@current_user.isTeacher && @current_user.id == @teacher.user_id))
+
     @madeNewUser = false
 
     if params.has_key?(:email) && params[:email] != "" && (@teacher.user.nil? || params[:email] != @teacher.user.email )

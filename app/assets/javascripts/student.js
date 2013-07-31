@@ -79,6 +79,9 @@ var StudentsIndexView = Backbone.View.extend({
 });
 
 var EditStudentView = Backbone.View.extend({
+	initialize: function(){
+		_.bindAll(this, 'render', 'submit', 'saveStudent', 'changePassword');
+	},
 	events: {
 		'click .submitButton': 'submit',
 		'click .passwordButton': 'changePassword'
@@ -91,54 +94,93 @@ var EditStudentView = Backbone.View.extend({
 		$(this.el).html((Mustache.to_html(this.options.template.html(), this.student.toJSON())));
 		$(this.el).find("button").button();
 
+		this.email = this.student.get('email');
+
 		return this;
 	},
 	submit: function(e) {
 		e.preventDefault();
 		var form = $(this.el).find('#editStudent');
-		// var changedEmail = false;
-		// if (form.find('input[name=email]').val() != this.student.email){
-		// 	changedEmail = true;
-		// }
+			
+		this.emailChanged = (this.email != form.find('input[name=email]').valplace());
 
 		this.student.set('firstname', form.find('input[name=firstname]').valplace());
 		this.student.set('lastname', form.find('input[name=lastname]').valplace());
 		this.student.set('address1', form.find('input[name=address1]').valplace());
 		this.student.set('address2', form.find('input[name=address2]').valplace());
 		this.student.set('phone', form.find('input[name=phone]').valplace());
-		this.student.set('email', form.find('input[name=email]').valplace());
-		//var create_user = form.find('input[name=create_user]').is(':checked');
-		//var mail_student = form.find('input[name=mail_student]').is(':checked');
-		var student = this.student;
+
 		// var newStudent = this.newStudent;
 
 		if (this.student.isValid()){
-			this.student.save(null,{
-				success: function(model, response){
-					allStudents.set(student,{remove: false});
-					moderator.reloadSidebar();
-					moderator.setMainScreenShowStudent(student);
-					if (('new_user' in response) && response.new_user == true) {
-						moderator.showDialog('passwordDialog', {
-							text: "Registratie gelukt! We hebben je het standaardpaswoord 'rockschool' gegeven.",
-							user_id: model.get('user_id')
-						})
+			if (this.emailChanged) {
+				var email = form.find('input[name=email]').valplace();
+				var user = new User({email: email});
+				this.student.set('user', user);
+
+				var userFetchCallback = function(model, response, options){
+					var newUser = (model.id == undefined);
+					if (newUser){
+						// nieuwe user --> geen user_id in model, wel user_attributes
+						delete this.student.attributes['user_id']; 
+						this.saveStudent({newUser: true});
 					}
 					else {
-						moderator.showDialog('generalDialog', {
-		        			title: "Succes",
-		        			text: "Registratie gelukt!"
-		        		});
+						//bestaande user --> gooi user_attributes weg en vul user_id in 
+						delete this.student.attributes['user'];
+						this.student.set('user_id',model.id);
+						moderator.showDialog('passwordConfirmationDialog', {
+							title: "Paswoord invoeren",
+							text: "Het emailadres dat je hebt ingegeven is reeds in gebruik. Als je je onder hetzelfde emailadres wil inschrijven, geef dan het correcte wachtwoord in.",
+							OKCB: this.saveStudent
+						});
 					}
-	        	},
-	    		error: function(model, response, options){
-					standardHTTPErrorHandling(model, response, options);
 				}
-			});
+				userFetchCallback = _.bind(userFetchCallback, this);
+				user.fetch({
+					data: {email: email},
+					success: userFetchCallback,
+					error: standardHTTPErrorHandling
+				});
+			}
+			else {
+				//Als de email niet is veranderd save je gewoon de student
+				this.saveStudent();
+			}
 		}
 		else {
 			standardValidationErrorHandling(this.student);
 		}
+	},
+	saveStudent: function(params){
+
+		//Bestaande user --> paswoord nodig
+		if (params.password){this.student.set('password', params.password);}
+
+		var studentSaveSuccess =  function(model, response, options){
+			allStudents.set(this.student,{remove: false});
+			moderator.reloadSidebar();
+			moderator.setMainScreenShowStudent(this.student);
+			//Als je een nieuwe user maakte, moet je de user de kans geven om het standaardpaswoord aan te passen
+			if (params.newUser){
+				moderator.showDialog('passwordDialog', {
+					text: "Registratie gelukt! We hebben je het standaardpaswoord 'rockschool' gegeven. Vul hier je eigen paswoord in",
+					user_id: model.get('user_id')
+				})
+			}
+			else {
+				moderator.showDialog('generalDialog', {
+	    			title: "Succes",
+	    			text: "Registratie gelukt!"
+	    		});
+			}
+		}
+		studentSaveSuccess = _.bind(studentSaveSuccess, this);
+
+		this.student.save(null, {
+			success: studentSaveSuccess,
+			error: standardHTTPErrorHandling
+		})
 	},
 	changePassword: function(e){
 		e.preventDefault();

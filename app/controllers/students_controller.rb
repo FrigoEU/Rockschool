@@ -6,16 +6,13 @@ class StudentsController < ApplicationController
     get_current_user
     if @current_user.isAdmin
       @students = Student.all
-      @students.each{ |student| student.retrieve_virtual_attributes}
     elsif @current_user.isTeacher
-      teacher = Teacher.find(@current_user.role_id)
+      teacher = Teacher.where("user_id = ?", @current_user.id)
       @students = teacher.students
-      @students.each{ |student| student.retrieve_virtual_attributes}
     elsif @current_user.isStudent
-      @students = Student.find(@current_user.role_id)
-      @students.retrieve_virtual_attributes
+      @students = Student.where("user_id = ?", @current_user.id)
     end
-
+    @students.each{ |student| student.retrieve_virtual_attributes} unless @students.nil?
     respond_to do |format|
       format.json { render json: @students }
     end
@@ -34,39 +31,66 @@ class StudentsController < ApplicationController
   # POST /students
   # POST /students.json
   def create
+    get_current_user
 
-    if params.has_key?(:email) && params[:email] != "" #&& params[:create_user] == true
-      @user = make_new_user(params[:email], "student")
-      @madeNewUser = true
-      @no_user = false
-    else 
-      @no_user = true
+    if params[:user_id].blank? && params[:user][:email].blank?
+      #Geen informatie over user --> Gewoon student maken
+      return make_and_save_new_student(params)
     end
-    respond_to do |format|
-      if @no_user || @user.save 
-        if @no_user 
-          user_id = 0 
-        else
-          user_id = @user.id
-        end
 
-        @student = Student.new(params[:student])
-        @student.user_id = user_id
-        if @madeNewUser 
-          @student.new_user = true
+    if (params[:user_id].present?)
+      if @current_user.isAdmin
+        # Niks, admin moet paswoord niet ingeven
+      else
+        #student die aan een bestaand emailadres wil koppelen moet zijn paswoord wel ingeven
+        user = User.find(params[:user_id])
+        if !user.authenticate(params[:password])
+          return render json: {errors: ["Het paswoord dat je hebt ingegeven is foutief"]}, status: :unprocessable_entity
         end
+      end
+      return make_and_save_new_student(params)
+    end
+
+    if params[:user][:email].present?
+      @user = User.new({
+        email: params[:user][:email],
+        password: "rockschool",
+        password_confirmation: "rockschool",
+        role: "student"
+        })
+      if @user.save
+        @student = Student.new(params[:student])
+        @student.user_id = @user.id
         if @student.save
           @student.retrieve_virtual_attributes
-          format.json { render json: @student, status: :created, location: @student }
-          @user.role_id = @student.id unless @no_user
-          @user.save unless @no_user
+          return render json: @student, status: :created, location: @student 
         else
-          @user.destroy unless @no_user
-          format.json { render json: {errors: @student.errors.full_messages}, status: :unprocessable_entity }
+          @user.destroy
+          return render json: {errors: @student.errors.full_messages}, status: :unprocessable_entity 
         end
       else
-        format.json { render json: {errors: @user.errors.full_messages}, status: :unprocessable_entity }
+        return render json: {errors: @user.errors.full_messages}, status: :unprocessable_entity 
       end
+    end
+  end
+
+  def make_and_save_new_student(params)
+    @student = Student.new(params[:student])
+    return save_student(@student)
+  end
+
+  def update_and_save_student(params)
+    @student = Student.find(params[:id])
+    @student.update_attributes(params[:student])
+    return save_student(@student)
+  end
+
+  def save_student(student)
+    if student.save
+      student.retrieve_virtual_attributes
+      render json: student, status: :created, location: student 
+    else
+      render json: {errors: student.errors.full_messages}, status: :unprocessable_entity 
     end
   end
 
@@ -74,36 +98,77 @@ class StudentsController < ApplicationController
   # PUT /students/1.json
   def update 
     get_current_user
-    return (render json: {errors: ["Je bent niet geauthoriseerd om dit te doen"]}, status: :unprocessable_entity) unless (@current_user.isAdmin || (@current_user.isStudent && @current_user.role_id == params[:id].to_i))
-
     @student = Student.find(params[:id])
-    @madeNewUser = false
+    return (render json: {errors: ["Je bent niet geauthoriseerd om dit te doen"]}, status: :unprocessable_entity) unless (@current_user.isAdmin || (@current_user.isStudent && @current_user.id == @student.user_id))
 
-    if params.has_key?(:email) && params[:email] != "" && (@student.user.nil? || params[:email] != @student.user.email )
-      @new_user = make_new_user(params[:email], "student", @student.id)
+    if params[:user_id].blank? && params[:user][:email].blank?
+      logger.debug("case1")
+      #Geen informatie over user --> Gewoon student saven
+      return update_and_save_student(params)
+    end
 
-      if @new_user.save
-        if @current_user.isStudent
-          cookies.delete(:remember_token)
-          cookies.permanent[:remember_token] = @new_user.remember_token
+    if params[:user_id].present?
+      logger.debug("case2")
+      @new_user = User.find(params[:user_id])
+      @old_user = @student.user
+      if @new_user == @old_user
+        return update_and_save_student(params)
+      else #Er wordt ven een uesr naar een andere bestaande user geswitcht
+        if @current_user.isAdmin
+          # Niks, admin moet paswoord niet ingeven
+        else
+          #student die aan een bestaand emailadres wil koppelen moet zijn paswoord wel ingeven
+          if !@new_user.authenticate(params[:password])
+            return render json: {errors: ["Het paswoord dat je hebt ingegeven is foutief"]}, status: :unprocessable_entity
+          end
         end
-        @student.user.destroy unless @student.user.nil?
-        params[:student][:user_id] = @new_user.id
-        @madeNewUser = true
+        #Als een student zijn user_id verandert dan moet de token naar de nieuwe token verwijzen
+
+        @student = Student.find(params[:id])
+        @student.update_attributes(params[:student])
+        if @student.save
+          @student.retrieve_virtual_attributes
+          new_remember_token(@new_user) if @current_user.isStudent
+          check_user_for_existing_roles(@old_user) unless @old_user.nil?
+          return render json: @student, status: :created, location: @student 
+        else
+          return render json: {errors: @student.errors.full_messages}, status: :unprocessable_entity 
+        end
+      end
+    end
+
+    if params[:user][:email].present? && params[:user_id].blank?
+      logger.debug("case3")
+      @old_user = @student.user
+      @new_user = User.new({
+        email: params[:user][:email],
+        password: "rockschool",
+        password_confirmation: "rockschool",
+        role: "student"
+        })
+      if @new_user.save
+        @student = Student.find(params[:id])
+        @student.user_id = @new_user.id
+        if @student.save
+          @student.retrieve_virtual_attributes
+          new_remember_token(@new_user) if @current_user.isStudent
+          check_user_for_existing_roles(@old_user) unless @old_user.nil?
+          return render json: @student, status: :created, location: @student 
+        else
+          @new_user.destroy
+          return render json: {errors: @student.errors.full_messages}, status: :unprocessable_entity 
+        end
       else
         return render json: {errors: @new_user.errors.full_messages}, status: :unprocessable_entity 
       end
     end
 
-    if @student.update_attributes(params[:student])
-      @student.retrieve_virtual_attributes
-      if @madeNewUser 
-        @student.new_user = true
-      end
-      render json: @student 
-      
-    else
-      render json: {errors: @student.errors.full_messages}, status: :unprocessable_entity 
+  end
+
+  def check_user_for_existing_roles(user)
+    @students = Student.where('user_id = ?', user.id)
+    if @students.count == 0 && user.role == "student"
+      user.destroy
     end
   end
 
