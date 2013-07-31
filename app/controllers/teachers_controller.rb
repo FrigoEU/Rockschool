@@ -23,7 +23,13 @@ class TeachersController < ApplicationController
     return (render json: {errors: ["Je bent niet geauthoriseerd om dit te doen"]}, status: :unprocessable_entity) unless @current_user.isAdmin
 
     if params.has_key?(:email) && params[:email] != "" 
-      @user = make_new_user(params[:email], "teacher")
+      @user = User.new({
+        email: params[:email],
+        role: "teacher",
+        password: "rockschool",
+        password_confirmation: "rockschool"
+        })
+
       @madeNewUser = true
       @no_user = false
     else 
@@ -65,7 +71,12 @@ class TeachersController < ApplicationController
     @madeNewUser = false
 
     if params.has_key?(:email) && params[:email] != "" && (@teacher.user.nil? || params[:email] != @teacher.user.email )
-      @new_user = make_new_user(params[:email], "teacher", @teacher.id)
+      @new_user = User.new({
+        email: params[:email],
+        role: "teacher",
+        password: "rockschool",
+        password_confirmation: "rockschool"
+        })
 
       if @new_user.save
         if @current_user.isTeacher
