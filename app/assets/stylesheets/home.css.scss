@@ -5,7 +5,7 @@ body {
 	
 }
 $lessonopencolor: lightblue;
-$lessoncreatedcolor: yellow;
+$infobackground: darkgray;
 $lessonunpaidenrollmentcolor:red;
 $lessonabsentokcolor: darkgray;
 $lessonabsentnokcolor: brown;
@@ -17,6 +17,8 @@ $darkgraybackground: #333333 url(images/ui-bg_dots-small_20_333333_2x2.png) 50% 
 $schedulecellheight: 4px;
 $standardborderradius: 5px;
 $orangebackground: #B24926;
+$inputwidth: 149px;
+$inputareawidth: 328px;
 body {
 	width: 100%;
 	margin: 0px;
@@ -59,7 +61,7 @@ body {
 	width: 200px;
 	font-size: 10px;
 }
-.unpaidenrollment {
+.unpaid {
 	background: url(exclamation9.png) left no-repeat;
 }
 .unapprovedenrollment {
@@ -82,7 +84,14 @@ body {
 	overflow:hidden;
 	text-overflow:ellipsis;
 	border-width: 2px;
-	line-height:$schedulelineheight;
+	line-height: 22px;
+}
+.invoice {
+	width: $inputareawidth;
+	min-width: $inputareawidth;
+	height: $schedulelineheight;
+	color: black;
+	background-color: $infobackground;
 }
 .enrollment {
 	background-color: $orangebackground;
@@ -150,10 +159,6 @@ body {
 #lessenrooster td.lesson-null {
 	text-align: center;
 	cursor: auto;
-}
-.lesson-created {
-	color: brown;
-	background-color: $lessoncreatedcolor;
 }
 .lesson-open {
 	color: darkblue;
@@ -268,8 +273,8 @@ input[type=checkbox].niceCheckbox:checked + label.niceCheckboxLabel {
 		
 	}
 	.info td {
-		width: 149px;
-		min-width: 149px;
+		width: $inputwidth;
+		min-width: $inputwidth;
 		height: 16px;
 		min-height: 16px;
 		margin: 2px;
@@ -278,7 +283,7 @@ input[type=checkbox].niceCheckbox:checked + label.niceCheckboxLabel {
 		font-weight: bold;
 	}
 	.info .infoTableCell, #timeTable .infoTableCell {
-		background: darkgray;
+		background: $infobackground;
 		border: 3px solid $orangebackground;
 		border-radius: 5px;
 		color: black;
@@ -289,8 +294,8 @@ input[type=checkbox].niceCheckbox:checked + label.niceCheckboxLabel {
 		width: 100px;
 	}
 	.info .infoTableCell.textAreaInfo{
-		width: 328px;
-		min-width: 328px;
+		width: $inputareawidth;
+		min-width: $inputareawidth;
 		height: 70px;
 		min-height: 70px;
 		overflow: auto;

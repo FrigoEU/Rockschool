@@ -15,6 +15,7 @@ var moderator = {
 	enrollmentsSearchView: "",
 	loginView: "",
 	teacherShowDetailsView: "",
+	enrollmentDetailsView:"",
 	DIALOGS: {
 		enrollmentDialog: {view: 'enrollmentDialogView', template: '#enrollmentDialogTemplate', el: '#enrollmentDialog', class: 'EnrollmentDialogView'},
 		newlessongroupDialog: {view: 'newLessongroupView', template: '#newLessongroupTemplate', el: '#newLessongroupDialog', class: 'NewLessongroupDialogView'},
@@ -22,7 +23,8 @@ var moderator = {
 		generalDialog: {view: 'generalDialog', template: '#generalDialogTemplate', el: '#generalDialog', class: 'GeneralDialog'},
 		passwordDialog: {view: 'passwordDialog', template: '#passwordDialogTemplate', el: '#passwordDialog', class: 'PasswordDialog'},
 		newLessonDialog: {view: 'newLessonDialog', template: '#newLessonDialogTemplate', el: '#newLessonDialog', class: 'NewLessonDialog'},
-		passwordConfirmationDialog: {view: 'passwordConfirmationDialog', template: '#passwordConfirmationDialogTemplate', el: '#passwordConfirmationDialog', class: 'PasswordConfirmationDialog'}
+		passwordConfirmationDialog: {view: 'passwordConfirmationDialog', template: '#passwordConfirmationDialogTemplate', el: '#passwordConfirmationDialog', class: 'PasswordConfirmationDialog'},
+		newInvoiceDialog: {view: 'newInvoiceDialog', template: '#newInvoiceDialogTemplate', el: '#newInvoiceDialog', class: 'NewInvoiceDialog'}
 	},
 
 	showMainScreenTeacherIndex: function() {
@@ -90,6 +92,23 @@ var moderator = {
 			this.enrollmentsSearchView.collection = new Enrollments();
 		}
 		this.setMiddle(enrollmentsSearchView);
+	},
+	showEnrollmentDetails:function(enrollment_id){
+		if (this.enrollmentDetailsView==="") {
+			this.enrollmentDetailsView = new EnrollmentDetailsView({
+			template: $("#enrollmentDetailsTemplate")
+			});
+		}
+		var enrollment = new Enrollment({id: enrollment_id});
+		var enrollmentFetchSuccessCallback = _.bind(function(model, response, options){
+				this.enrollmentDetailsView.enrollment = enrollment;
+				this.setMiddle(this.enrollmentDetailsView);
+			}, this);
+
+		enrollment.fetch({
+			success: enrollmentFetchSuccessCallback,
+			error: standardHTTPErrorHandling
+		})
 	},
 	setMainScreenTeacherSchedule: function (teacher, date1, date2) {
 		var firstDateForServer;
@@ -223,22 +242,32 @@ var moderator = {
 		});
 		enrollmentDropDownView.render();
 	},
+	showInvoiceDropDown: function(x,y,invoice){
+		var invoiceDropDownView = new InvoiceDropDownView({
+			posX: x,
+			posY: y,
+			invoice: invoice
+		});
+		invoiceDropDownView.render();
+	},
 	showDialog: function(dialog, options){
 		var dialogView = this.DIALOGS[dialog].view;
 		var dialogTemplate = this.DIALOGS[dialog].template;
 		var dialogElement = this.DIALOGS[dialog].el;
 		var myClass = window[this.DIALOGS[dialog].class];
 
-		this[dialogView] = new myClass({
-			template: $(dialogTemplate),
-			el: $(dialogElement)});
+		var newDialog = new myClass({
+			template: $(dialogTemplate)
+		});
 		_.each(options, function(value, key, list) {
-			this[dialogView][key] = value;
+			newDialog[key] = value;
 		}, this);
-		this[dialogView].render();
+		newDialog.render();
+		newDialog.setElement($(dialogElement));
 	},
 	clearAllScreens: function () {
 		if (this.sidebarView!==""){
+			if (this.sidebarView.hasOwnProperty("close")) {this.sidebarView.close();}
 			this.sidebarView.remove();
 			$('#sidebar').remove();
 			this.sidebarView="";
@@ -248,6 +277,7 @@ var moderator = {
 	},
 	clearMiddleScreen: function () {
 		if (this.middleView!=="") {
+			if (this.middleView.hasOwnProperty("close")) {this.middleView.close();}
 			this.middleView.remove();
 			$('#middle').remove();
 			this.middleView="";
@@ -255,15 +285,15 @@ var moderator = {
 		}
 	},
 	reloadMainscreen: function() {
-		if (this.middleView != "") {
+		if (this.middleView !== ""){
 			this.middleView.render();
-			$('#middle').mCustomScrollbar();
+			setScrollBar($('#middle'));
 		}
 	},
 	reloadSidebar: function() {
-		if (this.sidebarView != "") {
+		if (this.sidebarView !== "") {
 			this.sidebarView.render();
-			$('#sidebar').mCustomScrollbar();
+			setScrollBar($('#sidebar'));
 		}
 	},
 	setSidebar: function(view) {
@@ -271,13 +301,22 @@ var moderator = {
 		view.setElement($('#sidebar'));
 		this.sidebarView = view;
 		view.render();
-		$('#sidebar').mCustomScrollbar();
+		setScrollBar($('#sidebar'));
 	},
 	setMiddle: function(view) {
 		this.clearMiddleScreen();
 		view.setElement($('#middle'));
 		this.middleView = view;
 		view.render();
-		$('#middle').mCustomScrollbar();
+		setScrollBar($('#middle'));
 	}
 };
+var setScrollBar = function(){
+	var options = {advanced:{
+		updateOnBrowserResize:true,
+		updateOnContentResize:true
+	}};
+	return function(obj){
+		obj.mCustomScrollbar(options);
+	};
+}();

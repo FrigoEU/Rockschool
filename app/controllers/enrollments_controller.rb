@@ -38,7 +38,6 @@ class EnrollmentsController < ApplicationController
 
 		@enrollment = @lessongroup.enrollments.build({
 			student_id: @student.id,
-			paid: false,
 			approved: false
 		})
 		if not @lessongroup.valid? #om validaties op max_number_of_students enzo te doen
@@ -78,7 +77,12 @@ class EnrollmentsController < ApplicationController
 		end
 		if params.has_key?(:inquirystatus) && (params[:inquirystatus] == "unpaid" || params[:inquirystatus] == "unapproved")
 			if params[:inquirystatus] == "unpaid"		
-				@enrollments = Enrollment.where('paid = ?', false)
+				@enrollment_ids = Invoice.where("paid = ?", false).map(&:enrollment_id.to_proc).to_a
+				if not @enrollment_ids.empty?
+					@enrollments = Enrollment.where("id IN (?)", @enrollment_ids)
+				else
+					@enrollments = Enrollment.where("id = 0")
+				end
 			elsif params[:inquirystatus] == "unapproved"
 				@enrollments = Enrollment.where('approved = ?', false)
 			end
@@ -101,6 +105,16 @@ class EnrollmentsController < ApplicationController
 	        	format.json { render json: @enrollment.errors, status: :unprocessable_entity }
 	      	end
 	    end
+	end
+	def show
+		@enrollment = Enrollment.find(params[:id])
+		@student = @enrollment.student
+		get_current_user
+
+		return (render json: {errors: ["Je bent niet geauthoriseerd om dit te doen"]}, status: :unprocessable_entity) unless @current_user.isAdmin || @current_user.isStudent && @student.user_id == @current_user.id
+		
+		@enrollment.retrieve_virtual_attributes
+		render json: @enrollment.to_json
 	end
 	def destroy
 		get_current_user

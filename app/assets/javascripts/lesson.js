@@ -27,7 +27,8 @@ var Lesson = Backbone.Model.extend({
 				id: parseInt(response.id,10),
 				paid: response.paid,
 				maximumNumberOfStudents: parseInt(response.maximum_number_of_students, 10),
-				approved: response.approved
+				approved: response.approved,
+				enrollment_id: response.enrollment_id
 		};
 	},
 	statusToDutch: function() {
@@ -38,7 +39,7 @@ var Lesson = Backbone.Model.extend({
 		if (this.isGroupLesson() && this.userIsAuthorized()) {return "Groepsles";}
 		else {
 			if (this.get("students")[0] !== undefined) {return this.get("students")[0].getName();}
-			else {return ''}
+			else {return '';}
 		}
 	},
 	isGroupLesson: function() {
@@ -46,7 +47,26 @@ var Lesson = Backbone.Model.extend({
 	},
 	userIsAuthorized: function(){
 		//Status wordt als nil meegegeven vanuit server als de user niet geauthoriseerd was!
-		return !(this.get('status') == null || this.get('status') == undefined)
+		return !(this.get('status') === null || this.get('status') === undefined);
+	},
+	getStartDateFormatted: function(){
+		return this.get("startTime").toString("dd/MM/yyyy");
+	},
+	getEnrollmentActions: function(){
+		var enrollmentActions = [];
+		if (current_user_role == "admin"){
+			enrollmentActions = [EnrollmentActions.removeenrollment];
+			if (this.get('approved') === false){
+				enrollmentActions.push(EnrollmentActions.accept);
+				enrollmentActions.push(EnrollmentActions.reject);
+				_.each(enrollmentActions, function(value, key, list){
+					if (list[key] == EnrollmentActions.removeenrollment){
+						list.splice(key, 1);
+					}
+				});
+			}
+		}
+		return enrollmentActions;
 	}
 });
 
@@ -63,9 +83,8 @@ var LessonActions = {
 	absentnok: {action: 'absentnok', label: 'Afwezig'},
 	done: {action: 'done', label: 'Les OK'}
 };
-LessonActions = _.extend(LessonActions, EnrollmentActions);
 var LessonStatusses = {
-	open: {key:"open", name: "Open", studentPossibleActions:[LessonActions.absentreq], adminPossibleActions: [LessonActions.absentreq, LessonActions.absentok, LessonActions.absentnok, LessonActions.done, LessonActions.removeenrollment]},
+	open: {key:"open", name: "Open", studentPossibleActions:[LessonActions.absentreq], adminPossibleActions: [LessonActions.absentreq, LessonActions.absentok, LessonActions.absentnok, LessonActions.done]},
 	done: {key: "done", name: "Les OK", studentPossibleActions:[], adminPossibleActions: [LessonActions.open]},
 	absentreq: {key: "absentreq", name: "Afwezigheid aangevraagd", studentPossibleActions:[], adminPossibleActions: [LessonActions.absentok, LessonActions.absentnok]},
 	absentok: {key: "absentok", name: "Wettelijk afwezig", studentPossibleActions:[], adminPossibleActions: [LessonActions.open, LessonActions.done]},
@@ -82,7 +101,8 @@ var LessonDropDownView = DropDownView.extend({
 		"click .status": "changeStatus",
 		"click .enroll": "enrollment",
 		"click .grouplessonDetails": "grouplessonDetails",
-		"click .deleteGrouplesson": "deleteGrouplesson"
+		"click .deleteGrouplesson": "deleteGrouplesson",
+		"click .enrollmentDetails": "showEnrollmentDetails"
 	},
 	render: function() {
 		this.constructor.__super__.render.apply(this);
@@ -93,22 +113,9 @@ var LessonDropDownView = DropDownView.extend({
 			var choicesArray =[];
 			// Haal keuzes op die horen bij status van les
 			choicesArray = _.clone(LessonStatusses[this.options.lesson.get('status')][current_user_role + 'PossibleActions']);
+			var enrollmentActions = this.options.lesson.getEnrollmentActions();
 
 			//Voeg keuzes bij die horen bij status van enrollment
-			if (current_user_role == "admin"){
-				if (this.options.lesson.get('approved') === false){
-					choicesArray.push(LessonActions.accept);
-					choicesArray.push(LessonActions.reject);
-					_.each(choicesArray, function(value, key, list){
-						if (list[key] == LessonActions.removeenrollment){
-							list.splice(key, 1);
-						}
-					});
-				}
-				else if (this.options.lesson.get('paid') === false) {
-					choicesArray.push(LessonActions.pay);
-				}
-			}
 
 			var argumentHash = {
 				studentName: this.options.lesson.get("students")[0].getName(),
@@ -116,6 +123,7 @@ var LessonDropDownView = DropDownView.extend({
 				datetime: this.options.lesson.get('startTime').toString("ddd dd MMM yyyy, HH:mm"),
 				status: this.options.lesson.statusToDutch(),
 				choicesmenu: (choicesArray.length > 0),
+				enrollmentActions: enrollmentActions,
 				choices: choicesArray
 			};
 			return Mustache.render(this.template.html(),argumentHash);
@@ -178,6 +186,10 @@ var LessonDropDownView = DropDownView.extend({
 				standardHTTPErrorHandling(model, response, options);
 			}
 		})
+	},
+	showEnrollmentDetails: function(e){
+		var enrollment_id = this.options.lesson.get("enrollment_id");
+		moderator.showEnrollmentDetails(enrollment_id);
 	}
 });
 var LessonsSearchView = Backbone.View.extend({
@@ -240,7 +252,7 @@ var NewLessonDialog = Backbone.View.extend({
 							moderator.showDialog('generalDialog', {
 								title: "Nieuwe les gemaakt",
 								text:"Er is een nieuwe les aangemaakt, op " + model.get('startTime').toString('dd/MM/yyyy') + ' !'
-							})
+							});
 						},
 						error: function(model, response, options) {
 							standardHTTPErrorHandling(model, response, options);
@@ -252,5 +264,25 @@ var NewLessonDialog = Backbone.View.extend({
 				}
 			}
 		});
+	}
+});
+var LessonsView = CollectionView.extend({
+	events: {
+	},
+	modelView: "LessonView",
+	modelViewTemplateSelector: "#lessonTemplate"
+});
+var LessonView = ModelView.extend({
+	events:{
+		"click *": "showLessonDropDown"
+	},
+	getTemplateHash: function(){
+		return {
+			lesson: this.model.toJSON(),
+			text: this.model.getStartDateFormatted()
+		};
+	},
+	showLessonDropDown: function(e){
+		moderator.showLessonDropDown(e.pageX, e.pageY, this.model);
 	}
 });

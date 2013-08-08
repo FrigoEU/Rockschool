@@ -106,7 +106,7 @@ var ScheduleView = Backbone.View.extend({
 					++cursorArray[j];
 					if (scheduleViewItem.content.get("type") == "lesson") { // We hebben een les vast
 						htmlClass = "lesson lesson-" + scheduleViewItem.content.get('status');
-						if (scheduleViewItem.content.get('paid') == false) {htmlClass += " unpaidenrollment";}
+						if (scheduleViewItem.content.get('paid') == false) {htmlClass += " unpaid";}
 						if (scheduleViewItem.content.get('approved') == false) {htmlClass += " unapprovedenrollment";}
 						text = scheduleViewItem.content.getStudentName(); // + " " + scheduleViewItem.content.get("duration") + " minutes";
 					}

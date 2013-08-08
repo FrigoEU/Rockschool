@@ -9,6 +9,7 @@ Rockschool::Application.routes.draw do
   resources :lessongroups
   resources :users
   resources :closing_periods
+  resources :invoices
   match '/signin',  to: 'sessions#new',         via: 'get'
   match '/signout', to: 'sessions#destroy',     via: 'get'
 

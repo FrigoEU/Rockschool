@@ -9,6 +9,9 @@ class LessonsController < ApplicationController
       @lessons = Lesson.where("teacher_id = ? AND starttime > ? AND starttime < ?", params[:teacher_id], @startDateParsed, @endDateParsed)
     elsif params.has_key?(:inquirystatus) # Gewoon RESTful alles ophalen
       @lessons = Lesson.where("status = ?", params[:inquirystatus])
+    elsif params.has_key?(:enrollment_id)
+      @enrollment = Enrollment.find(params[:enrollment_id])
+      @lessons = @enrollment.lessons
     else
       @lessons = Lesson.all
     end

@@ -2,7 +2,7 @@ class Lesson < ActiveRecord::Base
   include ApplicationHelper
 
   	attr_accessible :endtime, :starttime, :status, :teacher_id, :lessongroup_id
-  	attr_accessor :paid, :students, :maximum_number_of_students, :approved
+  	attr_accessor :paid, :students, :maximum_number_of_students, :approved, :enrollment_id
   	has_one :teacher
   	belongs_to :lessongroup, :inverse_of => :lessons
   	validate :start_and_endtime
@@ -25,23 +25,31 @@ class Lesson < ActiveRecord::Base
 
         #paid & approved
         enrollments = lessongroup.enrollments
+        logger.debug(enrollments.count)
+
         if enrollments.empty?
           #we geven waarschuwingen als er niet betaald is of niet approved, dus als er nog geen inschrijvingen zien willen we nog niemand lastig vallen met waarschuwingen
           self.paid = true
           self.approved = true
         elsif lessongroup.maximum_number_of_students == 1
-          self.paid = enrollments.first.paid
+          # logger.debug(enrollments.first.paid?)
+          self.paid = enrollments.first.paid?
           self.approved = enrollments.first.approved
         else
           self.paid = true
           self.approved = true
         end
       end
+
+      #enrollment_id
+      if enrollments.count == 1
+        self.enrollment_id = enrollments.first.id
+      end
   	end
 
     def as_json options=nil
       options ||= {}
-      options[:methods] = ((options[:methods] || []) + [:paid, :approved, :students, :maximum_number_of_students])
+      options[:methods] = ((options[:methods] || []) + [:paid, :approved, :students, :maximum_number_of_students, :enrollment_id])
       super options
     end
     def authorized?(user)

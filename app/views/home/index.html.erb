@@ -314,6 +314,14 @@
 		<li><a>Student: {{studentName}}</a></li>
 		<li><a>Leeraar: {{teacherName}}</a></li>
 		<li><a>Tijdstip: {{datetime}}</a></li>
+		<li><a>Inschrijving</a>
+			<ul>
+				{{#enrollmentActions}}
+				<li><a  class="status" data-action="{{action}}">{{label}}</a></li>
+				{{/enrollmentActions}}
+				<li><a class="enrollmentDetails">Details inschrijving</a></li>
+			</ul>
+		</li>
 		<li><a>Status: {{status}}</a>
 			{{#choicesmenu}}
 			<ul>
@@ -332,6 +340,7 @@
 		<li><a>Tijdstip: {{datetime}}</a></li>
 		<li><a>Geaccepteerd: {{#approved}}Ja{{/approved}}{{^approved}}Nee{{/approved}}</a>
 		<li><a>Betaald: {{#paid}}Ja{{/paid}}{{^paid}}Nee{{/paid}}</a>
+		<li><a class="details">Details</a></li>
 		{{#choicesmenu}}
 		<li><a>Acties:</a>
 			<ul>
@@ -347,6 +356,11 @@
 	<td class="{{htmlClass}}" rowspan = "{{rowspan}}" colspan ="{{colspan}}" data-startTime = "{{startTime}}" data-duration = "{{duration}}" data-id="{{id}}"> 
 		{{text}}
 	</td>
+</script>
+<script type="text/template" class="template" id="lessonTemplate">
+	<div class="lessonbox lesson-{{lesson.status}}" data-id="{{lesson.id}}">
+	{{text}}
+	</div>
 </script>
 <script type="text/template" class="template" id="enrollmentDialogTemplate">
 <div id="enrollmentDialog" title="Inschrijvingsformulier">
@@ -432,7 +446,7 @@
 	</div>
 </script>
 <script type="text/template" class="template" id="enrollmentBoxTemplate">
-	<span class="enrollment lessonbox {{^approved}}unapprovedenrollment{{/approved}} {{#approved}}{{^paid}}unpaidenrollment{{/paid}}{{/approved}}">{{text}}</span>
+	<span class="enrollment lessonbox {{^approved}}unapprovedenrollment{{/approved}} {{#approved}}{{^paid}}unpaid{{/paid}}{{/approved}}">{{text}}</span>
 </script>
 
 <script type="text/template" class="template" id="loginViewTemplate">
@@ -537,6 +551,61 @@
 	  	<input type="password" name="password"/><br>
 	  	<label for="password_confirmation">Vul hier nogmaals je nieuwe paswoord in:</label><br>
 	  	<input type="password" name="password_confirmation"/><br>
+	</div>
+</script>
+<script type="text/template" class="template" id="enrollmentDetailsTemplate">
+	<div id="enrollmentDetails" class="configScreen detailsScreen">
+		<h3> Gegevens inschrijving: </h3>
+		<table class ="info">
+			<tr><td class="infoLabel">Leerling:</td><td class="infoLabel">Leraar:</td></tr>
+			<tr><td class="infoTableCell">{{studentName}}</td><td class="infoTableCell">{{teacherName}}</td></tr>
+			<tr><td class="infoLabel">Tijdstip:</td><td class="infoLabel">Geaccepteerd:</td></tr>
+			<tr><td class="infoTableCell">{{startTime}}</td><td class="infoTableCell">{{approvedText}}</td></tr>
+		</table>
+		<h3> Facturen: </h3>
+		<div id="invoices"></div>
+		<% if @current_user.isAdmin %>
+		<button id="newInvoice">Nieuwe factuur</button>
+		<%end %>
+		<h3> Individuele lessen: </h3>
+		<div id="lessons"></div>
+	</div>
+</script>
+
+<script type="text/template" class="template" id="invoicesCollectionTemplate">
+	<div class="invoices">
+	</div>
+</script>
+
+<script type="text/template" class="template" id="invoiceBoxTemplate">
+	<div class="invoice lessonbox {{^invoice.paid}}unpaid{{/invoice.paid}}" data-id="{{invoice.id}}" >
+		Nummer: {{number}}
+		Bedrag: {{invoice.amount}}
+	</div>
+</script>
+<script type="text/template" class="template" id="invoiceDropDownTemplate">
+	<% if @current_user.isAdmin %>
+	<ul class="menu">
+		{{^paid}}
+		<li><a class="pay" >Factuur betalen</a></li>
+		{{/paid}}
+		<li><a class="delete" >Factuur verwijderen</a></li>
+	</ul>
+	<% end %>
+</script>
+<script type="text/template" class="template" id="newInvoiceDialogTemplate">
+	<div id="newInvoiceDialog" class= "detailsScreen" title="Nieuwe factuur">
+		<p>{{text}}</p>
+		<table class="info">
+			<tr><td class="infoLabel">Leerling:</td><td class="infoLabel">Leraar:</td></tr>
+			<tr><td class="infoTableCell">{{studentName}}</td><td class="infoTableCell">{{teacherName}}</td></tr>
+			<tr><td class="infoLabel">Tijdstip:</td></tr>
+			<tr><td class="infoTableCell">{{startTime}}</td></tr>
+			<tr><td><label for="amount">Bedrag:</label></td><td><label for="dueDate">Datum:</label></td></tr>
+			<tr><td><input type="text" name="amount" placeholder= "{{amount}}"></td>
+				<td><input type="text" name="dueDate" placeholder= "{{dueDate}}"></td></tr>
+			<tr><td><label for="sendMail">Mail sturen?</label></td><td><input type="checkbox" name="sendMail"/></td></tr>
+		</table>
 	</div>
 </script>
 <script>

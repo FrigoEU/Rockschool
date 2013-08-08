@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130731225524) do
+ActiveRecord::Schema.define(:version => 20130807232005) do
 
   create_table "closingperiods", :force => true do |t|
     t.date     "startdate"
@@ -23,10 +23,18 @@ ActiveRecord::Schema.define(:version => 20130731225524) do
   create_table "enrollments", :force => true do |t|
     t.integer  "student_id"
     t.integer  "lessongroup_id"
-    t.boolean  "paid"
     t.datetime "created_at",     :null => false
     t.datetime "updated_at",     :null => false
     t.boolean  "approved"
+  end
+
+  create_table "invoices", :force => true do |t|
+    t.integer  "enrollment_id"
+    t.decimal  "amount",        :precision => 6, :scale => 2
+    t.boolean  "paid",                                        :default => false
+    t.datetime "due_date"
+    t.datetime "created_at",                                                     :null => false
+    t.datetime "updated_at",                                                     :null => false
   end
 
   create_table "lessongroups", :force => true do |t|

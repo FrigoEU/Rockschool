@@ -13,18 +13,18 @@ var Student = Backbone.Model.extend({
 		var defaultError = false;
 		var defaultStudent = new Student();
 		var attributesToCheck = ["firstname", "lastname","address1", "address2","phone"];
- 		_.each(attributesToCheck, function(element, index, list){
- 			if (attrs[element] == '') {blanks = true}
- 			if (attrs[element] == defaultStudent.get([element])){defaultError= true}
- 		});
- 		if (blanks) {return 'Alle waarden moeten ingevuld zijn.'}
- 		if (defaultError) {return 'Alle waarden moeten verschillen van de voorbeeldwaarden.'}
+		_.each(attributesToCheck, function(element, index, list){
+			if (attrs[element] === '') {blanks = true;}
+			if (attrs[element] === defaultStudent.get([element])){defaultError= true;}
+		});
+		if (blanks) {return 'Alle waarden moeten ingevuld zijn.';}
+		if (defaultError) {return 'Alle waarden moeten verschillen van de voorbeeldwaarden.';}
 	}
 });
 var Students = Backbone.Collection.extend({
 	model: Student,
 	url: "/students"
-})
+});
 
 var StudentsIndexView = Backbone.View.extend({
 	events: {
@@ -35,8 +35,8 @@ var StudentsIndexView = Backbone.View.extend({
 	tagName: "div",
 	id: "accordion",
 	render: function() {
-		$(this.el).html(Mustache.to_html(this.options.template,{students: this.collection.models})); 
-		$(this.el).find('.studentsBox').each(function() {$(this).button()});
+		$(this.el).html(Mustache.to_html(this.options.template,{students: this.collection.models}));
+		$(this.el).find('.studentsBox').each(function() {$(this).button();});
 		$(this.el).find('.addStudent').button({
 			icons: {
 				secondary: "ui-icon-circle-plus"
@@ -44,12 +44,13 @@ var StudentsIndexView = Backbone.View.extend({
 		});
 		$(this.el).find('#searchStudent').button({
 			icons: {primary: "ui-icon-search"},
-		    text: false
+			text: false
 		});
 
 		if (this.collection.length == 1){
 			moderator.setMainScreenShowStudent(this.collection.at(0));
 		}
+		this.setElement($("#studentsIndex"));
 		return this;
 	},
 	showAddStudentScreen: function(e) {
@@ -170,9 +171,9 @@ var EditStudentView = Backbone.View.extend({
 			}
 			else {
 				moderator.showDialog('generalDialog', {
-	    			title: "Succes",
-	    			text: "Registratie gelukt!"
-	    		});
+					title: "Succes",
+					text: "Registratie gelukt!"
+				});
 			}
 		}
 		studentSaveSuccess = _.bind(studentSaveSuccess, this);

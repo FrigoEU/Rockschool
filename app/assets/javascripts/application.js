@@ -14,4 +14,8 @@
 //= require underscore.js 
 //= require jquery-ui.js
 //= require jquery_ujs
+//= require backbone.js
+//= require main.js
+//= require model.js
+//= require collection.js
 //= require_tree .

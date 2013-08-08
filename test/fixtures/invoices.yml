@@ -1,0 +1,13 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  enrollment_id: 
+  amount: 
+  paid: 
+  due_date: 2013-08-03 14:40:04
+
+two:
+  enrollment_id: 
+  amount: 
+  paid: 
+  due_date: 2013-08-03 14:40:04

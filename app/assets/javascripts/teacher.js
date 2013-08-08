@@ -5,7 +5,7 @@ var Teacher = Backbone.Model.extend({
 	getTeachingTime: function(start_end, day){
 		var hours = this.get(start_end + '_hours_' + day);
 		var minutes = this.get(start_end + '_minutes_' + day);
-		if (hours && hours != 0 ){return pad(hours,2) + ":" + pad(minutes, 2);}
+		if (hours && hours !== 0 ){return pad(hours,2) + ":" + pad(minutes, 2);}
 		else {return '';}
 	},
 	getTeachingTimeHash: function(start_end, day){
@@ -14,7 +14,7 @@ var Teacher = Backbone.Model.extend({
 		return {
 			hours: hours,
 			minutes: minutes
-		}
+		};
 	},
 	setTeachingTime: function(start_end, day, time){
 		// 8:30
@@ -24,7 +24,7 @@ var Teacher = Backbone.Model.extend({
 		this.set(start_end + '_minutes_' + day, parseInt(splitted[1]));
 	},
 	getTeachingDay: function(day){
-		return (this.get('start_hours_'+ day) !== undefined  && this.get('start_hours_'+ day) != 0)
+		return (this.get('start_hours_'+ day) !== undefined  && this.get('start_hours_'+ day) !== 0);
 	},
 	urlRoot: "/teachers",
 	showSchedule: function(startDate, endDate){
@@ -93,9 +93,9 @@ var TeachersIndexView = Backbone.View.extend({
 		$(this.el).html(Mustache.to_html(this.options.template,{teachers: this.collection.models}));
 		//$(this.el).find('.teachersBox').each(function() {$(this).button();});
 		var icons = {
-	      	header: "ui-icon-circle-arrow-e",
-	      	activeHeader: "ui-icon-circle-arrow-s"
-	    };
+			header: "ui-icon-circle-arrow-e",
+			activeHeader: "ui-icon-circle-arrow-s"
+		};
 		$(this.el).find('#accordion').accordion({
 			icons: icons,
 			collapsible: true,
@@ -107,8 +107,8 @@ var TeachersIndexView = Backbone.View.extend({
 		});
 		$(this.el).find('#searchTeacher').button({
 			icons: { primary: "ui-icon-search"},
-		    text: false
-		})
+			text: false
+		});
 
 		if (this.collection.length == 1){
 			moderator.setMainScreenTeacherSchedule(this.collection.at(0));
@@ -133,7 +133,7 @@ var TeachersIndexView = Backbone.View.extend({
 		if (!this.originalCollection){
 			this.originalCollection = this.collection;
 		}
-		if (string == ''){this.collection = this.originalCollection}
+		if (string === ''){this.collection = this.originalCollection;}
 		else {
 			this.collection = new Students();
 			this.originalCollection.each( function(element, index, list){
@@ -192,8 +192,8 @@ var TeacherDetailsView = Backbone.View.extend({
 			else {
 				var start = domElement.find('#start_hours_' + element).valplace();
 				var end = domElement.find('#end_hours_' + element).valplace();
-				if (start == ''){start = "00:00"};
-				if (end == ''){end = "00:00"};
+				if (start === ''){start = "00:00";}
+				if (end === ''){end = "00:00";}
 				teacher.setTeachingTime('start', element, start);
 				teacher.setTeachingTime('end',element, end);
 			}
@@ -217,9 +217,9 @@ var TeacherDetailsView = Backbone.View.extend({
 					}
 					else {
 						moderator.showDialog('generalDialog', {
-		        			title: "Succes",
-		        			text: "Registratie gelukt!"
-		        		});
+							title: "Succes",
+							text: "Registratie gelukt!"
+						});
 					}
 			},
 			error: function(model, response, options){
@@ -276,10 +276,10 @@ var TeacherShowDetailsView = Backbone.View.extend({
 		var showPhone = false;
 		var showEmail;
 		if (current_user_role == "admin" || (current_user_role == "teacher" && current_user_id == this.teacher.user_id)){
-			var showPhone = true;
+			showPhone = true;
 		}
 		if (current_user_role == "admin" || (current_user_role == "teacher" && current_user_id == this.teacher.user_id)){
-			var showEmail = true;
+			showEmail = true;
 		}
 		var argumentHash = {
 			firstname: this.teacher.get('firstname'),
@@ -306,4 +306,4 @@ var TeacherShowDetailsView = Backbone.View.extend({
 	editTeacher: function(e){
 		moderator.setMainScreenEditTeacher(this.teacher);
 	}
-})
+});
